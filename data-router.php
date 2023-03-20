@@ -7,6 +7,7 @@ global $in;
 $in = array('email', 'login', 'pass', 'key'=>'string',
 	'id'=>'integer', 'uid'=>'string', 'tz',
 	'aresIDS'=>'array', 'listIDS'=>'array', 'senderResumeDate'=>'integer', 'senderTimeInterval'=>'integer', 
+    'field'=>'string', 'where'=>'string',
 	'attribute', 'active', 'encoding'=>'string', 'format', 'g-recaptcha-response',
 ); // разрешенные входные параметры
 
@@ -466,7 +467,7 @@ function main () {
 	
 	
 	$arr1 = array();
-    $sql1 = "SELECT id_country, Country, Region, New_Region, RegList1, RegList2, Flag, id_reg, id_newreg, id_reg1, id_reg2, cntr_iso, code_cntr, reg_iso, code_reg, cntr_code, cord, scale FROM Country";
+    $sql1 = "SELECT id_country, Country, Region, New_Region, RegList1, RegList2, Flag, id_reg, id_newreg, id_reg1, id_reg2, cntr_iso, code_cntr, reg_iso, code_reg, cntr_code, cord, scale FROM Country" . (!empty($argv['where']) ? (' WHERE ' . $argv['where']) : ('') );
 
 	$STH1 = PreExecSQL_all($sql1, $arr1, $first);
 	if ($first) {
@@ -475,7 +476,13 @@ function main () {
 	$first = false;
     
     
-    $resultJSON = $STH1;
+    if (!empty($argv['field'])) {
+        $resultJSON = array_map(function ($row) use ($argv) {
+            return $row[$argv['field']];
+        }, $STH1);
+    } else {
+        $resultJSON = $STH1;
+    }
     
     
 	if ($argv['format'] !== 'json') {
