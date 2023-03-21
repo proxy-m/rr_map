@@ -400,6 +400,91 @@ $(document).ready(function ()
                   center: city,
                   zoom: scale, ///record.data['scale'] ?? 12,
                 }));
+                
+                console.log('markers: ', mrks); ///
+                
+                try {
+                    document.getElementById(popup).outerHTML = '';
+                } catch (e456343456) {
+                }
+                var container = null;
+                container = document.createElement('div');
+                container.setAttribute('id', 'popup');
+                container.title = '';
+                container.innerHTML = `<a href="#" id="popup-closer" class="ol-popup-closer"></a><div id="popup-content"></div>`;
+                container.class='ol-popup';
+                document.body.appendChild(container);
+                
+                // Popup showing the position the user clicked
+                var container = document.getElementById('popup');
+                var popup = new ol.Overlay({
+                    element: container,
+                    //autoPan: true,
+                    //autoPanAnimation: {
+                    //    duration: 250
+                    //}
+                });
+                window.mappanel.map.addOverlay(popup);
+                
+                var features = [];
+                mrks.forEach(function (m, i) {
+                    //console.log(dt[i+1]);
+                    
+                    var iconFeature = new ol.Feature({
+                        ///geometry: new ol.geom.Point(ol.proj.transform([106.8478695, -6.1568562], 'EPSG:4326', 'EPSG:3857'))
+                        geometry: new ol.geom.Point(ol.proj.fromLonLat([m[0].lng, m[0].lat])), /// [106.8478695, -6.1568562]))),
+                        type: 'Point',
+                        desc: '<pre><br/>' + '[Latitude : ' + m[0].lat + ', Longitude: ' + m[0].lng + '] ' 
+                                + '<br/><b>' + (`#${i + 1} - `) + (!!m[1] ? m[1] : 'Unnamed') + '</b></pre>',
+                    });
+                    var iconStyle = new ol.style.Style({
+                        image: new ol.style.Icon(({ // IconOptions
+                            anchor: [0.5, 46],
+                            anchorXUnits: 'fraction',
+                            anchorYUnits: 'pixels',
+                            opacity: 0.75,
+                            src: (!!dt[i+1] && !!dt[i+1].iconurl ? dt[i+1].iconurl : 'images_rur/Konf/diamondw.png'),
+                        })),
+                        text: new ol.style.Text({
+                            scale: 1.2,
+                        }),
+                    });
+                    iconFeature.setStyle(iconStyle);
+                    features.push(iconFeature);
+                });
+                
+                var vectorSource = new ol.source.Vector({
+                    features: features,      //add an array of features
+                    //,style: iconStyle     //to set the style for all your features...
+                });
+                var markersOL = new ol.layer.Vector({
+                    source: vectorSource
+                });
+                ///markersOL.getSource().addFeature(marker);
+                window.mappanel.map.addLayer(markersOL);
+                
+                
+                /* Add a pointermove handler to the map to render the popup.*/
+                window.mappanel.map.on('pointermove', function (evt) {
+                    var feature = window.mappanel.map.forEachFeatureAtPixel(evt.pixel, function (feat, layer) {
+                        return feat;
+                    });
+
+                    if (feature && feature.get('type') == 'Point') {
+                        var coordinate = evt.coordinate;    //default projection is EPSG:3857 you may want to use ol.proj.transform
+                        content = document.getElementById('popup-content'); ///
+                        content.innerHTML = feature.get('desc');
+                        popup.title = feature.get('name');
+                        popup.setPosition(coordinate);
+                    } else {
+                        popup.setPosition(undefined);
+                    }
+                });
+                
+                
+                    
+                
+                
                     
 				const map = new google.maps.Map(document.getElementById("map_div"), {
 				    zoom: scale ,
@@ -425,6 +510,8 @@ $(document).ready(function ()
 			      optimized: false,
 			      cont:dt[i+1]['info']
 			    });
+                
+                //console.log([marker.position.lat(), marker.position.lng()], marker); ///
 
 			    // Add a click listener for each marker, and set up the info window.
 			    marker.addListener("click", () => {
