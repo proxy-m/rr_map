@@ -185,6 +185,12 @@ $(document).ready(function ()
 		
 		if(Number($('#mapsrchvl').val().length)==0)
 		{
+            try {
+                document.getElementById("map_div").outerHTML = '';
+                document.getElementsByClassName("mapinfo")[0].outerHTML = '';
+            } catch (e5632534) {
+            }
+            
 			var ur='./final/getunivdata_gmap22.php?year='+yr+'&subj='+sb+'&cntr='+cntr+'&reg='+reg;
 			
 			//alert(ur);
@@ -401,17 +407,20 @@ $(document).ready(function ()
                   zoom: scale, ///record.data['scale'] ?? 12,
                 }));
                 
-                console.log('markers: ', mrks); ///
+                // Create an info window to share between markers.
+                const infoWindow = new google.maps.InfoWindow(); // TODO: remake
+                
+                //console.log('markers: ', mrks); ///
                 
                 try {
-                    document.getElementById(popup).outerHTML = '';
+                    document.getElementById('popup').outerHTML = '';
                 } catch (e456343456) {
                 }
                 var container = null;
                 container = document.createElement('div');
                 container.setAttribute('id', 'popup');
                 container.title = '';
-                container.innerHTML = `<a href="#" id="popup-closer" class="ol-popup-closer"></a><div id="popup-content"></div>`;
+                container.innerHTML = `<a href="#" id="popup-closer" class="ol-popup-closer"></a><div id="popup-content" style="background-color: white;"></div>`;
                 container.class='ol-popup';
                 document.body.appendChild(container);
                 
@@ -419,12 +428,15 @@ $(document).ready(function ()
                 var container = document.getElementById('popup');
                 var popup = new ol.Overlay({
                     element: container,
+                    offset: [15, 20],
+                    positioning: 'top-left', 
                     //autoPan: true,
                     //autoPanAnimation: {
                     //    duration: 250
                     //}
                 });
                 window.mappanel.map.addOverlay(popup);
+                    
                 
                 var features = [];
                 mrks.forEach(function (m, i) {
@@ -433,8 +445,9 @@ $(document).ready(function ()
                     var iconFeature = new ol.Feature({
                         ///geometry: new ol.geom.Point(ol.proj.transform([106.8478695, -6.1568562], 'EPSG:4326', 'EPSG:3857'))
                         geometry: new ol.geom.Point(ol.proj.fromLonLat([m[0].lng, m[0].lat])), /// [106.8478695, -6.1568562]))),
+                        n: i+1,
                         type: 'Point',
-                        desc: '<pre><br/>' + '[Latitude : ' + m[0].lat + ', Longitude: ' + m[0].lng + '] ' 
+                        desc: '<pre>' //+ '<br/>' + '[Latitude : ' + m[0].lat + ', Longitude: ' + m[0].lng + '] ' 
                                 + '<br/><b>' + (`#${i + 1} - `) + (!!m[1] ? m[1] : 'Unnamed') + '</b></pre>',
                     });
                     var iconStyle = new ol.style.Style({
@@ -463,6 +476,10 @@ $(document).ready(function ()
                 ///markersOL.getSource().addFeature(marker);
                 window.mappanel.map.addLayer(markersOL);
                 
+                let wasClickedTrigger = 0;
+                let ti = null;
+                let lastMissed = 0;
+                let missedCount = 0;
                 
                 /* Add a pointermove handler to the map to render the popup.*/
                 window.mappanel.map.on('pointermove', function (evt) {
@@ -470,22 +487,65 @@ $(document).ready(function ()
                         return feat;
                     });
 
-                    if (feature && feature.get('type') == 'Point') {
+                    if (feature && feature.get('type') == 'Point' && (!wasClickedTrigger || (feature.get('n') != lastMissed && (lastMissed = feature.get('n')) != wasClickedTrigger && (++missedCount) >= 10))) {
                         var coordinate = evt.coordinate;    //default projection is EPSG:3857 you may want to use ol.proj.transform
                         content = document.getElementById('popup-content'); ///
                         content.innerHTML = feature.get('desc');
                         popup.title = feature.get('name');
+                        wasClickedTrigger = 0;
+                        missedCount = 0;
+                        lastMissed = 0;
                         popup.setPosition(coordinate);
                     } else {
-                        popup.setPosition(undefined);
+                        if (!wasClickedTrigger) {
+                            popup.setPosition(undefined);
+                        }
+                    }
+                });
+                
+                window.mappanel.map.on('click', function (evt) {
+                    popup.setPosition(undefined);
+                    var feature = window.mappanel.map.forEachFeatureAtPixel(evt.pixel, function (feat, layer) {
+                        return feat;
+                    });
+
+                    if (feature && feature.get('type') == 'Point' && feature.get('n') != wasClickedTrigger) {
+                        var coordinate = evt.coordinate;
+                        content = document.getElementById('popup-content'); ///
+                        content.innerHTML = dt[feature.get('n')]['info']; // TODO check click
+                        popup.title = feature.get('name');
+                        wasClickedTrigger = feature.get('n');
+                        missedCount = 1;
+                        lastMissed = wasClickedTrigger;
+                        if (ti) {
+                            clearTimeout(ti);
+                            ti = null;
+                        }
+                        ti = setTimeout(function () {
+                            wasClickedTrigger = 0;
+                        }, 12000);
+                        popup.setPosition(coordinate);
+                        
+                        setTimeout(function () {
+                            Ext.create('Ext.window.Window', {
+                                layout: 'fit',
+                                html: $('#popup').html(),
+                                renderTo: 'perfectmap_div',
+                            }).show();
+                            popup.setPosition(undefined);
+                        }, 10);
+                    } else {
+                        if (!wasClickedTrigger) {
+                            wasClickedTrigger = 0;
+                            popup.setPosition(undefined);
+                        }
                     }
                 });
                 
                 
-                    
                 
                 
-                    
+                return; /// !!!    
 				const map = new google.maps.Map(document.getElementById("map_div"), {
 				    zoom: scale ,
 				    center: coord,
@@ -494,8 +554,7 @@ $(document).ready(function ()
 				const tourStops = mrks;
                 
                 
-			  // Create an info window to share between markers.
-			  const infoWindow = new google.maps.InfoWindow();
+			  
 				//var konf=['diamondw.png','goldw.png','silverw.png','bronzew.png','cooperw.png','worldw.png'];
 				//alert(konf[2]);
 			  // Create the markers.
@@ -515,7 +574,10 @@ $(document).ready(function ()
 
 			    // Add a click listener for each marker, and set up the info window.
 			    marker.addListener("click", () => {
-			      infoWindow.close();
+                    console.log('marker.cont: ', marker.cont); ///
+                    console.log('marker.getMap(): ', marker.getMap()); ///
+                    console.log('marker: ', marker); ///
+ 			      infoWindow.close();
 			      //infoWindow.setContent(marker.getTitle());
 			      infoWindow.setContent(marker.cont);
 			      infoWindow.open(marker.getMap(), marker);
