@@ -26,12 +26,169 @@
 	<script src="./templates/rur/js/bootstrap-typeahead.js" type="text/javascript"></script>   
 	<script src="./templates/rur/sweetalert-master/dist/sweetalert.min.js?v=2019101808" type="text/javascript"></script>
 	<!--<script src="./templates/rur/js/jquery.json.js?v=2019101808" type="text/javascript"></script>-->
+
+	<script type="text/javascript" src="./deps/ext-6.2.0/build/ext-all.js"></script>
+    	<link rel="stylesheet" type="text/css" href="./deps/ext-6.2.0/build/classic/theme-gray/resources/theme-gray-all.css" />
+    	<!-- Local OpenLayers 3 js -->
+	<script type="text/javascript" src="./deps/ol.js"></script>
+	<!--<script type="text/javascript" src="./map.js"></script>-->
+	<!-- Local OpenLayers 3 stylesheet -->
+	<link type="text/css" href="./deps/ol.css" rel="stylesheet">
+    
+    <script type="text/javascript">
+        function mainMap () {
+            ///    
+            Ext.require([
+                'Ext.grid.*',
+                'Ext.data.*',
+                'Ext.panel.*',
+                'Ext.form.*',
+                'Ext.layout.container.Border'
+            ]);
+
+            Ext.onReady(() => {
+                Ext.application({
+                    name: 'OL3EXT6',
+                    launch: function () {
+                        var programStore = Ext.create('Ext.data.JsonStore', {
+                            remoteSort: false,
+                            autoLoad: true,
+                            proxy: {
+                                type: 'ajax',
+                                //url: '/all/pro/roundranking/data-router.php?key=tk34hdrfv&format=json&encoding=UTF-8',
+                                url: 'https://roundranking.com/final/getcntrdata_gmap22.php?year=13&justmap=1&subj=1&reg=0&cntr=0&_dc=1679328036903',
+                                actionMethods: {
+                                    read: 'POST',
+                                    update: 'POST',
+                                    create: 'POST'
+                                },
+                                reader: {
+                                    type: 'json',
+                                    rootProperty: 'root[1]', ///rootProperty: 'root',
+                                    idProperty: 'id_country'
+                                }
+                            },
+                            sorters: [{
+                               property: 'id',
+                               direction: 'ASC'
+                            }],
+                            fields: [
+                                {name: 'id_country'},
+                                {name: 'Country'},
+                                {name: 'cord'},
+                                {name: 'scale'},                
+                                {name: 'cntr_code'},
+                                {name: 'cntr_iso'},
+                                {name: 'code_cntr'},
+                                {name: 'code_reg'},
+                                {name: 'Region'},
+                            ]
+                        });
+                                
+                        var mappanel = Ext.create('Ext.panel.Panel', {
+                            //region: 'center',
+                            //layout: 'fit',
+                            title: 'Map',
+                            xtype: 'panel',
+                            html: '<div id="map" style="height: 500px; width: 100%;"></div>',
+                            listeners:{
+                                afterrender:function(){
+                                    let me = this, city;
+                                    //city = ol.proj.transform([44.49, 56.18], 'EPSG:4326', 'EPSG:3857');
+                                    city = ol.proj.fromLonLat([-3.696100, 40.410800]); // Madrid, Spain
+
+                                    this.map = new ol.Map({
+                                        target: 'map', // div#map
+                                        renderer: 'canvas',
+                                        layers: [new ol.layer.Tile({
+                                          source: new ol.source.OSM()
+                                        })],
+                                        view: new ol.View({
+                                          center: city,
+                                          zoom: 12,
+                                        }),
+                                    });  
+
+                                },
+                                resize: function () {
+                                    this.map.updateSize();
+                                }
+                            }
+                        });
+                        window.mappanel = mappanel;
+                        
+                        Ext.create('Ext.panel.Panel', { ///'Ext.container.Viewport', {
+                            layout: {
+                                type: 'vbox',
+                                align: 'stretch',
+                            },
+                            type: 'vbox',
+                            renderTo: 'perfectmap_div', /// Ext.getBody(),
+                            items: [
+                                //toppanel,
+                                mappanel,
+                                //grid, 
+                            ]
+                        });
+                    }            
+                });
+                
+            });
+            ///
+        };
+        mainMap();
+    </script>
+
 	<script src="./templates/rur/js/loader.js?v=2019101808" type="text/javascript"></script>
-	<script src="./templates/rur/js/map_js_ggl22.js?v=2019101808" type="text/javascript"></script>
+	<!--<script src="./templates/rur/js/map_js_ggl22.js?v=2019101808" type="text/javascript"></script>-->
 	<script type="text/javascript">
-		jQuery(window).on('load',  function() {new JCaption('img.caption');});
-		jQuery(function($){ initTooltips(); $("body").on("subform-row-add", initTooltips); function initTooltips (event, container) { container = container || document;$(container).find(".hasTooltip").tooltip({"html": true,"container": "body"});} });
-		jQuery(function($){ initPopovers(); $("body").on("subform-row-add", initPopovers); function initPopovers (event, container) { $(container || document).find(".hasPopover").popover({"html": true,"trigger": "hover focus","container": "body"});} });
+        setTimeout(function () {
+            function initZero () { return $(document).ready(function () { window.initMap(); }); };
+            window.initZero = initZero; // please, use such way
+            
+            
+            jQuery(window).on('load',  function() {
+                jQuery(document).ready(function () {
+                    let iv = setTimeout(function () {
+                        jQuery('select').bind('change', function (t) { window.initZero(); }); // TODO: recheck
+                        jQuery('select').on('change', function (t) { window.initZero(); }); // TODO: recheck
+                    }, 200);
+                    
+                    new JCaption('img.caption');
+                });
+            });
+            jQuery(function($){ initTooltips(); $("body").on("subform-row-add", initTooltips); function initTooltips (event, container) { container = container || document;$(container).find(".hasTooltip").tooltip({"html": true,"container": "body"});} });
+            jQuery(function($){ initPopovers(); $("body").on("subform-row-add", initPopovers); function initPopovers (event, container) { $(container || document).find(".hasPopover").popover({"html": true,"trigger": "hover focus","container": "body"});} });
+            
+            var script = null;
+            
+            
+            script = document.createElement('script');
+            script.type = "text/javascript";
+            script.async = false;
+            script.src = "./templates/rur/js/map_js_ggl22.js?v=2019101808";
+            document.getElementsByTagName('head')[0].appendChild(script);
+
+            
+            script = document.createElement('script');
+            script.type = "text/javascript";
+            script.async = false;
+            script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyBzEr0UCQ2hxfjk_GcaCXS-9TkyGaoD7-o&callback=window.initZero&region=USA&language=en";
+            document.getElementsByTagName('head')[0].appendChild(script);
+                        
+            script = document.createElement('script');
+            script.type = "text/javascript";
+            script.async = false;
+            script.src = "data:text/javascript,window.initZero()";
+            document.getElementsByTagName('head')[0].appendChild(script);
+            
+            script = document.createElement('script');
+            script.type = "text/javascript";
+            script.async = false;
+            script.src = "data:text/javascript,jQuery(document).ready(function%20()%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20let%20iv%20%3D%20setTimeout(function%20()%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20jQuery('select').bind('change'%2C%20function%20(t)%20%7B%20window.initZero()%3B%20%7D)%3B%20%2F%2F%20TODO%3A%20recheck%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20jQuery('select').on('change'%2C%20function%20(t)%20%7B%20window.initZero()%3B%20%7D)%3B%20%2F%2F%20TODO%3A%20recheck%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%2C%20200)%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%2F%2Fnew%20JCaption('img.caption')%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D)";
+            document.getElementsByTagName('head')[0].appendChild(script);
+            
+        }, 5000);
 	</script>
 	<style>
 .form-search {
@@ -395,7 +552,13 @@ color: #494343;">RUR World Map shows the geographical location of universities i
 		<div class="col-md-4 col-sm-6 bronze"><img src="images_rur/Konf/bronzew.png" alt="Bronze League" />Bronze League (Rank 301-400)</div>
 		<div class="col-md-4 col-sm-6 cooper"><img src="images_rur/Konf/cooperw.png" alt="Copper League" />Copper League (Rank 401-500)</div>
 		<div class="col-md-4 col-sm-6 world"><img src="images_rur/Konf/worldw.png" alt="World League" />World League (501+)</div>
-	</div>
+	</div><br/>
+    
+<div class="perfectmapinfo row">
+			<div id="perfectmap_div"></div>
+			<div id="perfectnwmap"></div> 
+</div>
+<br/>
 	<!--/section-->
 
 	</div>
@@ -518,9 +681,9 @@ var _gaq = _gaq || [];
   ga('send', 'pageview');
 
 </script>
-<script
+<!--<script
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBzEr0UCQ2hxfjk_GcaCXS-9TkyGaoD7-o&callback=initMap&region=USA&language=en"
       async
-    ></script>
+    ></script>-->
 	</body>
 </html>

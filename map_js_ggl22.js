@@ -24,7 +24,9 @@ $(document).ready(function ()
 	subjectview();
   	//$('.mapinfo').html('<div id="map_div" style="display:none"></div><div id="nwmap"><h2>The map is loading.</h2></div>');
 	//setTimeout(function(){setmap();},100);
-	setTimeout(function(){initMap();},100);
+    
+	///setTimeout(function(){initMap();},100);
+
 
 	
 	$(document).on('click', '.main-nav li', function () {
@@ -131,6 +133,8 @@ $(document).ready(function ()
       	//$('.mapinfo').html('<div id="map_div" style="display:none"></div><div id="nwmap"><h2>The map is loading.</h2></div>');
 		initMap();
 	});
+    
+
 	function subjectview()
 	{
 		
@@ -387,12 +391,24 @@ $(document).ready(function ()
 								scale=2;	
 							}
 					}
+                
+                let pos = [coord.lat, coord.lng]; /// JSON.parse('['+record.data['cord']+']');
+                pos = [pos[1], pos[0]];
+                let city = ol.proj.fromLonLat(pos);
+                
+                window.mappanel.map.setView(new ol.View({
+                  center: city,
+                  zoom: scale, ///record.data['scale'] ?? 12,
+                }));
+                    
 				const map = new google.maps.Map(document.getElementById("map_div"), {
 				    zoom: scale ,
 				    center: coord,
 				    mapTypeId: google.maps.MapTypeId.TERRAIN
 			 	});	
 				const tourStops = mrks;
+                
+                
 			  // Create an info window to share between markers.
 			  const infoWindow = new google.maps.InfoWindow();
 				//var konf=['diamondw.png','goldw.png','silverw.png','bronzew.png','cooperw.png','worldw.png'];
@@ -508,6 +524,7 @@ $(document).ready(function ()
 		
 		}  		
 	}
+    window.initMap = initMap;
 	function country_list()
 	{
 					sb=$('.mfilter-subject select option:selected').val();
@@ -546,6 +563,7 @@ $(document).ready(function ()
 								dtcntr[key]['code_cntr']=val['code_cntr'];
 								dtcntr[key]['code_reg']=val['code_reg'];
 								//alert(key + '\n' + dtcntr[key]);
+                                
 							});
 						}
 		});
