@@ -454,8 +454,9 @@ $(document).ready(function ()
                         geometry: new ol.geom.Point(ol.proj.fromLonLat([m[0].lng, m[0].lat])), /// [106.8478695, -6.1568562]))),
                         n: i+1,
                         type: 'Point',
-                        desc: '<pre>' //+ '<br/>' + '[Latitude : ' + m[0].lat + ', Longitude: ' + m[0].lng + '] ' 
-                                + '<br/><b>' + (`#${i + 1} - `) + (!!m[1] ? m[1] : 'Unnamed') + '</b></pre>',
+                        desc: '' // + '<pre>'
+                                + '<b>' + (`#${i + 1} - `) + (!!m[1] ? m[1] : 'Unnamed') + '</b>' + '<br/>'
+                                + ' ' + '[Lat, Lng: ' + m[0].lat + ', ' + m[0].lng + ']', //+ ' </pre>', 
                     });
                     var iconStyle = new ol.style.Style({
                         image: new ol.style.Icon(({ // IconOptions
