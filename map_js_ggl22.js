@@ -491,6 +491,13 @@ $(document).ready(function ()
                         return feat;
                     });
 
+                    this.getTargetElement = (!this.getTargetElement) ? this.getTarget : this.getTargetElement;
+                    if (feature && feature.get('type') == 'Point') {
+                        this.getTargetElement().style.cursor = 'pointer';
+                    } else {
+                        this.getTargetElement().style.cursor = '';
+                    }
+
                     if (feature && feature.get('type') == 'Point' && (!wasClickedTrigger || (feature.get('n') != lastMissed && (lastMissed = feature.get('n')) != wasClickedTrigger && (++missedCount) >= 10))) {
                         var coordinate = evt.coordinate;    //default projection is EPSG:3857 you may want to use ol.proj.transform
                         content = document.getElementById('popup-content'); ///
