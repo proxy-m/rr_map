@@ -515,6 +515,17 @@ $(document).ready(function ()
                     }
                 });
                 
+                function closeTooltip (panel) {
+                    if (Ext.getVersion().major > 5) {
+                        Ext.getCmp(panel.el.down('.x-tool-close').up().id).setTooltip('\0')
+                    } else {
+                        Ext.create('Ext.tip.ToolTip', {
+                            target: panel.el.down('.x-tool-close').id,
+                            html: '\0'
+                        });
+                    }
+                }
+                
                 window.mappanel.map.on('click', function (evt) {
                     popup.setPosition(undefined);
                     var feature = window.mappanel.map.forEachFeatureAtPixel(evt.pixel, function (feat, layer) {
@@ -550,6 +561,17 @@ $(document).ready(function ()
                                 layout: 'fit',
                                 html: $('#popup').html(),
                                 renderTo: 'perfectmap_div',
+                                listeners: {
+                                    afterrender: closeTooltip
+                                },
+                                buttons: [],
+                                tools: [{
+                                    type:'refresh',
+                                    tooltip: null,
+                                    handler: function (event, toolEl, panel) {
+                                    }
+                                },
+                                ]
                             }).show();
                             popup.setPosition(undefined);
                         }, 10);
