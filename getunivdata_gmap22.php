@@ -49,7 +49,7 @@ $sql = 'SELECT t1.id_univ,t2.[Univ name],t3.Country AS Economy,t3.Region,t3.Flag
 
 	foreach ($rr as $row)
 	{
-		//if($row['Economy']!='USA'&$row['Economy']!='Switzerland'&$row['Economy']!='Turkey')
+		//if($row['Economy']!='USA' && $row['Economy']!='Switzerland' && $row['Economy']!='Turkey')
 		//if($row['Economy']!='USA')
 		//{
 			//if($row['id_univ']!=1222)
@@ -66,34 +66,41 @@ $sql = 'SELECT t1.id_univ,t2.[Univ name],t3.Country AS Economy,t3.Region,t3.Flag
 			{$univ[$i]['FS'] = round($univ[$i]['Students']/$univ[$i]['Faculty'],0);}
 			else{$univ[$i]['FS']=0;}
 			
-			$univ[$i]['country'] = $row['Economy'];
-			$univ[$i]['region'] = $row['Region'];
-			$univ[$i]['flag'] = $row['Flag'];
+			$univ[$i]['country'] = $row['Economy'] ?? $row['Country'] ?? $row['country'] ?? 'UnknownCountry';
+			$univ[$i]['region'] = $row['Region'] ?? $row['region'] ?? NULL;
+			$univ[$i]['flag'] = $row['Flag'] ?? $row['flag'] ?? NULL;
 			
-			if($row['Logo']!=''&$row['Logo']!=NULL)
+            $row['Logo'] = $row['Logo'] ?? $row['logo'] ?? NULL;
+			if($row['Logo']!='' && $row['Logo']!=NULL)
 			{$univ[$i]['logo'] = $row['Logo'];}
 			else{$univ[$i]['logo']='./images_rur/Logo.png';}
-			if($row['loc']!=''&$row['loc']!=NULL)
-			{$univ[$i]['loc'] = $row['Location'];}
+            
+            $row['loc'] = $row['loc'] ?? $row['Location'] ?? NULL;
+			if($row['loc']!='' && $row['loc']!=NULL)
+			{$univ[$i]['loc'] = $row['loc'];}
 			else{$univ[$i]['loc']='No Location';}
 			
-			if($row['found']!=''&$row['found']!=NULL)
-			{$univ[$i]['found'] = $row['Foundation'];}
+            $row['found'] = $row['found'] ?? $row['Foundation'] ?? NULL;
+			if($row['found']!='' && $row['found']!=NULL)
+			{$univ[$i]['found'] = $row['found'];}
 			else{$univ[$i]['found']='No Foundation';}
 			
-			if($row['sh_nm']!=''&$row['sh_nm']!=NULL)
-			{$univ[$i]['sh_nm'] = $row['Short name'];}
+            $row['sh_nm'] = $row['sh_nm'] ?? $row['Short name'] ?? NULL;
+			if($row['sh_nm']!='' && $row['sh_nm']!=NULL)
+			{$univ[$i]['sh_nm'] = $row['sh_nm'];}
 			else{$univ[$i]['sh_nm']='No Short name';}
 			
-			if($row['type']!=''&$row['type']!=NULL)
-			{$univ[$i]['type'] = $row['Type'];}
+            $row['type'] = $row['type'] ?? $row['Type'] ?? NULL;
+			if($row['type']!='' && $row['type']!=NULL)
+			{$univ[$i]['type'] = $row['type'];}
 			else{$univ[$i]['type']='No Type';}
 			
-			if($row['website']!=''&$row['website']!=NULL)
-			{$univ[$i]['website'] = $row['Web_site'];}
+            $row['website'] = $row['website'] ?? $row['Web_site'] ?? NULL;
+			if($row['website']!='' && $row['website']!=NULL)
+			{$univ[$i]['website'] = $row['website'];}
 			else{$univ[$i]['website']='https://roundranking.com/';}
 			
-			if($row['cord']!=''&$row['cord']!=NULL)
+			if($row['cord']!='' && $row['cord']!=NULL)
 			{$univ[$i]['cord'] = $row['cord'];}
 			else{$univ[$i]['cord']='0,0';}
 			$iscord=explode(",", $row['cord']);
