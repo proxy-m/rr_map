@@ -16,6 +16,9 @@ window.lastWindowCoord = null;
 
 $(document).ready(function () 
 {
+    let container = null;
+    let content = null;
+    
   	$('.item-111').removeClass('active');
 	$('.item-111').removeClass('carent');
 	$('.item-110').addClass('active');
@@ -187,8 +190,188 @@ $(document).ready(function ()
             
 		}
 	}
+    
+    function addMarkers (mrks) {
+        if (!mrks || !mrks.length || mrks.length < 1) {
+            console.log('ERR: mrks is not defined');
+            return;
+        }
+        //console.log('markers: ', mrks); ///
+        console.log(mrks[0]);    
+        
+        try {
+            document.getElementById('popup').outerHTML = '';
+        } catch (e456343456) {
+        }
+        
+        container = document.createElement('div');
+        container.setAttribute('id', 'popup');
+        container.title = '';
+        container.innerHTML = `<a href="#" id="popup-closer" class="ol-popup-closer"></a><div id="popup-content" style="background-color: white;"></div>`;
+        container.class='ol-popup';
+        document.body.appendChild(container);
+        
+        // Popup showing the position the user clicked
+        var container = document.getElementById('popup');
+        var popup = new ol.Overlay({
+            element: container,
+            offset: [15, 20],
+            positioning: 'top-left', 
+            //autoPan: true,
+            //autoPanAnimation: {
+            //    duration: 250
+            //}
+        });
+        window.mappanel.map.addOverlay(popup);
+        
+        console.log(mrks.length);
+        
+        var features = [];
+        mrks.forEach(function (m, i) {
+            //console.log(dt[i+1]);
+            
+            var iconFeature = new ol.Feature({
+                ///geometry: new ol.geom.Point(ol.proj.transform([106.8478695, -6.1568562], 'EPSG:4326', 'EPSG:3857'))
+                geometry: new ol.geom.Point(ol.proj.fromLonLat([m[0].lng, m[0].lat])), /// [106.8478695, -6.1568562]))),
+                n: i+1,
+                type: 'Point',
+                info: (!!m[3] ? m[3] : '<div><h3>Missing info</h3></div>'),
+                desc: '' // + '<pre>'
+                        + '<b>' + (`#${i + 1} - `) + (!!m[1] ? m[1] : 'Unnamed') + '</b>' + '<br/>'
+                        + ' ' + '[Lat, Lng: ' + m[0].lat + ', ' + m[0].lng + ']', //+ ' </pre>', 
+            });
+            var iconStyle = new ol.style.Style({
+                image: new ol.style.Icon(({ // IconOptions
+                    anchor: [0.5, 46],
+                    anchorXUnits: 'fraction',
+                    anchorYUnits: 'pixels',
+                    opacity: 0.75,
+                    src: (!!m[2] ? m[2] : 'images_rur/Konf/diamondw.png'), // dt[i+1].iconurl
+                })),
+                text: new ol.style.Text({
+                    scale: 1.2,
+                }),
+            });
+            iconFeature.setStyle(iconStyle);
+            features.push(iconFeature);
+        });
+        
+        var vectorSource = new ol.source.Vector({
+            features: features,      //add an array of features
+            //,style: iconStyle     //to set the style for all your features...
+        });
+        var markersOL = new ol.layer.Vector({
+            source: vectorSource
+        });
+        ///markersOL.getSource().addFeature(marker);
+        window.mappanel.map.addLayer(markersOL);
+        
+        wasClickedTrigger = 0;
+        
+        /* Add a pointermove handler to the map to render the popup.*/
+        window.mappanel.map.on('pointermove', function (evt) {
+            var feature = window.mappanel.map.forEachFeatureAtPixel(evt.pixel, function (feat, layer) {
+                return feat;
+            });
+
+            this.getTargetElement = (!this.getTargetElement) ? this.getTarget : this.getTargetElement;
+            if (feature && feature.get('type') == 'Point') {
+                this.getTargetElement().style.cursor = 'pointer';
+            } else {
+                this.getTargetElement().style.cursor = '';
+            }
+
+            if (feature && feature.get('type') == 'Point' && (!wasClickedTrigger || (feature.get('n') != lastMissed && (lastMissed = feature.get('n')) != wasClickedTrigger && (++missedCount) >= 10))) {
+                var coordinate = evt.coordinate;    //default projection is EPSG:3857 you may want to use ol.proj.transform
+                content = document.getElementById('popup-content'); ///
+                content.innerHTML = feature.get('desc');
+                popup.title = feature.get('name');
+                wasClickedTrigger = 0;
+                missedCount = 0;
+                lastMissed = 0;
+                popup.setPosition(coordinate);
+            } else {
+                if (!wasClickedTrigger) {
+                    popup.setPosition(undefined);
+                }
+            }
+        });
+        
+        function closeTooltip (panel) {
+            if (Ext.getVersion().major > 5) {
+                Ext.getCmp(panel.el.down('.x-tool-close').up().id).setTooltip('\0')
+            } else {
+                Ext.create('Ext.tip.ToolTip', {
+                    target: panel.el.down('.x-tool-close').id,
+                    html: '\0'
+                });
+            }
+        }
+        
+        window.mappanel.map.on('click', function (evt) {
+            popup.setPosition(undefined);
+            var feature = window.mappanel.map.forEachFeatureAtPixel(evt.pixel, function (feat, layer) {
+                return feat;
+            });
+
+            if (feature && feature.get('type') == 'Point' && feature.get('n') != wasClickedTrigger) {
+                var coordinate = evt.coordinate;
+                var windowCoord = JSON.stringify(coordinate);
+                if (windowCoord == window.lastWindowCoord) {
+                    return;
+                } else {
+                    window.lastWindowCoord = windowCoord;
+                    console.log(window.lastWindowCoord); //
+                }
+                content = document.getElementById('popup-content'); ///
+                content.innerHTML = feature.get('info'); ///dt[feature.get('n')]['info']; // TODO check click
+                popup.title = feature.get('name');
+                wasClickedTrigger = feature.get('n');
+                missedCount = 1;
+                lastMissed = wasClickedTrigger;
+                if (ti) {
+                    clearTimeout(ti);
+                    ti = null;
+                }
+                ti = setTimeout(function () {
+                    wasClickedTrigger = 0;
+                }, 12000);
+                popup.setPosition(coordinate);
+                
+                setTimeout(function () {
+                    Ext.create('Ext.window.Window', {
+                        layout: 'fit',
+                        html: $('#popup').html(),
+                        renderTo: 'perfectmap_div',
+                        listeners: {
+                            afterrender: closeTooltip
+                        },
+                        buttons: [],
+                        tools: [{
+                            type:'refresh',
+                            tooltip: null,
+                            handler: function (event, toolEl, panel) {
+                            }
+                        },
+                        ]
+                    }).show();
+                    popup.setPosition(undefined);
+                }, 10);
+            } else {
+                if (!wasClickedTrigger) {
+                    wasClickedTrigger = 0;
+                    popup.setPosition(undefined);
+                }
+            }
+        });
+
+
+
+    }
+    
 	function initMap()
 	{
+        if (!window.google) { window.google = {} }; if (!google.maps) { google.maps = {} }; if (!google.maps.InfoWindow) { google.maps.InfoWindow = function () {} };
 		
 		if(Number($('#mapsrchvl').val().length)==0)
 		{
@@ -344,21 +527,29 @@ $(document).ready(function ()
 					tph = tph.substring(0,tph.length - 1);
 					//alert(tph);
 					var tphtxt='$("#mapsrchvl").typeahead({autoSelect:false,source: ['+tph+'],displayField: "Name",valueField: "ID",limit:"20"});';
-					
-					eval(tphtxt);
-				//var mrks=[];
-				var mrkstr='var mrks=[';	var konf=[];var infwnd=[];
+                eval(tphtxt);
+                
+				///var mrkstr='var mrks=[';	
+                var konf=[];var infwnd=[];
+                var mrks=[];
 			
 				for(var i=0;i<n;i++)
 				{
 					konf[i]=dt[i+1]['iconurl'];
 					infwnd[i]=dt[i+1]['info'];
-					mrkstr+='[{lat:'+dt[i+1]['lat']+',lng:'+dt[i+1]['lng']+'},"'+dt[i+1]['univ_name']+'"],';
+                    mrks.push([
+                        {lat: +((''+dt[i+1]['lat']).trim()), lng: +((''+dt[i+1]['lng']).trim())},
+                        dt[i+1]['univ_name'],
+                        dt[i+1]['iconurl'],
+                        dt[i+1]['info'],
+                    ]);
+					///mrkstr+='[{lat:'+dt[i+1]['lat']+',lng:'+dt[i+1]['lng']+'},"'+dt[i+1]['univ_name']+'"],';
 					//alert(infwnd[i]);
 				}
-				mrkstr+='];';
+				///mrkstr+='];';
 				//alert(mrkstr);
-				eval(mrkstr);
+				///eval(mrkstr);
+                console.log('mrks[0]: ', mrks[0]);
 				
 					if(Number($('.mfilter-country select').val())!=0)			
 					{
@@ -414,174 +605,13 @@ $(document).ready(function ()
                     zoom: scale, ///record.data['scale'] ?? 12,
                 }));
                 
+                addMarkers(mrks);
+                
+                
                 // Create an info window to share between markers.
                 const infoWindow = new google.maps.InfoWindow(); // TODO: remake
                 
-                //console.log('markers: ', mrks); ///
                 
-                try {
-                    document.getElementById('popup').outerHTML = '';
-                } catch (e456343456) {
-                }
-                var container = null;
-                container = document.createElement('div');
-                container.setAttribute('id', 'popup');
-                container.title = '';
-                container.innerHTML = `<a href="#" id="popup-closer" class="ol-popup-closer"></a><div id="popup-content" style="background-color: white;"></div>`;
-                container.class='ol-popup';
-                document.body.appendChild(container);
-                
-                // Popup showing the position the user clicked
-                var container = document.getElementById('popup');
-                var popup = new ol.Overlay({
-                    element: container,
-                    offset: [15, 20],
-                    positioning: 'top-left', 
-                    //autoPan: true,
-                    //autoPanAnimation: {
-                    //    duration: 250
-                    //}
-                });
-                window.mappanel.map.addOverlay(popup);
-                    
-                
-                var features = [];
-                mrks.forEach(function (m, i) {
-                    //console.log(dt[i+1]);
-                    
-                    var iconFeature = new ol.Feature({
-                        ///geometry: new ol.geom.Point(ol.proj.transform([106.8478695, -6.1568562], 'EPSG:4326', 'EPSG:3857'))
-                        geometry: new ol.geom.Point(ol.proj.fromLonLat([m[0].lng, m[0].lat])), /// [106.8478695, -6.1568562]))),
-                        n: i+1,
-                        type: 'Point',
-                        desc: '' // + '<pre>'
-                                + '<b>' + (`#${i + 1} - `) + (!!m[1] ? m[1] : 'Unnamed') + '</b>' + '<br/>'
-                                + ' ' + '[Lat, Lng: ' + m[0].lat + ', ' + m[0].lng + ']', //+ ' </pre>', 
-                    });
-                    var iconStyle = new ol.style.Style({
-                        image: new ol.style.Icon(({ // IconOptions
-                            anchor: [0.5, 46],
-                            anchorXUnits: 'fraction',
-                            anchorYUnits: 'pixels',
-                            opacity: 0.75,
-                            src: (!!dt[i+1] && !!dt[i+1].iconurl ? dt[i+1].iconurl : 'images_rur/Konf/diamondw.png'),
-                        })),
-                        text: new ol.style.Text({
-                            scale: 1.2,
-                        }),
-                    });
-                    iconFeature.setStyle(iconStyle);
-                    features.push(iconFeature);
-                });
-                
-                var vectorSource = new ol.source.Vector({
-                    features: features,      //add an array of features
-                    //,style: iconStyle     //to set the style for all your features...
-                });
-                var markersOL = new ol.layer.Vector({
-                    source: vectorSource
-                });
-                ///markersOL.getSource().addFeature(marker);
-                window.mappanel.map.addLayer(markersOL);
-                
-                wasClickedTrigger = 0;
-                
-                /* Add a pointermove handler to the map to render the popup.*/
-                window.mappanel.map.on('pointermove', function (evt) {
-                    var feature = window.mappanel.map.forEachFeatureAtPixel(evt.pixel, function (feat, layer) {
-                        return feat;
-                    });
-
-                    this.getTargetElement = (!this.getTargetElement) ? this.getTarget : this.getTargetElement;
-                    if (feature && feature.get('type') == 'Point') {
-                        this.getTargetElement().style.cursor = 'pointer';
-                    } else {
-                        this.getTargetElement().style.cursor = '';
-                    }
-
-                    if (feature && feature.get('type') == 'Point' && (!wasClickedTrigger || (feature.get('n') != lastMissed && (lastMissed = feature.get('n')) != wasClickedTrigger && (++missedCount) >= 10))) {
-                        var coordinate = evt.coordinate;    //default projection is EPSG:3857 you may want to use ol.proj.transform
-                        content = document.getElementById('popup-content'); ///
-                        content.innerHTML = feature.get('desc');
-                        popup.title = feature.get('name');
-                        wasClickedTrigger = 0;
-                        missedCount = 0;
-                        lastMissed = 0;
-                        popup.setPosition(coordinate);
-                    } else {
-                        if (!wasClickedTrigger) {
-                            popup.setPosition(undefined);
-                        }
-                    }
-                });
-                
-                function closeTooltip (panel) {
-                    if (Ext.getVersion().major > 5) {
-                        Ext.getCmp(panel.el.down('.x-tool-close').up().id).setTooltip('\0')
-                    } else {
-                        Ext.create('Ext.tip.ToolTip', {
-                            target: panel.el.down('.x-tool-close').id,
-                            html: '\0'
-                        });
-                    }
-                }
-                
-                window.mappanel.map.on('click', function (evt) {
-                    popup.setPosition(undefined);
-                    var feature = window.mappanel.map.forEachFeatureAtPixel(evt.pixel, function (feat, layer) {
-                        return feat;
-                    });
-
-                    if (feature && feature.get('type') == 'Point' && feature.get('n') != wasClickedTrigger) {
-                        var coordinate = evt.coordinate;
-                        var windowCoord = JSON.stringify(coordinate);
-                        if (windowCoord == window.lastWindowCoord) {
-                            return;
-                        } else {
-                            window.lastWindowCoord = windowCoord;
-                            console.log(window.lastWindowCoord); //
-                        }
-                        content = document.getElementById('popup-content'); ///
-                        content.innerHTML = dt[feature.get('n')]['info']; // TODO check click
-                        popup.title = feature.get('name');
-                        wasClickedTrigger = feature.get('n');
-                        missedCount = 1;
-                        lastMissed = wasClickedTrigger;
-                        if (ti) {
-                            clearTimeout(ti);
-                            ti = null;
-                        }
-                        ti = setTimeout(function () {
-                            wasClickedTrigger = 0;
-                        }, 12000);
-                        popup.setPosition(coordinate);
-                        
-                        setTimeout(function () {
-                            Ext.create('Ext.window.Window', {
-                                layout: 'fit',
-                                html: $('#popup').html(),
-                                renderTo: 'perfectmap_div',
-                                listeners: {
-                                    afterrender: closeTooltip
-                                },
-                                buttons: [],
-                                tools: [{
-                                    type:'refresh',
-                                    tooltip: null,
-                                    handler: function (event, toolEl, panel) {
-                                    }
-                                },
-                                ]
-                            }).show();
-                            popup.setPosition(undefined);
-                        }, 10);
-                    } else {
-                        if (!wasClickedTrigger) {
-                            wasClickedTrigger = 0;
-                            popup.setPosition(undefined);
-                        }
-                    }
-                });
                 
                 
                 
@@ -659,11 +689,11 @@ $(document).ready(function ()
 			var unnm=dt[$('#tphsel').val()]['univ_name'];
 			var icnsrc='';
 			var url = './images_rur/Konf/';
-			if(Number(unnm.length)>0&$('#mapsrchvl').val()==unnm)
+			if(Number(unnm.length)>0 && $('#mapsrchvl').val()==unnm)
 			{
-				//alert(unnm+'\n'+unic +'\n'+dtrow[$('#tphsel').val()]); 
-				//alert(dtrow[$('#tphsel').val()]); 
-				//alert(uninfo);
+				console.log(unnm+'\n'+unic +'\n'+dtrow[$('#tphsel').val()]); 
+				console.log('dtrow #tphsel', dtrow[$('#tphsel').val()]); 
+				//console.log('uninfo', uninfo);
 				switch (unic)
 				{
 					case 'diamond':icnsrc=url+'diamondw.png';break;
@@ -675,9 +705,36 @@ $(document).ready(function ()
 		 			
 				  	default:icnsrc=url+'worldw.png';
 				}
+                
+                //if(Number(yr)<10){cntr=0;}
+				const uluru = { lat: lt, lng: lg };
+                const coord = uluru;
+                
+                if (window.mappanel && window.mappanel.map && window.mappanel.map.setView && window.ol && ol.View) {
+                    let pos = [coord.lat, coord.lng]; /// JSON.parse('['+record.data['cord']+']');
+                    pos = [pos[1], pos[0]];
+                    let city = ol.proj.fromLonLat(pos);
+                    
+                    window.mappanel.map.setView(new ol.View({
+                        center: city,
+                        zoom: zummap, ///record.data['scale'] ?? 12,
+                    }));
+                    
+                    var mrks = [{
+                        0: coord, // position coord
+                        1: unnm, // title
+                        2: icnsrc, // icon
+                        3: uninfo, // info content
+                    }]; // only one marker
+                    addMarkers(mrks);
+                    // TODO: click on marker if it is only one
+                    
+                    return; /// !!!
+                }
+                
+                
 					$('.mapinfo').html('<div id="map_div"></div><div id="nwmap"></div>');
-				//if(Number(yr)<10){cntr=0;}
-					const uluru = { lat: lt, lng: lg };
+				
 				  // The map, centered at Uluru
 				  const map = new google.maps.Map(document.getElementById("map_div"), {
 				    zoom: zummap,
