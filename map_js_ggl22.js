@@ -7,6 +7,13 @@ var cordtph=new Array;	//массив координат вузов по пои�
 var map=new Object;
 var data;
 var dtcntr=new Array;	//массив данных стран для карт
+
+let wasClickedTrigger = 0;
+let ti = null;
+let lastMissed = 0;
+let missedCount = 0;
+window.lastWindowCoord = null;
+
 $(document).ready(function () 
 {
   	$('.item-111').removeClass('active');
@@ -403,8 +410,8 @@ $(document).ready(function ()
                 let city = ol.proj.fromLonLat(pos);
                 
                 window.mappanel.map.setView(new ol.View({
-                  center: city,
-                  zoom: scale, ///record.data['scale'] ?? 12,
+                    center: city,
+                    zoom: scale, ///record.data['scale'] ?? 12,
                 }));
                 
                 // Create an info window to share between markers.
@@ -476,10 +483,7 @@ $(document).ready(function ()
                 ///markersOL.getSource().addFeature(marker);
                 window.mappanel.map.addLayer(markersOL);
                 
-                let wasClickedTrigger = 0;
-                let ti = null;
-                let lastMissed = 0;
-                let missedCount = 0;
+                wasClickedTrigger = 0;
                 
                 /* Add a pointermove handler to the map to render the popup.*/
                 window.mappanel.map.on('pointermove', function (evt) {
@@ -511,6 +515,13 @@ $(document).ready(function ()
 
                     if (feature && feature.get('type') == 'Point' && feature.get('n') != wasClickedTrigger) {
                         var coordinate = evt.coordinate;
+                        var windowCoord = JSON.stringify(coordinate);
+                        if (windowCoord == window.lastWindowCoord) {
+                            return;
+                        } else {
+                            window.lastWindowCoord = windowCoord;
+                            console.log(window.lastWindowCoord); //
+                        }
                         content = document.getElementById('popup-content'); ///
                         content.innerHTML = dt[feature.get('n')]['info']; // TODO check click
                         popup.title = feature.get('name');

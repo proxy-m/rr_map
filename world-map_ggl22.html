@@ -103,9 +103,14 @@
                                         layers: [new ol.layer.Tile({
                                           source: new ol.source.OSM()
                                         })],
+                                        controls: ol.control.defaults().extend([
+                                            new ol.control.FullScreen({
+                                                source: 'perfectmap_div', ///
+                                            }),
+                                        ]),
                                         view: new ol.View({
-                                          center: city,
-                                          zoom: 12,
+                                            center: city,
+                                            zoom: 12,
                                         }),
                                     });  
 
