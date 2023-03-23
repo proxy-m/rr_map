@@ -278,6 +278,18 @@ $(document).ready(function ()
         
         wasClickedTrigger = 0;
         
+
+        function closeTooltip (panel) {
+            if (Ext.getVersion().major > 5) {
+                Ext.getCmp(panel.el.down('.x-tool-close').up().id).setTooltip('\0')
+            } else {
+                Ext.create('Ext.tip.ToolTip', {
+                    target: panel.el.down('.x-tool-close').id,
+                    html: '\0'
+                });
+            }
+        }
+        
         /* Add a pointermove handler to the map to render the popup.*/
         window.mappanel.map.on('pointermove', function (evt) {
             var feature = window.mappanel.map.forEachFeatureAtPixel(evt.pixel, function (feat, layer) {
@@ -291,7 +303,7 @@ $(document).ready(function ()
                 this.getTargetElement().style.cursor = '';
             }
 
-            if (feature && feature.get('type') == 'Point' && (!wasClickedTrigger || (feature.get('n') != lastMissed && (lastMissed = feature.get('n')) != wasClickedTrigger && (++missedCount) >= 10))) {
+            if (feature && feature.get('type') == 'Point' && (!wasClickedTrigger || (feature.get('n') != lastMissed && (lastMissed = feature.get('n')) != wasClickedTrigger && (++missedCount) >= 2))) {
                 var coordinate = evt.coordinate;    //default projection is EPSG:3857 you may want to use ol.proj.transform
                 content = document.getElementById('popup-content'); ///
                 content.innerHTML = feature.get('desc');
@@ -306,17 +318,6 @@ $(document).ready(function ()
                 }
             }
         });
-        
-        function closeTooltip (panel) {
-            if (Ext.getVersion().major > 5) {
-                Ext.getCmp(panel.el.down('.x-tool-close').up().id).setTooltip('\0')
-            } else {
-                Ext.create('Ext.tip.ToolTip', {
-                    target: panel.el.down('.x-tool-close').id,
-                    html: '\0'
-                });
-            }
-        }
         
         window.mappanel.map.on('click', function (evt) {
             popup.setPosition(undefined);
@@ -395,24 +396,22 @@ $(document).ready(function ()
             evt.pixel = window.mappanel.map.getPixelFromCoordinate(evt.coordinate);
             
             window.mappanel.map.dispatchEvent(evt); // vector layer
-            //let layerArray = window.mappanel.map.getLayers().getArray();
-            //for (let j=0; j<layerArray.length; ++j) {
-            //    layerArray[j].dispatchEvent(evt); // vector layer
-            //}
         }
 
     }
     
 	function initMap()
 	{
-        if (!window.google) { window.google = {} }; if (!google.maps) { google.maps = {} }; if (!google.maps.InfoWindow) { google.maps.InfoWindow = function () {} };
+        if (!window.google) { window.google = {} }; if (!google.maps) { google.maps = {} }; if (!google.maps.InfoWindow) { google.maps.InfoWindow = function () {} }; if (!google.maps.Map) { google.maps.Map = function () {} };  if (!google.maps.Marker) { google.maps.Marker = function () {} };  if (!google.maps.MapTypeId) { google.maps.MapTypeId = {} };
 		
 		if(Number($('#mapsrchvl').val().length)==0)
 		{
-            try {
-                document.getElementById("map_div").outerHTML = '';
-                document.getElementsByClassName("mapinfo")[0].outerHTML = '';
-            } catch (e5632534) {
+            if (window.mappanel && window.mappanel.map && window.mappanel.map.setView && window.ol && ol.View) {
+                try {
+                    document.getElementById("map_div").outerHTML = '';
+                    document.getElementsByClassName("mapinfo")[0].outerHTML = '';
+                } catch (e5632534) {
+                }
             }
             
 			var ur='./final/getunivdata_gmap22.php?year='+yr+'&subj='+sb+'&cntr='+cntr+'&reg='+reg;
@@ -633,27 +632,25 @@ $(document).ready(function ()
 							}
 					}
                 
-                let pos = [coord.lat, coord.lng]; /// JSON.parse('['+record.data['cord']+']');
-                pos = [pos[1], pos[0]];
-                let city = ol.proj.fromLonLat(pos);
-                
-                window.mappanel.map.setView(new ol.View({
-                    center: city,
-                    zoom: scale, ///record.data['scale'] ?? 12,
-                }));
-                
-                addMarkers(mrks);
-                
+                if (window.mappanel && window.mappanel.map && window.mappanel.map.setView && window.ol && ol.View) {
+                    let pos = [coord.lat, coord.lng]; /// JSON.parse('['+record.data['cord']+']');
+                    pos = [pos[1], pos[0]];
+                    let city = ol.proj.fromLonLat(pos);
+                    
+                    window.mappanel.map.setView(new ol.View({
+                        center: city,
+                        zoom: scale, ///record.data['scale'] ?? 12,
+                    }));
+                    
+                    addMarkers(mrks);                
+                    
+                    return; /// !!!   
+                }
                 
                 // Create an info window to share between markers.
                 const infoWindow = new google.maps.InfoWindow(); // TODO: remake
                 
                 
-                
-                
-                
-                
-                return; /// !!!    
 				const map = new google.maps.Map(document.getElementById("map_div"), {
 				    zoom: scale ,
 				    center: coord,
