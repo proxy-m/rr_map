@@ -30,7 +30,7 @@
 	<script type="text/javascript" src="./deps/ext-6.2.0/build/ext-all.js"></script>
     	<link rel="stylesheet" type="text/css" href="./deps/ext-6.2.0/build/classic/theme-gray/resources/theme-gray-all.css" />
     	<!-- Local OpenLayers 3 js -->
-	<!-- ---------------<script type="text/javascript" src="./deps/ol.js"></script>------------>
+	<script type="text/javascript" src="./deps/ol.js"></script>
 	<!--<script type="text/javascript" src="./map.js"></script>-->
 	<!-- Local OpenLayers 3 stylesheet -->
 	<link type="text/css" href="./deps/ol.css" rel="stylesheet">
@@ -179,11 +179,11 @@
             document.getElementsByTagName('head')[0].appendChild(script);
 
             
-            script = document.createElement('script');
-            script.type = "text/javascript";
-            script.async = false;
-            script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyBzEr0UCQ2hxfjk_GcaCXS-9TkyGaoD7-o&callback=window.initZero&region=USA&language=en";
-            document.getElementsByTagName('head')[0].appendChild(script);
+            //script = document.createElement('script');
+            //script.type = "text/javascript";
+            //script.async = false;
+            //script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyBzEr0UCQ2hxfjk_GcaCXS-9TkyGaoD7-o&callback=window.initZero&region=USA&language=en";
+            //document.getElementsByTagName('head')[0].appendChild(script);
                         
             script = document.createElement('script');
             script.type = "text/javascript";
@@ -197,7 +197,7 @@
             script.src = "data:text/javascript,jQuery(document).ready(function%20()%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20let%20iv%20%3D%20setTimeout(function%20()%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20jQuery('select').bind('change'%2C%20function%20(t)%20%7B%20window.initZero()%3B%20%7D)%3B%20%2F%2F%20TODO%3A%20recheck%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20jQuery('select').on('change'%2C%20function%20(t)%20%7B%20window.initZero()%3B%20%7D)%3B%20%2F%2F%20TODO%3A%20recheck%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%2C%20200)%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%2F%2Fnew%20JCaption('img.caption')%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D)";
             document.getElementsByTagName('head')[0].appendChild(script);
             
-        }, 5000);
+        }, 2000);
 	</script>
 	<style>
 .form-search {
@@ -549,10 +549,10 @@ color: #494343;">RUR World Map shows the geographical location of universities i
 		
 	</div>
 
-<div class="mapinfo">
+<!--<div class="mapinfo">
 			<div id="map_div"></div>
 			<div id="nwmap"></div> 
-</div>
+</div>-->
 <div class="perfectmapinfo row">
 			<div id="perfectmap_div"></div>
 			<div id="perfectnwmap"></div> 
@@ -690,9 +690,5 @@ var _gaq = _gaq || [];
   ga('send', 'pageview');
 
 </script>
-<!--<script
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBzEr0UCQ2hxfjk_GcaCXS-9TkyGaoD7-o&callback=initMap&region=USA&language=en"
-      async
-    ></script>-->
 	</body>
 </html>
