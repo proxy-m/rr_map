@@ -561,8 +561,8 @@ $(document).ready(function ()
 					tph = tph.replace('undefined', '');
 					tph = tph.substring(0,tph.length - 1);
 					//alert(tph);
-                    console.log('tphsel: ', $('#tphsel').html());
-                    console.log('tph: ', tph);
+                    //console.log('tphsel: ', $('#tphsel').html());
+                    //console.log('tph: ', tph);
 					var tphtxt='$("#mapsrchvl").typeahead({autoSelect:false,source: ['+tph+'],displayField: "Name",valueField: "ID",limit:"20"});';
                 eval(tphtxt);
                 
@@ -586,7 +586,7 @@ $(document).ready(function ()
 				///mrkstr+='];';
 				//alert(mrkstr);
 				///eval(mrkstr);
-                console.log('mrks[0][0]: ', mrks[0][0]);
+                //console.log('mrks[0][0]: ', mrks[0][0]);
 				
 					if(Number($('.mfilter-country select').val())!=0)			
 					{
@@ -728,8 +728,8 @@ $(document).ready(function ()
 			var url = './images_rur/Konf/';
             var unnmA = $('#mapsrchvl').val();
             
-            console.log('unnm: ', unnm.length, unnm);
-            console.log('mapsrchvl: ', unnmA);
+            //console.log('unnm.length: ', unnm.length);
+            //console.log('mapsrchvl: ', unnmA);
             
 			if(Number(unnm.length)>0 && unnmA==(dt[$('#tphsel').val()]['id_univ'] + ': ' + unnm))
 			{

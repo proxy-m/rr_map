@@ -40,7 +40,7 @@ contact@it-int.ru
 /* 
 
 	=============================
-	Команда разработчиков "Azdeus Freelance" -  создание и разработка сайтов, дизайн сайтов, сайт под ключ.
+	ÐšÐ¾Ð¼Ð°Ð½Ð´Ð° Ñ€Ð°Ð·Ñ€Ð°Ð±Ð¾Ñ‚Ñ‡Ð¸ÐºÐ¾Ð² "Azdeus Freelance" -  ÑÐ¾Ð·Ð´Ð°Ð½Ð¸Ðµ Ð¸ Ñ€Ð°Ð·Ñ€Ð°Ð±Ð¾Ñ‚ÐºÐ° ÑÐ°Ð¹Ñ‚Ð¾Ð², Ð´Ð¸Ð·Ð°Ð¹Ð½ ÑÐ°Ð¹Ñ‚Ð¾Ð², ÑÐ°Ð¹Ñ‚ Ð¿Ð¾Ð´ ÐºÐ»ÑŽÑ‡.
 	www.freelance.azdeus.com
 	freelance@azdeus.com.ua 
 	=============================
@@ -190,14 +190,14 @@ ul li {
   padding: 4px 0 0;
   color: #010101;
   font-size: 14px;
-  /* Для Firefox */
+  /* Ð”Ð»Ñ Firefox */
 
   -ms-transform: scaleX(0.85);
-  /* Для IE */
+  /* Ð”Ð»Ñ IE */
 
   -webkit-transform: scaleX(0.85);
-  /* Для Safari, Chrome, iOS */
-  /* Для Opera */
+  /* Ð”Ð»Ñ Safari, Chrome, iOS */
+  /* Ð”Ð»Ñ Opera */
 
   transform: scaleX(0.85);
 }
@@ -207,14 +207,14 @@ ul li {
   right: 0;
   padding: 0 0 11px;
   line-height: 21px;
-  /* Для Firefox */
+  /* Ð”Ð»Ñ Firefox */
 
   -ms-transform: scale(0.8);
-  /* Для IE */
+  /* Ð”Ð»Ñ IE */
 
   -webkit-transform: scale(0.8);
-  /* Для Safari, Chrome, iOS */
-  /* Для Opera */
+  /* Ð”Ð»Ñ Safari, Chrome, iOS */
+  /* Ð”Ð»Ñ Opera */
 
   transform: scale(0.8);
   -ms-transform-origin: 100% 100%;
@@ -273,7 +273,7 @@ ul li {
   position: relative;
   float: left;
   font-size: 16px;
-	margin: 0 0 0 3.8em;
+	margin: 0 0 0 2.65em;
   /*text-transform: uppercase;*/
 }
 .main-nav li:first-child {
@@ -757,14 +757,14 @@ h2,
   text-align: center;
 }
 .footer-icon img {
-  /* Для Firefox */
+  /* Ð”Ð»Ñ Firefox */
 
   -ms-transform: scale(0.6);
-  /* Для IE */
+  /* Ð”Ð»Ñ IE */
 
   -webkit-transform: scale(0.6);
-  /* Для Safari, Chrome, iOS */
-  /* Для Opera */
+  /* Ð”Ð»Ñ Safari, Chrome, iOS */
+  /* Ð”Ð»Ñ Opera */
 
   transform: scale(0.6);
 
@@ -775,14 +775,14 @@ h2,
   transform-origin: 50% 20%;
 }
 .footer-webs img {
-  /* Для Firefox */
+  /* Ð”Ð»Ñ Firefox */
 
   -ms-transform: scale(0.7);
-  /* Для IE */
+  /* Ð”Ð»Ñ IE */
 
   -webkit-transform: scale(0.7);
-  /* Для Safari, Chrome, iOS */
-  /* Для Opera */
+  /* Ð”Ð»Ñ Safari, Chrome, iOS */
+  /* Ð”Ð»Ñ Opera */
 
   transform: scale(0.7);
 
@@ -945,7 +945,7 @@ label.error {
 }
 @media (max-width: 560px) {
   .logo {
-   /* float: none;*/
+    float: none;
     text-align: center;
   }
   .logo img {
@@ -1985,7 +1985,7 @@ input[type="button"].btn-block {
 
 
 
-	Команда разработчиков "Azdeus Freelance" -  создание и разработка сайтов, дизайн сайтов, сайт под ключ.
+	ÐšÐ¾Ð¼Ð°Ð½Ð´Ð° Ñ€Ð°Ð·Ñ€Ð°Ð±Ð¾Ñ‚Ñ‡Ð¸ÐºÐ¾Ð² "Azdeus Freelance" -  ÑÐ¾Ð·Ð´Ð°Ð½Ð¸Ðµ Ð¸ Ñ€Ð°Ð·Ñ€Ð°Ð±Ð¾Ñ‚ÐºÐ° ÑÐ°Ð¹Ñ‚Ð¾Ð², Ð´Ð¸Ð·Ð°Ð¹Ð½ ÑÐ°Ð¹Ñ‚Ð¾Ð², ÑÐ°Ð¹Ñ‚ Ð¿Ð¾Ð´ ÐºÐ»ÑŽÑ‡.
 
 
 
@@ -2299,25 +2299,46 @@ div.tt-suggestion {
   padding: 10px;
   margin: 10px 0;
 }
-
+	.mfilter-wrapper {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  flex-wrap: wrap;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 10px;
+  margin: 10px 0;
+}
 .filter-wrapper .form-control {
   -webkit-box-shadow: none;
   box-shadow: none;
   padding: 6px 20px 6px 12px;
   cursor: pointer;
 }
-
+	.mfilter-wrapper .form-control {
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  padding: 6px 20px 6px 12px;
+  cursor: pointer;
+}
 .filter-item {
   position: relative;
   height: 34px;
   -webkit-box-flex: 1;
   flex: 1;
 }
-
+	.mfilter-item {
+  position: relative;
+  height: 34px;
+  -webkit-box-flex: 1;
+  flex: 1;
+}
 .filter-item.filter-year {
   flex: 0 1 90px;
 }
-
+	.mfilter-item.filter-year {
+  flex: 0 1 90px;
+}
 .filter-btn {
   display: none;
   cursor: pointer;
@@ -2327,11 +2348,21 @@ div.tt-suggestion {
   border: 1px solid #ccc;
   border-radius: 4px;
 }
-
+	.mfilter-btn {
+	  display: none;
+	  cursor: pointer;
+	  width: 34px;
+	  height: 34px;
+	  padding: 5px;
+	  border: 1px solid #ccc;
+	  border-radius: 4px;
+	}
 .filter-btn.active {
   border-color: #000;
 }
-
+	.mfilter-btn.active {
+  border-color: #000;
+}
 .filter-item label {
   position: absolute;
   left: 8px;
@@ -2345,52 +2376,91 @@ div.tt-suggestion {
   background-color: #fff;
   top: -8px;
 }
-
+	.mfilter-item label {
+  position: absolute;
+  left: 8px;
+  z-index: 10;
+  height: 16px;
+  line-height: 16px;
+  padding: 0 5px;
+  font-size: 10px;
+  margin: 0;
+  font-weight: 400;
+  background-color: #fff;
+  top: -8px;
+}
 .filter-item.filter-width-25 {
   -webkit-box-flex: 0;
   flex: 0 0 calc(25% - 5px);
 }
-
+	.mfilter-item.filter-width-25 {
+	  -webkit-box-flex: 0;
+	  flex: 0 0 calc(25% - 5px);
+	}
 .filter-item.filter-width-50 {
   -webkit-box-flex: 0;
   flex: 0 0 50%;
 }
-
+	.mfilter-item.filter-width-50 {
+  -webkit-box-flex: 0;
+  flex: 0 0 50%;
+}
 .filter-year select {
   position: absolute;
   top: 0;
   left: 0;
-    cursor: pointer;
 }
-
+	.mfilter-year select {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
 .filter-btn img {
   max-width: 100%;
 }
-
+	.mfilter-btn img {
+  max-width: 100%;
+}
 .filter-select-arrow {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
   -webkit-box-align: center;
-  -ms-flex-align: center;
   align-items: center;
   -webkit-box-pack: center;
-  -ms-flex-pack: center;
   justify-content: center;
   position: absolute;
   pointer-events: none;
   border-left: 1px solid #ccc;
-  right: 1px;
+  right: 0;
   top: 50%;
   -webkit-transform: translateY(-50%);
   -ms-transform: translateY(-50%);
   transform: translateY(-50%);
   z-index: 100;
-  width: 19px;
-  height: calc(100% - 2px);
-  background-color:#fff;
+  width: 20px;
+  height: 100%;
 }
-
+	.mfilter-select-arrow {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  justify-content: center;
+  position: absolute;
+  pointer-events: none;
+  border-left: 1px solid #ccc;
+  right: 0;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+  z-index: 100;
+  width: 20px;
+  height: 100%;
+}
 @media screen and (max-width: 991px) {
   .filter-item,
   .filter-item.filter-year {
@@ -2493,7 +2563,7 @@ div.tt-suggestion {
     padding: 14px 8px 1px 1px;
   }
   .main-nav li {
-    margin-left: 8%;
+    margin-left: auto;
     margin-bottom: auto;
   }
   .main-nav li:nth-child(6n) {
@@ -2539,25 +2609,25 @@ div.tt-suggestion {
     float: none;
     width: auto;
   }
-  .logo-text,.header-phone,
-  .header-mail{display: none;}
- /* .logo-text,
+  .logo-text,
   .header-phone,
   .header-mail,
   .main-nav,
   .color-line,
-  .header-webs {display: none;}
+  .header-webs {
+    display: none;
+  }
   .main_mob_icn {
     display: block;
-  }*/
+  }
   .logo img {
     width: 10em;
   }
- /* .form-search {
+  .form-search {
     position: relative;
     right: 5em;
     top: 3em;
-  }*/
+  }
   #mod-finder-searchword {
     width: 20em;
   }
