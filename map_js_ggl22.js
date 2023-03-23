@@ -472,6 +472,7 @@ $(document).ready(function ()
 						dt[i]['sh_nm']=data[1][i]['sh_nm'];
 						dt[i]['type']=data[1][i]['type'];
 						dt[i]['website']=data[1][i]['website'];
+                        dt[i]['id_univ']=data[1][i]['id_univ']; ///
 						
 						var crd=data[1][i]['cord'].split(',');
 						dt[i]['lat']=crd[0];
@@ -551,15 +552,17 @@ $(document).ready(function ()
 						//alert(dtmap);
 						//alert(sv+'\n'+dt[i]['icon']+'\n'+ dt[i]['icon_pct']+'\n'+ dt[i]['info']);
 						//alert(dtrow[i]);
-						tph=tph+'{ID:'+i+', Name: "'+dt[i]['univ_name']+'"},';
+						tph=tph+'{ID:'+i+', Name: "'+dt[i]['id_univ']+': '+dt[i]['univ_name']+'"},';
 						
-						$('#tphsel').append('<option value="'+i+'">'+dt[i]['univ_name']+'</option>');
+						$('#tphsel').append('<option value="'+i+'">'+dt[i]['id_univ']+': '+dt[i]['univ_name']+'</option>');
 						cordtph[i]=[dt[i]['lat'],dt[i]['lng']];
 					}
 					
 					tph = tph.replace('undefined', '');
 					tph = tph.substring(0,tph.length - 1);
 					//alert(tph);
+                    console.log('tphsel: ', $('#tphsel').html());
+                    console.log('tph: ', tph);
 					var tphtxt='$("#mapsrchvl").typeahead({autoSelect:false,source: ['+tph+'],displayField: "Name",valueField: "ID",limit:"20"});';
                 eval(tphtxt);
                 
@@ -723,7 +726,12 @@ $(document).ready(function ()
 			var unnm=dt[$('#tphsel').val()]['univ_name'];
 			var icnsrc='';
 			var url = './images_rur/Konf/';
-			if(Number(unnm.length)>0 && $('#mapsrchvl').val()==unnm)
+            var unnmA = $('#mapsrchvl').val();
+            
+            console.log('unnm: ', unnm.length, unnm);
+            console.log('mapsrchvl: ', unnmA);
+            
+			if(Number(unnm.length)>0 && unnmA==(dt[$('#tphsel').val()]['id_univ'] + ': ' + unnm))
 			{
 				//console.log(unnm+'\n'+unic +'\n'+dtrow[$('#tphsel').val()]); 
 				//console.log('dtrow #tphsel', dtrow[$('#tphsel').val()]); 

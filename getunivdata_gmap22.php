@@ -55,7 +55,7 @@ $sql = 'SELECT t1.id_univ,t2.[Univ name],t3.Country AS Economy,t3.Region,t3.Flag
 			//if($row['id_univ']!=1222)
 			//{
 			$i++;
-			$univ[$i]['id_univ'] = round($row['id_univ'],0);
+			$univ[$i]['id_univ'] = round($row['id_univ'] ?? 0, 0);
 			$univ[$i]['univ_name'] = $row['Univ name'];
 			if(!$row['Students']){$univ[$i]['Students'] = round($row['Students_rur'],0);}
 			else{$univ[$i]['Students'] = round($row['Students'],0);}
@@ -89,6 +89,7 @@ $sql = 'SELECT t1.id_univ,t2.[Univ name],t3.Country AS Economy,t3.Region,t3.Flag
 			if($row['sh_nm']!='' && $row['sh_nm']!=NULL)
 			{$univ[$i]['sh_nm'] = $row['sh_nm'];}
 			else{$univ[$i]['sh_nm']='No Short name';}
+            
 			
             $row['type'] = $row['type'] ?? $row['Type'] ?? NULL;
 			if($row['type']!='' && $row['type']!=NULL)
