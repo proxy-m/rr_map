@@ -551,9 +551,9 @@ $(document).ready(function ()
 						//alert(dtmap);
 						//alert(sv+'\n'+dt[i]['icon']+'\n'+ dt[i]['icon_pct']+'\n'+ dt[i]['info']);
 						//alert(dtrow[i]);
-						tph=tph+'{ID:'+i+', Name: "'+dt[i]['id_univ']+': '+dt[i]['univ_name']+'"},';
+						tph=tph+'{ID:'+i+', Name: "'+dt[i]['id_univ']+'_ '+dt[i]['univ_name']+'"},';
 						
-						$('#tphsel').append('<option value="'+i+'">'+dt[i]['id_univ']+': '+dt[i]['univ_name']+'</option>');
+						$('#tphsel').append('<option value="'+i+'">'+dt[i]['id_univ']+'_ '+dt[i]['univ_name']+'</option>');
 						cordtph[i]=[dt[i]['lat'],dt[i]['lng']];
 					}
 					
@@ -728,7 +728,7 @@ $(document).ready(function ()
             //console.log('unnm.length: ', unnm.length);
             //console.log('mapsrchvl: ', unnmA);
             
-			if(Number(unnm.length)>0 && unnmA==(dt[$('#tphsel').val()]['id_univ'] + ': ' + unnm))
+			if(Number(unnm.length)>0 && unnmA==(dt[$('#tphsel').val()]['id_univ'] + '_ ' + unnm))
 			{
 				//console.log(unnm+'\n'+unic +'\n'+dtrow[$('#tphsel').val()]); 
 				//console.log('dtrow #tphsel', dtrow[$('#tphsel').val()]); 

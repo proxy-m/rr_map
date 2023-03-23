@@ -27,6 +27,23 @@
 	<script src="./templates/rur/sweetalert-master/dist/sweetalert.min.js?v=2019101808" type="text/javascript"></script>
 	<!--<script src="./templates/rur/js/jquery.json.js?v=2019101808" type="text/javascript"></script>-->
 
+	<style type="text/css">
+@font-face {
+    font-family: "opensans_nonumbers";
+    src: url("deps/fonts/OpenSans-Medium_no.woff2") format('woff2');
+}
+
+@font-face {
+    font-family: "opensans_nonumbers";
+    src: url("deps/fonts/OpenSans-MediumItalic_no.woff") format('woff');
+    font-style: italic;
+}
+
+ul.typeahead.dropdown-menu > * {
+    font-family: opensans_nonumbers !important;
+}
+	</style>
+
 	<script type="text/javascript" src="./deps/ext-6.2.0/build/ext-all.js"></script>
     	<link rel="stylesheet" type="text/css" href="./deps/ext-6.2.0/build/classic/theme-gray/resources/theme-gray-all.css" />
     	<!-- Local OpenLayers 3 js -->
@@ -110,7 +127,7 @@
                                         ]),
                                         view: new ol.View({
                                             center: city,
-                                            zoom: 12,
+                                            zoom: 2,
                                         }),
                                     });  
                                     
@@ -540,12 +557,12 @@ color: #494343;">RUR World Map shows the geographical location of universities i
 
 <div class="mpsrch row">
 		<div class="tphinp col-md-5">
-			<input type="text" class="typeahead form-control" id="mapsrchvl"  autocomplete="off" placeholder="Enter the name of the university"/>
+			<input type="text" class="typeahead form-control" style="font-family: opensans_nonumbers !important;" id="mapsrchvl"  autocomplete="off" placeholder="Enter the name of the university"/>
 		</div>
 		<div class="col-md-2">
 			<input type="submit" class="form-control" id="mapsrchbtn" value="Search" disabled="true"/>
 		</div>
-		<select id="tphsel" class="form-control" style="display: none;"></select>
+		<select id="tphsel" class="form-control" style="font-family: opensans_nonumbers !important; display: none;"></select>
 		
 	</div>
 
