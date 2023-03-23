@@ -202,6 +202,7 @@ $(document).ready(function ()
         }
         if (!needClickOnFirst) {
             window.needClickOnFirst = false;
+            mappanel.map.getLayers().getArray().map((e, i) => {if (i>0) mappanel.map.getLayers().getArray().splice(1) }); // rest only first layer
         } else {
             window.needClickOnFirst = true;
         }
