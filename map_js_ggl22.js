@@ -191,13 +191,22 @@ $(document).ready(function ()
 		}
 	}
     
-    function addMarkers (mrks) {
+    function getLastFeatures () {
+        return window.mappanel.map.getLayers().getArray()[window.mappanel.map.getLayers().getArray().length - 1].getSource().getFeatures();
+    }
+    
+    function addMarkers (mrks, needClickOnFirst) {
         if (!mrks || !mrks.length || mrks.length < 1) {
             console.log('ERR: mrks is not defined');
             return;
         }
+        if (!needClickOnFirst) {
+            window.needClickOnFirst = false;
+        } else {
+            window.needClickOnFirst = true;
+        }
         //console.log('markers: ', mrks); ///
-        console.log(mrks[0]);    
+        //console.log(mrks[0]);    
         
         try {
             document.getElementById('popup').outerHTML = '';
@@ -265,6 +274,7 @@ $(document).ready(function ()
         });
         ///markersOL.getSource().addFeature(marker);
         window.mappanel.map.addLayer(markersOL);
+        features = [];
         
         wasClickedTrigger = 0;
         
@@ -313,8 +323,12 @@ $(document).ready(function ()
             var feature = window.mappanel.map.forEachFeatureAtPixel(evt.pixel, function (feat, layer) {
                 return feat;
             });
-
-            if (feature && feature.get('type') == 'Point' && feature.get('n') != wasClickedTrigger) {
+            
+            if (!!evt.coordinate && window.needClickOnFirst && getLastFeatures()[0].getGeometry().getCoordinates()[0] == evt.coordinate[0] && getLastFeatures()[0].getGeometry().getCoordinates()[1] == evt.coordinate[1]) {
+                feature = getLastFeatures()[0];
+            }
+            
+            if (feature && feature.get('type') == 'Point' && (feature.get('n') != wasClickedTrigger || window.needClickOnFirst)) {
                 var coordinate = evt.coordinate;
                 var windowCoord = JSON.stringify(coordinate);
                 if (windowCoord == window.lastWindowCoord) {
@@ -323,6 +337,9 @@ $(document).ready(function ()
                     window.lastWindowCoord = windowCoord;
                     console.log(window.lastWindowCoord); //
                 }
+                
+                window.needClickOnFirst = false;
+                
                 content = document.getElementById('popup-content'); ///
                 content.innerHTML = feature.get('info'); ///dt[feature.get('n')]['info']; // TODO check click
                 popup.title = feature.get('name');
@@ -337,6 +354,8 @@ $(document).ready(function ()
                     wasClickedTrigger = 0;
                 }, 12000);
                 popup.setPosition(coordinate);
+                
+                
                 
                 setTimeout(function () {
                     Ext.create('Ext.window.Window', {
@@ -363,9 +382,24 @@ $(document).ready(function ()
                     popup.setPosition(undefined);
                 }
             }
+        
         });
 
-
+        if (needClickOnFirst) {
+            let feature = getLastFeatures()[0];
+            let evt = {};
+            evt.type = 'click';
+            ///alert(feature.get('type')); // Point
+            ///evt.coordinate = [];  evt.coordinate[0] = 6633511;  evt.coordinate[1] = 4079902;
+            evt.coordinate = feature.getGeometry().getCoordinates();
+            evt.pixel = window.mappanel.map.getPixelFromCoordinate(evt.coordinate);
+            
+            window.mappanel.map.dispatchEvent(evt); // vector layer
+            //let layerArray = window.mappanel.map.getLayers().getArray();
+            //for (let j=0; j<layerArray.length; ++j) {
+            //    layerArray[j].dispatchEvent(evt); // vector layer
+            //}
+        }
 
     }
     
@@ -549,7 +583,7 @@ $(document).ready(function ()
 				///mrkstr+='];';
 				//alert(mrkstr);
 				///eval(mrkstr);
-                console.log('mrks[0]: ', mrks[0]);
+                console.log('mrks[0][0]: ', mrks[0][0]);
 				
 					if(Number($('.mfilter-country select').val())!=0)			
 					{
@@ -691,8 +725,8 @@ $(document).ready(function ()
 			var url = './images_rur/Konf/';
 			if(Number(unnm.length)>0 && $('#mapsrchvl').val()==unnm)
 			{
-				console.log(unnm+'\n'+unic +'\n'+dtrow[$('#tphsel').val()]); 
-				console.log('dtrow #tphsel', dtrow[$('#tphsel').val()]); 
+				//console.log(unnm+'\n'+unic +'\n'+dtrow[$('#tphsel').val()]); 
+				//console.log('dtrow #tphsel', dtrow[$('#tphsel').val()]); 
 				//console.log('uninfo', uninfo);
 				switch (unic)
 				{
@@ -726,8 +760,7 @@ $(document).ready(function ()
                         2: icnsrc, // icon
                         3: uninfo, // info content
                     }]; // only one marker
-                    addMarkers(mrks);
-                    // TODO: click on marker if it is only one
+                    addMarkers(mrks, true); // TODO: click on marker if it is only one
                     
                     return; /// !!!
                 }
