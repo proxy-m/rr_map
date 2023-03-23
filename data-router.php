@@ -7,7 +7,7 @@ global $in;
 $in = array('email', 'login', 'pass', 'key'=>'string',
 	'id'=>'integer', 'uid'=>'string', 'tz',
 	'aresIDS'=>'array', 'listIDS'=>'array', 'senderResumeDate'=>'integer', 'senderTimeInterval'=>'integer', 
-    'field'=>'string', 'where'=>'string',
+    'topic'=>'string', 'field'=>'string', 'where'=>'string', 'limit'=>'integer',
 	'attribute', 'active', 'encoding'=>'string', 'format', 'g-recaptcha-response',
 ); // разрешенные входные параметры
 
@@ -425,6 +425,11 @@ function main () {
 		die('Forbidden');
 		return;
 	}
+    if (empty($argv['topic']) || trim($argv['topic']) != $argv['topic'] || strtolower($argv['topic']) != $argv['topic'] || strlen($argv['topic']) < 3 || strlen($argv['topic']) > 255) {
+        http_response_code(404);
+		die('Not found');
+		return;
+    }
 	
 	date_default_timezone_set(!empty($argv['tz']) ? $argv['tz'] : 'Europe/Minsk'); //date_default_timezone_set('Etc/GMT-3');
 	
@@ -464,11 +469,18 @@ function main () {
         $first = true;
     }
 	
-	
-	
-	$arr1 = array();
-    $sql1 = "SELECT id_country, Country, Region, New_Region, RegList1, RegList2, Flag, id_reg, id_newreg, id_reg1, id_reg2, cntr_iso, code_cntr, reg_iso, code_reg, cntr_code, cord, scale FROM Country" . (!empty($argv['where']) ? (' WHERE ' . $argv['where']) : ('') );
+    $arr1 = array();
+    
+	if ($argv['topic'] == 'country') {
+        $sql1 = "SELECT id_country, Country, Region, New_Region, RegList1, RegList2, Flag, id_reg, id_newreg, id_reg1, id_reg2, cntr_iso, code_cntr, reg_iso, code_reg, cntr_code, cord, scale FROM " . $argv['topic'];
+    } else if ($argv['topic'] == 'univ') {
+        $sql1 = 'SELECT t1.id_univ,t2.[Univ name],t3.Country AS Economy,t3.Region,t3.Flag,t2.Logo,t2.Location,t2.Foundation,t2.[Short name],t2.Type,t2.Web_site,t2.cord,t2.nm_page,t2.Faculty,t2.Students,t1.Faculty AS Faculty_rur,t1.Students AS Students_rur,t1.O_CR,t1.O_WR,t1.O_WS,t1.O_TR,t1.O_TS,t1.O_RR,t1.O_RS,t1.O_IR,t1.O_IS,t1.O_FR,t1.O_FS,t4.League AS O_OL,t9.O_80p,t9.O_O_s,t10.O_T_s,t11.O_R_s,t12.O_I_s,t13.O_F_s,t4.Color1 AS O_Color1,t4.Color3 AS O_Color3,t4.Color4 AS O_Color4,t5.Color1 AS T_Color1,t5.Color3 AS T_Color3,t5.Color4 AS T_Color4,t6.Color1 AS R_Color1,t6.Color3 AS R_Color3,t6.Color4 AS R_Color4,t7.Color1 AS I_Color1,t7.Color3 AS I_Color3,t7.Color4 AS I_Color4,t8.Color1 AS F_Color1,t8.Color3 AS F_Color3,t8.Color4 AS F_Color4 FROM rur AS t1 JOIN Univ AS t2 ON t1.id_univ = t2.id_univ JOIN Country AS  t3 ON t2.id_country = t3.id_country JOIN League AS t4 ON t1.id_OL = t4.id_leag JOIN League AS t5 ON t1.id_TL = t5.id_leag JOIN League AS t6 ON t1.id_RL = t6.id_leag JOIN League AS t7 ON t1.id_IL = t7.id_leag JOIN League AS t8 ON t1.id_FL = t8.id_leag JOIN picleag AS t9 ON t1.id_OL = t9.id_leag AND t1.id_subj = t9.id_subj JOIN picleag AS t10 ON t1.id_TL = t10.id_leag AND t1.id_subj = t10.id_subj JOIN picleag AS t11 ON t1.id_RL = t11.id_leag AND t1.id_subj = t11.id_subj JOIN picleag AS t12 ON t1.id_IL = t12.id_leag AND t1.id_subj = t12.id_subj JOIN picleag AS t13 ON t1.id_FL = t13.id_leag AND t1.id_subj = t13.id_subj JOIN year AS t14 ON t1.id_year = t14.id_year JOIN Subject AS t15 ON t1.id_subj = t15.id_subj'; //' WHERE t14.id_year = '.$year.' AND t15.id_subj = '.$subj;
+    } else {
+        $sql1 = 'SELECT 1';
+    }
 
+    $sql1 .= (!empty($argv['where']) ? (' WHERE ' . $argv['where']) : ('') );
+    $sql1 .= (!empty($argv['limit']) ? (' LIMIT ' . $argv['limit']) : (' LIMIT -1') );
 	$STH1 = PreExecSQL_all($sql1, $arr1, $first);
 	if ($first) {
 		echo '<hr/>';
