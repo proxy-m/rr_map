@@ -258,7 +258,7 @@ $(document).ready(function ()
                 type: 'Point',
                 info: (!!m[3] ? m[3] : '<div><h3>Missing info</h3></div>'),
                 desc: '' // + '<pre>'
-                        + '<b>' + (`#${i + 1} - `) + (!!m[1] ? m[1] : 'Unnamed') + '</b>' + '<br/>'
+                        + '<b>' + (!!m[1] ? m[1] : 'Unnamed') + '</b>' + '<br/>'
                         + ' ' + '[Lat, Lng: ' + m[0].lat + ', ' + m[0].lng + ']', //+ ' </pre>', 
             });
             var iconStyle = new ol.style.Style({
@@ -410,6 +410,37 @@ $(document).ready(function ()
             window.mappanel.map.dispatchEvent(evt); // vector layer
         }
 
+    }
+    
+    function getWorldRating (dt, title, i) {
+        if (!dt) {
+            return undefined;
+        }
+        if (!title && (!i || i == 0 || i < 0)) {
+            return null;
+        }
+        if (!title || title === true || Array.isArray(title) || !title.length || title.trim().length == 0) {
+            title = null;
+        } else if (!i || i == 0 || i < 0) {
+            i = 0; // dt starts from index 1
+        }
+        
+        if (i > 0 && !title) {
+            title = dt[i]['univ_name'];
+        } else {
+            i = -1;
+            for (let j=1; !!dt[j]; ++j) {
+                if (dt[j]['univ_name'] == title) {
+                    i = j;
+                    break;
+                }
+            }
+        }
+        if (i <= 0 || dt[i]['univ_name'] != title) {
+            console.warn('You should use only one of arguments: title, i');
+            return null;
+        }
+        return dt[i]['O_WR'];
     }
     
 	function initMap()
@@ -585,9 +616,10 @@ $(document).ready(function ()
 				{
 					konf[i]=dt[i+1]['iconurl'];
 					infwnd[i]=dt[i+1]['info'];
+                    let title = dt[i+1]['univ_name'];
                     mrks.push([
                         {lat: +((''+dt[i+1]['lat']).trim()), lng: +((''+dt[i+1]['lng']).trim())},
-                        dt[i+1]['univ_name'],
+                        `#${getWorldRating(dt, title, i + 1)} - ${title}`, //`#${dt[i + 1]['League']} - ${title}`,
                         dt[i+1]['iconurl'],
                         dt[i+1]['info'],
                     ]);
@@ -680,8 +712,8 @@ $(document).ready(function ()
 			    const marker = new google.maps.Marker({
 			      position,
 			      map,
-			      title: `#${i + 1} - ${title}`,
-			      //label: `${i + 1}`,
+			      title: title,
+			      //label: `${i + 1} - ${title}`,
 			      icon:konf[i],
 			      optimized: false,
 			      cont:dt[i+1]['info']
@@ -771,9 +803,10 @@ $(document).ready(function ()
                         zoom: zummap, ///record.data['scale'] ?? 12,
                     }));
                     
+                    let title = unnm;
                     var mrks = [{
                         0: coord, // position coord
-                        1: unnm, // title
+                        1: `#${getWorldRating(dt, title, null)} - ${title}`, // title
                         2: icnsrc, // icon
                         3: uninfo, // info content
                     }]; // only one marker
@@ -792,9 +825,10 @@ $(document).ready(function ()
 				    mapTypeId: google.maps.MapTypeId.TERRAIN
 				  });
 				  // The marker, positioned at Uluru
+                  let title = unnm;
 				  const marker = new google.maps.Marker({
 				    position: uluru,
-				    title:unnm,
+				    title: `#${getWorldRating(dt, title, null)} - ${title}`,
 				    icon:icnsrc,
 				    cont:uninfo,
 				    map: map,
