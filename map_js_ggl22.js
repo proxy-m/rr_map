@@ -344,6 +344,17 @@ $(document).ready(function ()
             if (feature && feature.get('type') == 'Point' && (feature.get('n') != wasClickedTrigger || window.needClickOnFirst)) {
                 var coordinate = evt.coordinate;
                 var windowCoord = JSON.stringify(coordinate);
+                
+                if (ti) {
+                    clearTimeout(ti);
+                    ti = null;
+                }
+                ti = setTimeout(function () {
+                    wasClickedTrigger = 0;
+                    window.lastWindowCoord = '[0,0]'; // TODO: reset coords within on close dialog window
+                }, 500); // We assume that user must not search same object or same action faster then 0.5 s.
+                popup.setPosition(coordinate);
+                
                 if (windowCoord == window.lastWindowCoord) {
                     return;
                 } else {
@@ -354,21 +365,11 @@ $(document).ready(function ()
                 window.needClickOnFirst = false;
                 
                 content = document.getElementById('popup-content'); ///
-                content.innerHTML = feature.get('info'); ///dt[feature.get('n')]['info']; // TODO check click
+                content.innerHTML = feature.get('info');
                 popup.title = feature.get('name');
                 wasClickedTrigger = feature.get('n');
                 missedCount = 1;
                 lastMissed = wasClickedTrigger;
-                if (ti) {
-                    clearTimeout(ti);
-                    ti = null;
-                }
-                ti = setTimeout(function () {
-                    wasClickedTrigger = 0;
-                }, 12000);
-                popup.setPosition(coordinate);
-                
-                
                 
                 setTimeout(function () {
                     Ext.create('Ext.window.Window', {
