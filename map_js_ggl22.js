@@ -800,7 +800,7 @@ $(document).ready(function ()
                     
                     window.mappanel.map.setView(new ol.View({
                         center: city,
-                        zoom: zummap, ///record.data['scale'] ?? 12,
+                        zoom: 12, ///zummap ?? 12,
                     }));
                     
                     let title = unnm;
