@@ -38,7 +38,15 @@ $(document).ready(function ()
     
 	///setTimeout(function(){initMap();},100);
 
-
+    window.commandVisualize = function commandVisualize () {
+        sb=$('.mfilter-subject select option:selected').val();
+		yr=$('.mfilter-year select option:selected').val();
+		reg=$('.mfilter-region select option:selected').val();
+		if(Number($('.mfilter-country select option:selected').val()))
+		{cntr=$('.mfilter-country select option:selected').val();}
+		else{cntr=0;}
+		initMap();
+    };
 	
 	$(document).on('click', '.main-nav li', function () {
 		$('.main-nav li').removeClass('active');
@@ -60,18 +68,16 @@ $(document).ready(function ()
 		$('.mapinfo').html('<div id="map_div"></div>');
 		$('#mapsrchvl').attr('placeholder','Enter the name of the university');
       	$('#mapsrchvl').val('');
+        
+        setTimeout(function () {
+            commandVisualize();
+        }, 1);
+        
 		//return false;
 	});
-	$(document).on('click', '#mctrvz', function () 
-	{
-		sb=$('.mfilter-subject select option:selected').val();
-		yr=$('.mfilter-year select option:selected').val();
-		reg=$('.mfilter-region select option:selected').val();
-		if(Number($('.mfilter-country select option:selected').val()))
-		{cntr=$('.mfilter-country select option:selected').val();}
-		else{cntr=0;}
-		initMap();
-	});      
+    
+	$(document).on('click', '#mctrvz', commandVisualize);
+    
 	$(document).on('change', '.mfilter-country select', function ()
 	{
 		//alert($('.az-sort-by-cntr').val());
@@ -103,12 +109,15 @@ $(document).ready(function ()
 	}); 
 	$(document).on('change', '.mfilter-region  select', function ()
 	{
-		
 		$('.mapinfo').html('<div id="map_div"></div><div id="nwmap"></div>');
 		//$('.az-sort-by-cntr').html('<option value="0">World</option>');
 		country_list();
 		$('#mapsrchvl').attr('placeholder','Enter the name of the university');
       	$('#mapsrchvl').val('');
+        
+        setTimeout(function () {
+            commandVisualize();
+        }, 1);
 	});
 	$(document).on('change', '.maz-sort-by-s', function ()
 	{
