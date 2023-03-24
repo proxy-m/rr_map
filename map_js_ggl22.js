@@ -563,7 +563,7 @@ $(document).ready(function ()
 					//alert(tph);
                     //console.log('tphsel: ', $('#tphsel').html());
                     //console.log('tph: ', tph);
-					var tphtxt='$("#mapsrchvl").typeahead({autoSelect:false,source: ['+tph+'],displayField: "Name",valueField: "ID",limit:"20"});';
+					var tphtxt='$("#mapsrchvl").typeahead({autoSelect:false,source: ['+tph+'],displayField: "Name",valueField: "ID",limit:"20", afterSelect: function (item) { console.log("after selected: ", item); setTimeout(function () { $(\'input[type="button"]#mapsrchbtn,input[type="submit"]#mapsrchbtn\')[0].focus(); }, 100); return item; }, });';
                 eval(tphtxt);
                 
 				///var mrkstr='var mrks=[';	
