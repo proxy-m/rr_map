@@ -487,6 +487,88 @@ function main () {
 	}
 	$first = false;
     
+    if ($argv['topic'] == 'univ') {
+        $i = 0;
+        foreach ($STH1 as $row) {
+            $row['id_univ'] = round($row['id_univ'] ?? 0, 0);
+            $row['univ_name'] = $row['Univ name'];
+            if(!$row['Students']){$row['Students'] = round($row['Students_rur'],0);}
+            else{$row['Students'] = round($row['Students'],0);}
+            if(!$row['Faculty']){$row['Faculty'] = round($row['Faculty_rur'],0);}
+            else{$row['Faculty'] = round($row['Faculty'],0);}
+            
+            if($row['Faculty']!=0)
+            {$row['FS'] = round($row['Students']/$row['Faculty'],0);}
+            else{$row['FS']=0;}
+            
+            $row['country'] = $row['Economy'] ?? $row['Country'] ?? $row['country'] ?? 'UnknownCountry';
+            $row['region'] = $row['Region'] ?? $row['region'] ?? NULL;
+            $row['flag'] = $row['Flag'] ?? $row['flag'] ?? NULL;
+            
+            $row['Logo'] = $row['Logo'] ?? $row['logo'] ?? NULL;
+            if($row['Logo']!='' && $row['Logo']!=NULL)
+            {$row['logo'] = $row['Logo'];}
+            else{$row['logo']='./images_rur/Logo.png';}
+            
+            $row['loc'] = $row['loc'] ?? $row['Location'] ?? NULL;
+            if($row['loc']!='' && $row['loc']!=NULL)
+            {$row['loc'] = $row['loc'];}
+            else{$row['loc']='No Location';}
+            
+            $row['found'] = $row['found'] ?? $row['Foundation'] ?? NULL;
+            if($row['found']!='' && $row['found']!=NULL)
+            {$row['found'] = $row['found'];}
+            else{$row['found']='No Foundation';}
+            
+            $row['sh_nm'] = $row['sh_nm'] ?? $row['Short name'] ?? NULL;
+            if($row['sh_nm']!='' && $row['sh_nm']!=NULL)
+            {$row['sh_nm'] = $row['sh_nm'];}
+            else{$row['sh_nm']='No Short name';}
+            
+            
+            $row['type'] = $row['type'] ?? $row['Type'] ?? NULL;
+            if($row['type']!='' && $row['type']!=NULL)
+            {$row['type'] = $row['type'];}
+            else{$row['type']='No Type';}
+            
+            $row['website'] = $row['website'] ?? $row['Web_site'] ?? NULL;
+            if($row['website']!='' && $row['website']!=NULL)
+            {$row['website'] = $row['website'];}
+            else{$row['website']='https://roundranking.com/';}
+            
+            if($row['cord']!='' && $row['cord']!=NULL)
+            {$row['cord'] = $row['cord'];}
+            else{$row['cord']='0,0';}
+            $iscord=explode(",", $row['cord']);
+            if(!is_numeric($iscord[0]))
+            {$row['cord']='0,0';}
+                        
+            
+            $row['nm_page'] = $row['nm_page'];
+            
+            $row['O_CR'] = round($row['O_CR'],0);
+            $row['O_WR'] = round($row['O_WR'],0);$row['O_WS'] = round($row['O_WS'], 3);	
+            $row['O_TR'] = round($row['O_TR'],0);$row['O_TS'] = round($row['O_TS'], 3);	
+            $row['O_RR'] = round($row['O_RR'],0);$row['O_RS'] = round($row['O_RS'], 3);	
+            $row['O_IR'] = round($row['O_IR'],0);$row['O_IS'] = round($row['O_IS'], 3);	
+            $row['O_FR'] = round($row['O_FR'],0);$row['O_FS'] = round($row['O_FS'], 3);	
+            $row['League'] = $row['O_OL'];
+            $row['O_80p'] = $row['O_80p'];$row['O_O_s'] = $row['O_O_s'];
+            
+            $row['O_Color1'] = $row['O_Color1'];;$row['O_Color3'] = $row['O_Color3'];$row['O_Color4'] = $row['O_Color4'];
+            $row['T_Os'] = $row['O_T_s'];
+            $row['T_Color1'] = $row['T_Color1'];$row['T_Color3'] = $row['T_Color3'];$row['T_Color4'] = $row['T_Color4'];
+            $row['R_Os'] = $row['O_R_s'];
+            $row['R_Color1'] = $row['R_Color1'];$row['R_Color3'] = $row['R_Color3'];$row['R_Color4'] = $row['R_Color4'];
+            $row['I_Os'] = $row['O_I_s'];
+            $row['I_Color1'] = $row['I_Color1'];$row['I_Color3'] = $row['I_Color3'];$row['I_Color4'] = $row['I_Color4'];
+            $row['F_Os'] = $row['O_F_s'];
+            $row['F_Color1'] = $row['F_Color1'];$row['F_Color3'] = $row['F_Color3'];$row['F_Color4'] = $row['F_Color4'];
+            
+            $STH1[$i++] = $row;
+        }
+    }
+    
     
     if (!empty($argv['field'])) {
         $resultJSON = array_map(function ($row) use ($argv) {
