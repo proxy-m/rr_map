@@ -146,7 +146,85 @@ Ext.onReady(() => {
             }
         });
         
+        window.mappanel.map.on('click', function (evt) {
+            popup.setPosition(undefined);
+            var feature = window.mappanel.map.forEachFeatureAtPixel(evt.pixel, function (feat, layer) {
+                return feat;
+            });
+            
+            if (!!evt.coordinate && window.needClickOnFirst && getLastFeatures()[0].getGeometry().getCoordinates()[0] == evt.coordinate[0] && getLastFeatures()[0].getGeometry().getCoordinates()[1] == evt.coordinate[1]) {
+                feature = getLastFeatures()[0];
+            }
+            
+            if (feature && feature.get('type') == 'Point' && (feature.get('n') != wasClickedTrigger || window.needClickOnFirst)) {
+                var coordinate = evt.coordinate;
+                var windowCoord = JSON.stringify(coordinate);
+                
+                if (ti) {
+                    clearTimeout(ti);
+                    ti = null;
+                }
+                ti = setTimeout(function () {
+                    wasClickedTrigger = 0;
+                    window.lastWindowCoord = '[0,0]'; // TODO: reset coords within on close dialog window
+                }, 500); // We assume that user must not search same object or same action faster then 0.5 s.
+                popup.setPosition(coordinate);
+                
+                if (windowCoord == window.lastWindowCoord) {
+                    return;
+                } else {
+                    window.lastWindowCoord = windowCoord;
+                    console.log(window.lastWindowCoord); //
+                }
+                
+                window.needClickOnFirst = false;
+                
+                content = document.getElementById('popup-content'); ///
+                content.innerHTML = feature.get('info');
+                popup.title = feature.get('name');
+                wasClickedTrigger = feature.get('n');
+                missedCount = 1;
+                lastMissed = wasClickedTrigger;
+                
+                setTimeout(function () {
+                    Ext.create('Ext.window.Window', {
+                        layout: 'fit',
+                        html: $('#popup').html(),
+                        renderTo: 'perfectmap_div',
+                        listeners: {
+                            afterrender: closeTooltip
+                        },
+                        buttons: [],
+                        tools: [{
+                            type:'refresh',
+                            tooltip: null,
+                            handler: function (event, toolEl, panel) {
+                            }
+                        },
+                        ]
+                    }).show();
+                    popup.setPosition(undefined);
+                }, 10);
+            } else {
+                if (!wasClickedTrigger) {
+                    wasClickedTrigger = 0;
+                    popup.setPosition(undefined);
+                }
+            }
+        
+        });
 
+        if (needClickOnFirst) {
+            let feature = getLastFeatures()[0];
+            let evt = {};
+            evt.type = 'click';
+            ///alert(feature.get('type')); // Point
+            ///evt.coordinate = [];  evt.coordinate[0] = 6633511;  evt.coordinate[1] = 4079902;
+            evt.coordinate = feature.getGeometry().getCoordinates();
+            evt.pixel = window.mappanel.map.getPixelFromCoordinate(evt.coordinate);
+            
+            window.mappanel.map.dispatchEvent(evt); // vector layer
+        }
     }
 
     
@@ -359,13 +437,13 @@ Ext.application({
         });
         
                 
-        Ext.create('Ext.container.Viewport', {
+        Ext.create('Ext.container.Viewport', { ///'Ext.panel.Panel', {
             layout: {
                 type: 'vbox',
                 align: 'stretch',
             },
             type: 'vbox',
-            renderTo: Ext.getBody(),
+            renderTo: 'perfectmap_div', //Ext.getBody(),
             items: [
                 toppanel,
                 mappanel,
