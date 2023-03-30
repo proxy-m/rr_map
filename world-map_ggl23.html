@@ -107,6 +107,7 @@ ul.typeahead.dropdown-menu > * {
                             //layout: 'fit',
                             title: 'Map',
                             xtype: 'panel',
+                            id: 'MapPanel',
                             html: '<div id="map" style="height: 500px; width: 100%;"></div>',
                             listeners:{
                                 afterrender:function(){
@@ -122,8 +123,8 @@ ul.typeahead.dropdown-menu > * {
                                         })],
                                         controls: ol.control.defaults().extend([
                                             new ol.control.FullScreen({
-                                                source: 'perfectmap_div', ///
-                                            }),
+                                                source: 'perfectmapinfo', ///'perfectmap_div', ///
+                                            }), /// Ext.getCmp('MapPanel').updateLayout()
                                         ]),
                                         view: new ol.View({
                                             center: city,
@@ -142,6 +143,10 @@ ul.typeahead.dropdown-menu > * {
                             }
                         });
                         window.mappanel = mappanel;
+                        
+                        document.addEventListener("fullscreenchange", function (e) {
+                            Ext.getCmp('MapPanel').updateLayout(); // window.mappanel.updateLayout();
+                        });
                         
                         Ext.create('Ext.panel.Panel', { ///'Ext.container.Viewport', {
                             layout: {
@@ -293,8 +298,8 @@ ul.typeahead.dropdown-menu > * {
      crossorigin="anonymous"></script-->
 	</head>
 	<body>
-	<div class="container-fluid">
-	<div id="wrapper">
+	<div id="wrapper-parent" class="container-fluid">
+	<div id="wrapper" style="margin-left: 0; overflow: visible;"><!-- or position:static instead of overflow:visible -->
 	<header id="header">
 	<div class="header-top">
 				<div class="logo">
@@ -570,9 +575,10 @@ color: #494343;">RUR World Map shows the geographical location of universities i
 			<div id="map_div"></div>
 			<div id="nwmap"></div> 
 </div>-->
-<div class="perfectmapinfo row">
+<div id="perfectmapinfo" class="perfectmapinfo row">
 			<div id="perfectmap_div"></div>
 			<div id="perfectnwmap"></div> 
+            <div id="info_windows"></div> 
 <br/>	
 	<div class="map-legendbox row">
 		<div class="col-md-4 col-sm-6 diamond"><img src="images_rur/Konf/diamondw.png" alt="Diamond League" />Diamond League (Rank 1-100)</div>

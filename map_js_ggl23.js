@@ -375,7 +375,7 @@ $(document).ready(function ()
                     Ext.create('Ext.window.Window', {
                         layout: 'fit',
                         html: $('#popup').html(),
-                        renderTo: 'perfectmap_div',
+                        renderTo: 'perfectmap_div', ///'wrapper-parent',
                         listeners: {
                             afterrender: closeTooltip
                         },
