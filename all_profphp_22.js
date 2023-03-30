@@ -3,8 +3,47 @@ var YYRR;
 var profdat=Array;
 var undt=Array;
 var unmlnk='california-institute-of-technology-caltech';
+
+let wasClickedTrigger = 0;
+let ti = null;
+let lastMissed = 0;
+let missedCount = 0;
+window.lastWindowCoord = null;
+
 (function ($) 
 {
+    let container = null;
+    let content = null;
+
+    
+    if (!window.ol || !ol.View) {
+        let script = null;
+        
+        script = document.createElement('script');
+        script.type = "text/javascript";
+        script.async = false;
+        script.src = "/deps/ext-6.2.0/build/ext-all.js";
+        document.getElementsByTagName('head')[0].appendChild(script); // TODO: style for ext
+        
+        script = document.createElement('link');
+        script.type = "text/css";
+        script.rel = "stylesheet";
+        script.href = "/deps/ext-6.2.0/build/classic/theme-gray/resources/theme-gray-all.css";
+        document.getElementsByTagName('head')[0].appendChild(script);
+        
+        script = document.createElement('script');
+        script.type = "text/javascript";
+        script.async = false;
+        script.src = "/deps/ol.js";
+        document.getElementsByTagName('head')[0].appendChild(script);
+        
+        script = document.createElement('link');
+        script.type = "text/css";
+        script.rel = "stylesheet";
+        script.href = "/deps/ol.css";
+        document.getElementsByTagName('head')[0].appendChild(script);
+    }
+    
 	$.format3dight = function (value) {
 		return value.split(',').join('.').toFixed(3).toString().split('.').join(',');
 	}
@@ -569,7 +608,7 @@ else
 			
 /*********block 10*/				
 			
-			htkd=htkd+'<div class="pagebreak"></div><div class="uni-dop"><div class="uni-subinfo uni-subinfo-overview az-uni-profile"><div class="uni-subinfo-img-box"><img src=".'+undt['pic1']+'" alt="" data-src="Picture1" /></div><div class="uni-subinfo-text-box"><h2 class="uni-subinfo-h" data-text-color="[sort]_Color1" style="color: '+data['O_Color1']+';">Overview</h2><div data-text="Overview" class="overview scroll-pane">'+data['over']+'</div></div></div><div class="uni-subinfo az-uni-profile"><div class="uni-subinfo-img-box"><img src=".'+undt['pic2']+'" alt="" data-src="Picture2" /></div><div class="uni-subinfo-text-box" id="txtmiss"><h2 class="uni-subinfo-h" data-text-color="[sort]_Color1" style="color: '+data['O_Color1']+';">Mission Statement</h2><div data-text="Mission" class="mission scroll-pane">'+data['miss']+'</div></div></div><div class="mapbl"><div id="map"></div></div></div><div style="clear:both;"></div>';
+			htkd=htkd+'<div class="pagebreak"></div><div class="uni-dop"><div class="uni-subinfo uni-subinfo-overview az-uni-profile"><div class="uni-subinfo-img-box"><img src=".'+undt['pic1']+'" alt="" data-src="Picture1" /></div><div class="uni-subinfo-text-box"><h2 class="uni-subinfo-h" data-text-color="[sort]_Color1" style="color: '+data['O_Color1']+';">Overview</h2><div data-text="Overview" class="overview scroll-pane">'+data['over']+'</div></div></div><div class="uni-subinfo az-uni-profile"><div class="uni-subinfo-img-box"><img src=".'+undt['pic2']+'" alt="" data-src="Picture2" /></div><div class="uni-subinfo-text-box" id="txtmiss"><h2 class="uni-subinfo-h" data-text-color="[sort]_Color1" style="color: '+data['O_Color1']+';">Mission Statement</h2><div data-text="Mission" class="mission scroll-pane">'+data['miss']+'</div></div></div><div class="mapbl"><div id="map" style="display: block;></div></div></div><div style="clear:both;"></div>';
 								
 			$('.d3').css('display','block');
 			$('.d3').html(cdttoexp+htkd);
@@ -693,7 +732,261 @@ else
 			      })
 			    ;
 		  	}
+            
+    function getLastFeatures () {
+        return window.mappanel.map.getLayers().getArray()[window.mappanel.map.getLayers().getArray().length - 1].getSource().getFeatures();
+    }
+    
+    function addMarkers (mrks, needClickOnFirst) {
+        if (!mrks || !mrks.length || mrks.length < 1) {
+            console.log('ERR: mrks is not defined');
+            return;
+        }
+        if (!needClickOnFirst) {
+            window.needClickOnFirst = false;
+            mappanel.map.getLayers().getArray().map((e, i) => {if (i>0) mappanel.map.getLayers().getArray().splice(1) }); // rest only first layer
+        } else {
+            window.needClickOnFirst = true;
+        }
+        //console.log('markers: ', mrks); ///
+        //console.log(mrks[0]);    
+        
+        try {
+            document.getElementById('popup').outerHTML = '';
+        } catch (e456343456) {
+        }
+        
+        container = document.createElement('div');
+        container.setAttribute('id', 'popup');
+        container.title = '';
+        container.innerHTML = `<a href="#" id="popup-closer" class="ol-popup-closer"></a><div id="popup-content" style="background-color: white;"></div>`;
+        container.class='ol-popup';
+        document.body.appendChild(container);
+        
+        // Popup showing the position the user clicked
+        var container = document.getElementById('popup');
+        var popup = new ol.Overlay({
+            element: container,
+            offset: [15, 20],
+            positioning: 'top-left', 
+            //autoPan: true,
+            //autoPanAnimation: {
+            //    duration: 250
+            //}
+        });
+        window.mappanel.map.addOverlay(popup);
+        
+        console.log(mrks.length);
+        
+        var features = [];
+        mrks.forEach(function (m, i) {
+            //console.log(dt[i+1]);
+            
+            var iconFeature = new ol.Feature({
+                ///geometry: new ol.geom.Point(ol.proj.transform([106.8478695, -6.1568562], 'EPSG:4326', 'EPSG:3857'))
+                geometry: new ol.geom.Point(ol.proj.fromLonLat([m[0].lng, m[0].lat])), /// [106.8478695, -6.1568562]))),
+                n: i+1,
+                type: 'Point',
+                info: (!!m[3] ? m[3] : '<div><h3>Missing info</h3></div>'),
+                desc: '' // + '<pre>'
+                        + '<b>' + (!!m[1] ? m[1] : 'Unnamed') + '</b>' + '<br/>'
+                        + ' ' + '[Lat, Lng: ' + m[0].lat + ', ' + m[0].lng + ']', //+ ' </pre>', 
+            });
+            var iconStyle = new ol.style.Style({
+                image: new ol.style.Icon(({ // IconOptions
+                    anchor: [0.5, 46],
+                    anchorXUnits: 'fraction',
+                    anchorYUnits: 'pixels',
+                    opacity: 0.75,
+                    src: (!!m[2] ? m[2] : 'images_rur/Konf/diamondw.png'), // dt[i+1].iconurl
+                })),
+                text: new ol.style.Text({
+                    scale: 1.2,
+                }),
+            });
+            iconFeature.setStyle(iconStyle);
+            features.push(iconFeature);
+        });
+        
+        var vectorSource = new ol.source.Vector({
+            features: features,      //add an array of features
+            //,style: iconStyle     //to set the style for all your features...
+        });
+        var markersOL = new ol.layer.Vector({
+            source: vectorSource
+        });
+        ///markersOL.getSource().addFeature(marker);
+        window.mappanel.map.addLayer(markersOL);
+        features = [];
+        
+        wasClickedTrigger = 0;
+        
+
+        function closeTooltip (panel) {
+            if (Ext.getVersion().major > 5) {
+                Ext.getCmp(panel.el.down('.x-tool-close').up().id).setTooltip('\0')
+            } else {
+                Ext.create('Ext.tip.ToolTip', {
+                    target: panel.el.down('.x-tool-close').id,
+                    html: '\0'
+                });
+            }
+        }
+        
+        /* Add a pointermove handler to the map to render the popup.*/
+        window.mappanel.map.on('pointermove', function (evt) {
+            var feature = window.mappanel.map.forEachFeatureAtPixel(evt.pixel, function (feat, layer) {
+                return feat;
+            });
+
+            this.getTargetElement = (!this.getTargetElement) ? this.getTarget : this.getTargetElement;
+            if (feature && feature.get('type') == 'Point') {
+                this.getTargetElement().style.cursor = 'pointer';
+            } else {
+                this.getTargetElement().style.cursor = '';
+            }
+
+            if (feature && feature.get('type') == 'Point' && (!wasClickedTrigger || (feature.get('n') != lastMissed && (lastMissed = feature.get('n')) != wasClickedTrigger && (++missedCount) >= 2))) {
+                var coordinate = evt.coordinate;    //default projection is EPSG:3857 you may want to use ol.proj.transform
+                content = document.getElementById('popup-content'); ///
+                content.innerHTML = feature.get('desc');
+                popup.title = feature.get('name');
+                wasClickedTrigger = 0;
+                missedCount = 0;
+                lastMissed = 0;
+                popup.setPosition(coordinate);
+            } else {
+                if (!wasClickedTrigger) {
+                    popup.setPosition(undefined);
+                }
+            }
+        });
+        
+        window.mappanel.map.on('click', function (evt) {
+            popup.setPosition(undefined);
+            var feature = window.mappanel.map.forEachFeatureAtPixel(evt.pixel, function (feat, layer) {
+                return feat;
+            });
+            
+            if (!!evt.coordinate && window.needClickOnFirst && getLastFeatures()[0].getGeometry().getCoordinates()[0] == evt.coordinate[0] && getLastFeatures()[0].getGeometry().getCoordinates()[1] == evt.coordinate[1]) {
+                feature = getLastFeatures()[0];
+            }
+            
+            if (feature && feature.get('type') == 'Point' && (feature.get('n') != wasClickedTrigger || window.needClickOnFirst)) {
+                var coordinate = evt.coordinate;
+                var windowCoord = JSON.stringify(coordinate);
+                
+                if (ti) {
+                    clearTimeout(ti);
+                    ti = null;
+                }
+                ti = setTimeout(function () {
+                    wasClickedTrigger = 0;
+                    window.lastWindowCoord = '[0,0]'; // TODO: reset coords within on close dialog window
+                }, 500); // We assume that user must not search same object or same action faster then 0.5 s.
+                popup.setPosition(coordinate);
+                
+                if (windowCoord == window.lastWindowCoord) {
+                    return;
+                } else {
+                    window.lastWindowCoord = windowCoord;
+                    console.log(window.lastWindowCoord); //
+                }
+                
+                window.needClickOnFirst = false;
+                
+                content = document.getElementById('popup-content'); ///
+                content.innerHTML = feature.get('info');
+                popup.title = feature.get('name');
+                wasClickedTrigger = feature.get('n');
+                missedCount = 1;
+                lastMissed = wasClickedTrigger;
+                
+                setTimeout(function () {
+                    Ext.create('Ext.window.Window', {
+                        layout: 'fit',
+                        html: $('#popup').html(),
+                        renderTo: 'map', /// 'perfectmap_div', /// Ext.getBody(),
+                        listeners: {
+                            afterrender: closeTooltip
+                        },
+                        buttons: [],
+                        tools: [{
+                            type:'refresh',
+                            tooltip: null,
+                            handler: function (event, toolEl, panel) {
+                            }
+                        },
+                        ]
+                    }).show();
+                    popup.setPosition(undefined);
+                }, 10);
+            } else {
+                if (!wasClickedTrigger) {
+                    wasClickedTrigger = 0;
+                    popup.setPosition(undefined);
+                }
+            }
+        
+        });
+
+        if (needClickOnFirst) {
+            let feature = getLastFeatures()[0];
+            let evt = {};
+            evt.type = 'click';
+            ///alert(feature.get('type')); // Point
+            ///evt.coordinate = [];  evt.coordinate[0] = 6633511;  evt.coordinate[1] = 4079902;
+            evt.coordinate = feature.getGeometry().getCoordinates();
+            evt.pixel = window.mappanel.map.getPixelFromCoordinate(evt.coordinate);
+            
+            window.mappanel.map.dispatchEvent(evt); // vector layer
+        }
+
+    }
+    
+    function getWorldRating (dt, title, i) {
+        if (!dt) {
+            return undefined;
+        }
+        if (!title && (!i || i == 0 || i < 0)) {
+            return null;
+        }
+        if (!title || title === true || Array.isArray(title) || !title.length || title.trim().length == 0) {
+            title = null;
+        } else if (!i || i == 0 || i < 0) {
+            i = 0; // dt starts from index 1
+        }
+        
+        if (i > 0 && !title) {
+            title = dt[i]['univ_name'];
+        } else {
+            i = -1;
+            for (let j=1; !!dt[j]; ++j) {
+                if (dt[j]['univ_name'] == title) {
+                    i = j;
+                    break;
+                }
+            }
+        }
+        if (i <= 0 || dt[i]['univ_name'] != title) {
+            console.warn('You should use only one of arguments: title, i');
+            return null;
+        }
+        return dt[i]['O_WR'];
+    }
+            
 		  	function initMap() {
+                if (!window.google) { window.google = {} }; if (!google.maps) { google.maps = {} }; if (!google.maps.InfoWindow) { google.maps.InfoWindow = function () {} }; if (!google.maps.Map) { google.maps.Map = function () {} };  if (!google.maps.Marker) { google.maps.Marker = function () {} };  if (!google.maps.MapTypeId) { google.maps.MapTypeId = {} };
+                               
+                if ($('#map').length == 0) {
+                    $('.mapbl').html('<div id="map" style="display: block;"></div>');
+                }
+                if (!window.mappanel || !window.mappanel.map) {
+                    window.mappanel = {}; // TODO recheck
+                    window.mappanel.map = $('#map')[0];
+                }
+                console.log('map short: ', window.mappanel.map);
+                               
 			    var lt=Number(latvl);
 				var lg=Number(lngvl);
 				zummap=Number(12);
@@ -703,8 +996,56 @@ else
 				var icnsrc='';
 				var url = './images_rur/Konf/';
 				$('.gm-style-iw-d').css('background-color','antiquewhite');
-				$('.mapbl').html('<div id="map" style="display: block;"></div>');
+				$('.mapbl').empty().append(!!window.mappanel.map.getTargetElement ? (window.mappanel.map.getTargetElement() ? window.mappanel.map.getTargetElement() : $('#map')[0]) : window.mappanel.map); /// $('.mapbl').empty().append('<div id="map" style="display: block;"></div>'); /// instead inner .html(text)
 				const uluru = { lat: lt, lng: lg };
+                               
+                
+                if (window.ol && ol.View && !window.mappanel.map.setView) {
+                    let city = ol.proj.fromLonLat([-3.696100, 40.410800]); // Madrid, Spain
+                    window.mappanel.map = new ol.Map({
+                        target: 'map', // div#map
+                        renderer: 'canvas',
+                        layers: [new ol.layer.Tile({
+                          source: new ol.source.OSM()
+                        })],
+                        controls: ol.control.defaults().extend([
+                            new ol.control.FullScreen({
+                                source: 'map', ///'perfectmap_div', ///
+                            }), /// Ext.getCmp('MapPanel').updateLayout()
+                        ]),
+                        view: new ol.View({
+                            center: city,
+                            zoom: 2,
+                        }),
+                    });
+                }
+
+                
+                const coord = uluru;
+                if (window.mappanel && window.mappanel.map && window.mappanel.map.setView && window.ol && ol.View) {
+                    let pos = [coord.lat, coord.lng]; /// JSON.parse('['+record.data['cord']+']');
+                    pos = [pos[1], pos[0]];
+                    let city = ol.proj.fromLonLat(pos);
+                    
+                    window.mappanel.map.setView(new ol.View({
+                        center: city,
+                        zoom: 12, ///zummap ?? 12,
+                    }));
+                    
+                    let title = unnm;
+                    var mrks = [{
+                        0: coord, // position coord
+                        1: title, // `#${getWorldRating(dt, title, null)} - ${title}`,
+                        2: (!!icnsrc && icnsrc.length > 0) ? icnsrc : unic, // icon
+                        3: uninfo, // info content
+                    }]; // only one marker
+                    addMarkers(mrks, false);
+                    
+                    return; /// !!!   
+                }
+                
+                
+                
 				const map = new google.maps.Map(document.getElementById("map"), {
 				    zoom: zummap,
 				    center: uluru,
