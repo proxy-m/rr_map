@@ -5,6 +5,8 @@ var tphcord=new Array;	//массив координат поиска
 var tphunnm=new Array;	//массив имен вузов поиска
 var cordtph=new Array;	//массив координат вузов по поиску
 var map=new Object;
+var dt_world = {};
+var mrks_world = {};
 var data;
 var dtcntr=new Array;	//массив данных стран для карт
 
@@ -493,14 +495,17 @@ $(document).ready(function ()
 					{$('.mapinfo').html('<div id="map_div"></div>');}
 					
 					/*	$('.mapinfo').html('<div id="map_div"></div>');*/
-	  	 			tph='';
 	  	 			dt.length=0;
 	  	 			$('#mapsrchvl').typeahead('destroy');
+                    var dtFullTmp = $.extend([], dt_world[yr] || dt);
+                    dtFullTmp[0] = null;
+                    console.log('yr: ', yr);
+                    console.log('tmp.length: ', dtFullTmp.length);
 	  	 			
 	  	 			for(var i=1;i<=n;i++)
 	  	 			{
 						//alert(data[4][i]);
-						dt[i]=[];dtrow[i]=[];dtmap=[];
+						dt[i]=[]; //dtmap=[];
 						
 						dt[i]['univ_name']=$.trim(data[1][i]['univ_name']);
 						dt[i]['country']=data[1][i]['country'];
@@ -583,26 +588,41 @@ $(document).ready(function ()
 						
 						//dt[i]['info']=data[4][i];
 						//alert(dt[i]['info']);
-						//dtrow[i]={Number(dt[i]['lat']),Number(dt[i]['lng']),dt[i]['info'],dt[i]['icon']};
+					}
+                    
+                    if (!dt_world[yr] || dt_world[yr].length !== dt.length) {
+                        tph = '';
+                        dtrow = [];
+                    }
+                    
+                    for(var i=1;i<=dtFullTmp.length-1;i++) {
+                        if (!!dtrow[i] && !!dt_world[yr] && dt_world[yr].length === dt.length) { // TODO reset dtrow and tph only after year change
+                            continue;
+                        }
+                        dtrow[i]=[];
+                        //dtrow[i]={Number(dtFullTmp[i]['lat']),Number(dtFullTmp[i]['lng']),dtFullTmp[i]['info'],dtFullTmp[i]['icon']};
 						
-						dtrow[i].push(Number(dt[i]['lat']));
-						dtrow[i].push(Number(dt[i]['lng']));
-						dtrow[i].push(dt[i]['info']);
+						dtrow[i].push(Number(dtFullTmp[i]['lat']));
+						dtrow[i].push(Number(dtFullTmp[i]['lng']));
+						dtrow[i].push(dtFullTmp[i]['info']);
 						
-						dtrow[i].push(dt[i]['icon']);
-						//dtrow[i].push(dt[i]['univ_name']);
+						dtrow[i].push(dtFullTmp[i]['icon']);
+						//dtrow[i].push(dtFullTmp[i]['univ_name']);
 						//dtmap.push(dtrow[i]);
 						//alert(dtmap);
-						//alert(sv+'\n'+dt[i]['icon']+'\n'+ dt[i]['icon_pct']+'\n'+ dt[i]['info']);
+						//alert(sv+'\n'+dtFullTmp[i]['icon']+'\n'+ dtFullTmp[i]['icon_pct']+'\n'+ dtFullTmp[i]['info']);
 						//alert(dtrow[i]);
-						tph=tph+'{ID:'+i+', Name: "' + dt[i]['univ_name'] + ' _' + dt[i]['id_univ'] + '"},';
+						tph=tph+'{ID:'+i+', Name: "' + dtFullTmp[i]['univ_name'] + ' _' + dtFullTmp[i]['id_univ'] + '"},';
 						
-						$('#tphsel').append('<option value="'+i+'">' + dt[i]['univ_name'] + ' _' + dt[i]['id_univ'] +'</option>');
-						cordtph[i]=[dt[i]['lat'],dt[i]['lng']];
-					}
+						$('#tphsel').append('<option value="'+i+'">' + dtFullTmp[i]['univ_name'] + ' _' + dtFullTmp[i]['id_univ'] +'</option>');
+                        
+                        cordtph[i]=[dtFullTmp[i]['lat'],dtFullTmp[i]['lng']];
+                    }
 					
-					tph = tph.replace('undefined', '');
-					tph = tph.substring(0,tph.length - 1);
+                    if (!dt_world[yr] || dt_world[yr].length !== dt.length) {
+                        tph = tph.replace('undefined', '');
+                        tph = tph.substring(0,tph.length - 1);
+                    }
 					//alert(tph);
                     //console.log('tphsel: ', $('#tphsel').html());
                     //console.log('tph: ', tph);
@@ -682,6 +702,14 @@ $(document).ready(function ()
                     pos = [pos[1], pos[0]];
                     let city = ol.proj.fromLonLat(pos);
                     
+                    /// yr+'&subj='+sb+'&cntr='+cntr+'&reg='+reg
+                    if (sb == 1 && cntr == 0 && reg == 0) { // default full world
+                        if (!dt_world[yr] || !mrks_world[yr] || dt_world[yr].length < dt.length) {
+                            dt_world[yr] = $.extend([], dt);
+                            mrks_world[yr] = $.extend([], mrks);
+                        }
+                    }
+                    
                     window.mappanel.map.setView(new ol.View({
                         center: city,
                         zoom: scale, ///record.data['scale'] ?? 12,
@@ -759,7 +787,7 @@ $(document).ready(function ()
 		}
 		else
 		{
-			
+			dt = $.extend([], dt_world[yr] || []);
 			var lt=Number(cordtph[$('#tphsel').val()][0]);
 			var lg=Number(cordtph[$('#tphsel').val()][1]);
 			zummap=Number(8);

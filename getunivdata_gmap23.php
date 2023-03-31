@@ -1,5 +1,9 @@
 <?php
 session_start();
+//ini_set('display_errors', 1);
+//ini_set('display_startup_errors', 1);
+//error_reporting(E_ALL);
+
 if($_REQUEST['year']!=''){$year =$_REQUEST['year'];}else{$year =12;}
 if($_REQUEST['subj']!=''){$subj =$_REQUEST['subj'];}else{$subj =1;}
 if($_REQUEST['cntr']!=''){$cntr =$_REQUEST['cntr'];}else{$cntr =79;}
@@ -85,15 +89,15 @@ $sql .= ';';
 			//if($row['id_univ']!=1222)
 			//{
 			$i++;
-			$univ[$i]['id_univ'] = round($row['id_univ'] ?? 0, 0);
+			$univ[$i]['id_univ'] = round(intval($row['id_univ'] ?? 0), 0);
 			$univ[$i]['univ_name'] = $row['Univ name'];
-			if(!$row['Students']){$univ[$i]['Students'] = round($row['Students_rur'],0);}
-			else{$univ[$i]['Students'] = round($row['Students'],0);}
-			if(!$row['Faculty']){$univ[$i]['Faculty'] = round($row['Faculty_rur'],0);}
-			else{$univ[$i]['Faculty'] = round($row['Faculty'],0);}
+			if(!$row['Students']){$univ[$i]['Students'] = round(intval($row['Students_rur']),0);}
+			else{$univ[$i]['Students'] = round(intval($row['Students']),0);}
+			if(!$row['Faculty']){$univ[$i]['Faculty'] = round(intval($row['Faculty_rur']),0);}
+			else{$univ[$i]['Faculty'] = round(intval($row['Faculty']),0);}
 			
 			if($univ[$i]['Faculty']!=0)
-			{$univ[$i]['FS'] = round($univ[$i]['Students']/$univ[$i]['Faculty'],0);}
+			{$univ[$i]['FS'] = round(intval($univ[$i]['Students'])/intval($univ[$i]['Faculty']),0);}
 			else{$univ[$i]['FS']=0;}
 			
 			$univ[$i]['country'] = $row['Economy'] ?? $row['Country'] ?? $row['country'] ?? 'UnknownCountry';
@@ -142,12 +146,12 @@ $sql .= ';';
 			
 			$univ[$i]['nm_page'] = $row['nm_page'];
 			
-			$univ[$i]['O_CR'] = round($row['O_CR'],0);
-			$univ[$i]['O_WR'] = round($row['O_WR'],0);$univ[$i]['O_WS'] = round($row['O_WS'], 3);	
-			$univ[$i]['O_TR'] = round($row['O_TR'],0);$univ[$i]['O_TS'] = round($row['O_TS'], 3);	
-			$univ[$i]['O_RR'] = round($row['O_RR'],0);$univ[$i]['O_RS'] = round($row['O_RS'], 3);	
-			$univ[$i]['O_IR'] = round($row['O_IR'],0);$univ[$i]['O_IS'] = round($row['O_IS'], 3);	
-			$univ[$i]['O_FR'] = round($row['O_FR'],0);$univ[$i]['O_FS'] = round($row['O_FS'], 3);	
+			$univ[$i]['O_CR'] = round(intval($row['O_CR']),0);
+			$univ[$i]['O_WR'] = round(intval($row['O_WR']),0);$univ[$i]['O_WS'] = round(intval($row['O_WS']), 3);	
+			$univ[$i]['O_TR'] = round(intval($row['O_TR']),0);$univ[$i]['O_TS'] = round(intval($row['O_TS']), 3);	
+			$univ[$i]['O_RR'] = round(intval($row['O_RR']),0);$univ[$i]['O_RS'] = round(intval($row['O_RS']), 3);	
+			$univ[$i]['O_IR'] = round(intval($row['O_IR']),0);$univ[$i]['O_IS'] = round(intval($row['O_IS']), 3);	
+			$univ[$i]['O_FR'] = round(intval($row['O_FR']),0);$univ[$i]['O_FS'] = round(intval($row['O_FS']), 3);	
 			$univ[$i]['League'] = $row['O_OL'];
 			$univ[$i]['O_80p'] = $row['O_80p'];$univ[$i]['O_O_s'] = $row['O_O_s'];
             
@@ -205,10 +209,10 @@ $sql .= ';';
 		foreach ($rr as $row)
 		{
 			$j++;
-			$country[$row['id_country']]['id_country']=round($row['id_country'],0);
+			$country[$row['id_country']]['id_country']=round(intval($row['id_country']),0);
 			$country[$row['id_country']]['Country']=$row['Country'];
 			$country[$row['id_country']]['cord']=$row['cord'];
-			$country[$row['id_country']]['scale']=round($row['scale'],0);
+			$country[$row['id_country']]['scale']=round(intval($row['scale']),0);
 			$country[$row['id_country']]['cntr_code']=$row['cntr_code'];
 			$country[$row['id_country']]['cntr_iso']=$row['cntr_iso'];
 			$country[$row['id_country']]['code_cntr']=$row['code_cntr'];
