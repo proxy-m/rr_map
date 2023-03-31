@@ -1,6 +1,6 @@
 var yr,sb,cntr,reg,n,sv,lftur,hs;
 var dt=new Array;var dtmap=new Array; var dtrow=new Array;
-var tph;				//текст массива вузов для typehead
+var tph = '';				//текст массива вузов для typehead
 var tphcord=new Array;	//массив координат поиска
 var tphunnm=new Array;	//массив имен вузов поиска
 var cordtph=new Array;	//массив координат вузов по поиску
@@ -446,7 +446,8 @@ $(document).ready(function ()
         return dt[i]['O_WR'];
     }
     
-	function initMap()
+    window.lastURL = '';
+	function initMap (forceFull)
 	{
         if (!window.google) { window.google = {} }; if (!google.maps) { google.maps = {} }; if (!google.maps.InfoWindow) { google.maps.InfoWindow = function () {} }; if (!google.maps.Map) { google.maps.Map = function () {} };  if (!google.maps.Marker) { google.maps.Marker = function () {} };  if (!google.maps.MapTypeId) { google.maps.MapTypeId = {} };
 		
@@ -460,7 +461,17 @@ $(document).ready(function ()
                 }
             }
             
-			var ur='./final/getunivdata_gmap23.php?year='+yr+'&subj='+sb+'&cntr='+cntr+'&reg='+reg + '&mode=head';
+            if (forceFull && !(sb == 1 && cntr == 0 && reg == 0)) {
+                forceFull = false;
+                return;
+            }
+            
+			var ur='./final/getunivdata_gmap23.php?year='+yr+'&subj='+sb+'&cntr='+cntr+'&reg='+reg + (!forceFull ? '&mode=head' : '');
+            if (window.lastURL == ur) {
+                return;
+            } else {
+                window.lastURL = ur;
+            }
 			
 			//alert(ur);
 			leftur='https://roundranking.com/universities/';hs='';
@@ -618,10 +629,10 @@ $(document).ready(function ()
                         
                         cordtph[i]=[dtFullTmp[i]['lat'],dtFullTmp[i]['lng']];
                     }
-					
+                    
                     if (!dt_world[yr] || dt_world[yr].length !== dt.length) {
                         tph = tph.replace('undefined', '');
-                        tph = tph.substring(0,tph.length - 1);
+                        ///tph = tph.substring(0,tph.length - 1);
                     }
 					//alert(tph);
                     //console.log('tphsel: ', $('#tphsel').html());
@@ -704,18 +715,24 @@ $(document).ready(function ()
                     
                     /// yr+'&subj='+sb+'&cntr='+cntr+'&reg='+reg
                     if (sb == 1 && cntr == 0 && reg == 0) { // default full world
-                        if (!dt_world[yr] || !mrks_world[yr] || dt_world[yr].length < dt.length) {
+                        if (!dt_world[yr] || !mrks_world[yr] || dt_world[yr].length < dt.length || forceFull) {
                             dt_world[yr] = $.extend([], dt);
                             mrks_world[yr] = $.extend([], mrks);
+                            if (!forceFull) {
+                                setTimeout(function () {
+                                    initMap(true);
+                                }, 500);
+                            }
                         }
                     }
                     
-                    window.mappanel.map.setView(new ol.View({
-                        center: city,
-                        zoom: scale, ///record.data['scale'] ?? 12,
-                    }));
-                    
-                    addMarkers(mrks);                
+                    if (!forceFull) {
+                        window.mappanel.map.setView(new ol.View({
+                            center: city,
+                            zoom: scale, ///record.data['scale'] ?? 12,
+                        }));
+                    }   
+                    addMarkers(mrks);             
                     
                     return; /// !!!   
                 }
