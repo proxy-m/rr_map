@@ -458,7 +458,7 @@ $(document).ready(function ()
                 }
             }
             
-			var ur='./final/getunivdata_gmap23.php?year='+yr+'&subj='+sb+'&cntr='+cntr+'&reg='+reg;
+			var ur='./final/getunivdata_gmap23.php?year='+yr+'&subj='+sb+'&cntr='+cntr+'&reg='+reg + '&mode=head';
 			
 			//alert(ur);
 			leftur='https://roundranking.com/universities/';hs='';
