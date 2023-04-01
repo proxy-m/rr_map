@@ -392,6 +392,25 @@ $(document).ready(function ()
                     }).show();
                     popup.setPosition(undefined);
                 }, 10);
+
+                let city;
+                var lt;
+                var lg;
+                if (!coordinate) {
+                    lt = Number(mrks[wasClickedTrigger-1][0].lat);
+                    lg = Number(mrks[wasClickedTrigger-1][0].lng);
+                    city = ol.proj.fromLonLat([lg, lt]);
+                } else {
+                    lt = coordinate[1];
+                    lg = coordinate[0];
+                    city = [lg, lt];
+                }
+                console.log(lg, lt);
+                    
+                window.mappanel.map.setView(new ol.View({
+                    center: city,
+                    zoom: window.mappanel.map.getView().getZoom(), ///zoom: 12, /// ???
+                }));
             } else {
                 if (!wasClickedTrigger) {
                     wasClickedTrigger = 0;
