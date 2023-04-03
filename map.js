@@ -22,6 +22,24 @@ Ext.onReady(() => {
 
     let container = null;
     let content = null;
+    
+    function rgbToHex (r, g, b) {
+        return "#" + (1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1);
+    }
+    
+    function hexToRgb (hex) {
+      // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+      var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+      hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+        return r + r + g + g + b + b;
+      });
+      var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+      } : null;
+    }
 
     function addMarkers (mrks, needClickOnFirst) {
         if (!mrks || !mrks.length || mrks.length < 1) {
@@ -196,6 +214,7 @@ Ext.onReady(() => {
                         listeners: {
                             afterrender: closeTooltip
                         },
+                        style: 'background-color: white;', // $('.x-window').css('background-color', 'white')
                         buttons: [],
                         tools: [{
                             type:'refresh',
@@ -206,6 +225,9 @@ Ext.onReady(() => {
                         ]
                     }).show();
                     popup.setPosition(undefined);
+                    setTimeout(function () {
+                        $('.x-window-header, .x-window-tc, .x-window-tr, .x-window-tl, .x-window-ml, .x-window-mr, .x-window-bc, .x-window-br, .x-window-bl').css('background-color', 'white');
+                    }, 20);
                 }, 10);
             } else {
                 if (!wasClickedTrigger) {
@@ -446,12 +468,14 @@ Ext.application({
                                     case 'World League': dt[i+1]['icon'] = 'world';  dt[i+1]['iconurl'] = '../images_rur/Konf/worldw.png'; break;
                                     default: dt[i+1]['icon'] = 'world';  dt[i+1]['iconurl'] = '../images_rur/Konf/worldw.png';
                                 }
-                                
-                                dt[i+1]['info']='<div style="overflow:auto;font-family:arial;border:2px'+ dt[i+1]['O_Color1']+ 'solid;border:2px '+ dt[i+1]['O_Color1']+ ' solid;padding:10px;padding-right:32px;padding-bottom:16px"><table style="font-family:arial;width:560px;height:300px;border-collapse:collapse" class="style5" border="0"><tbody><tr>';
-                                dt[i+1]['info']+='<td style="font-family:arial;text-align:center" rowspan="10" colspan="2"><img src="'+ dt[i+1]['logo']+ '" style="vertical-align:top;width: 8em;height: 8em;" ></td><td colspan="4" style="font-family:arial;text-align:left"><span style="font-family:arial;color:'+ dt[i+1]['O_Color1']+ ';font-size:17px"><strong>'+ dt[i+1]['univ_name']+ '</strong></span></td></tr>';
+                                dt[i+1]['info'] = '';
+                                var colorLeagueJS = hexToRgb(dt[i+1]['O_Color1']);
+                                dt[i+1]['info']+= '<style type="text/css">/**' + dt[i+1]['League'] +' color*/\n :root { --card_color_' + dt[i+1]['icon'] + ': ' + dt[i+1]['O_Color1'] + '; --card_color_' + dt[i+1]['icon'] + '_rgb: ' + colorLeagueJS.r + ',' + colorLeagueJS.g + ',' + colorLeagueJS.b + '; }</style>';
+                                dt[i+1]['info']+='<div style="overflow:auto; font-family:arial; border:2px '+ dt[i+1]['O_Color1']+ ' solid; padding:10px; padding-right:32px; padding-bottom:16px"><table style="font-family:arial;width:560px;height:300px;border-collapse:collapse" class="style5" border="0"><tbody><tr>';
+                                dt[i+1]['info']+='<td style="font-family:arial;text-align:center" rowspan="10" colspan="2"><img src="'+ dt[i+1]['logo']+ '" style="vertical-align:top;width: 8em;height: 8em;" ></td><td colspan="4" style="font-family:arial;text-align:left"><span style="font-family:arial;color: '+ dt[i+1]['O_Color1']+ '; font-size:17px"><strong>'+ dt[i+1]['univ_name']+ '</strong></span></td></tr>';
                                 dt[i+1]['info']+='<tr><td style="width:110px"><span style="font-size:9pt"><b>Foundation year:</b></span></td>';
                                 dt[i+1]['info']+='<td style="width:98px"><span style="font-size:9pt">'+ dt[i+1]['found']+ '</span></td>';
-                                dt[i+1]['info']+='<td rowspan="9" colspan="2" style="font-family:arial;text-align:center"><img src="'+ dt[i+1]['flag']+ '" style="vertical-align:top" height="80"><br><span style="font-family:arial;font-size:10px"></span><span style="font-family:arial;color:'+ dt[i+1]['O_Color1']+ '"><strong></strong></span></td></tr>';
+                                dt[i+1]['info']+='<td rowspan="9" colspan="2" style="font-family:arial;text-align:center"><img src="'+ dt[i+1]['flag']+ '" style="vertical-align:top" height="80"><br><span style="font-family:arial;font-size:10px"></span><span style="font-family:arial;color: '+ dt[i+1]['O_Color1']+ '"><strong></strong></span></td></tr>';
                                 dt[i+1]['info']+='<tr><td style="width:110px"><span style="font-size:9pt"><b>Short name:</b></span></td><td style="width:98px"><span style="font-size:9pt">'+ dt[i+1]['sh_nm']+ '</span></td></tr>';
                                 dt[i+1]['info']+='<tr><td style="width:110px"><span style="font-size:9pt"><b>Type:</b></span></td><td style="width:98px"><span style="font-size:9pt">'+ dt[i+1]['type']+ '</span></td></tr>';
                                 dt[i+1]['info']+='<tr><td style="width:110px"><span style="font-size:9pt"><b>Students:</b></span></td><td style="width:98px"><span style="font-size:9pt">'+ dt[i+1]['Students']+ '</span></td></tr>';
@@ -459,16 +483,16 @@ Ext.application({
                                 dt[i+1]['info']+='<tr><td style="width:110px"><span style="font-size:9pt"><b>Web-site:<b></b></b></span></td><td style="width:98px"><span style="font-size:9pt"><a href="http://'+ dt[i+1]['website']+ '" target="_blank">'+ dt[i+1]['website']+ '</a></span></td></tr>';
                                 dt[i+1]['info']+='<tr><td style="width:110px"><span style="font-size:9pt"><b>Region:<b></b></b></span></td><td style="width:98px"><span style="font-size:9pt">'+ dt[i+1]['region']+ '</span></td></tr>';
                                 dt[i+1]['info']+='<tr><td style="width:110px"><span style="font-size:9pt"><b>Location:<b></b></b></span></td><td style="width:98px"><span style="font-size:9pt">'+ dt[i+1]['loc']+ '</span></td></tr>';
-                                dt[i+1]['info']+='<tr><td colspan="6">&nbsp;</td></tr><tr><td></td><td colspan="4" style="font-family:arial;border-top:'+ dt[i+1]['O_Color1']+ ' 2px solid"></td><td></td></tr>';
-                                dt[i+1]['info']+='<tr><td style="font-family:arial;width:114px;text-align:center" rowspan="6"><div style="font-family:arial;height:85px;width:85px"><img src="'+ dt[i+1]['O_80p']+ '" style=";width: 5em;height: 5em;" alt=""><br><div style="font-family:arial;color:#fff;font-size:14pt;font-weight:bold;padding-top:25px">'+ dt[i+1]['O_WR']+ '</div></div>';
-                                dt[i+1]['info']+='<div style="font-family:arial;width:80px"><strong><span style="color:'+ dt[i+1]['O_Color1']+ '"><span style="font-size:13pt">'+ dt[i+1]['O_WR']+ '</span></span></strong></div><div style="font-family:arial;width:80px"><strong><span style="color:'+ dt[i+1]['O_Color1']+ '"><span style="font-size:13pt">'+ dt[i+1]['League']+ '</span></span></strong></div></td>';
-                                dt[i+1]['info']+='<td style="font-family:arial;width:50px;height:7px"></td><td class="style6" style="width:110px;height:7px"><span style="font-size:9pt"><b>Dimension</b></span></td><td class="style6" style="font-family:arial;width:98px;height:7px"><span style="font-size:9pt"><b>Rank</b></span></td><td style="font-family:arial;width:63px;height:7px" class="style6"><span style="font-size:9pt"><b>Score</b></span></td><td style="font-family:arial;text-align:center" rowspan="4"><p class="style1"><span style="color:'+ dt[i+1]['O_Color1']+ '"><strong>Country rank</strong></span></p><p><span style="font-size:12pt"><span style="color:'+ dt[i+1]['O_Color1']+ '"><strong>'+ dt[i+1]['O_CR']+ '</strong></span></span></p></td></tr>';
-                                dt[i+1]['info']+='<tr style="font-family:arial;height:0px"><td colspan="4" style="font-family:arial;border-top:'+ dt[i+1]['O_Color1']+ ' 2px solid"></td><td></td></tr>';
-                                dt[i+1]['info']+='<tr style="font-family:arial;background:'+ dt[i+1]['O_Color4']+ ';height:35px"><td style="font-family:arial;width:50px" class="style1"><img alt="" src="'+ dt[i+1]['O_O_s']+ '" style="font-family:arial;float:right"></td><td class="style6" style="width:110px"><span style="font-size:9pt">Overall</span></td><td class="style6" style="width:98px;height:9px"><span style="font-size:9pt">'+ dt[i+1]['O_WR']+ '</span></td><td class="style6" style="width:98px;height:9px"><span style="font-size:9pt">'+ dt[i+1]['O_WS']+ '</span></td></tr>';
-                                dt[i+1]['info']+='<tr style="font-family:arial;height:20px;background:'+ dt[i+1]['T_Color4']+ '"><td style="font-family:arial;width:50px"><img alt="" src="'+ dt[i+1]['T_Os']+ '" style="font-family:arial;float:right"></td><td style="width:110px"><span style="font-size:9pt">Teaching</span></td><td class="style6" style="width:98px"><span style="font-size:9pt">'+ dt[i+1]['O_TR']+ '</td><td class="style6" style="width:98px"><span style="font-size:9pt">'+ dt[i+1]['O_TS']+ '</span></td></tr>';
-                                dt[i+1]['info']+='<tr style="font-family:arial;background:'+ dt[i+1]['R_Color4']+ '"><td style="font-family:arial;width:50px;height:22px"><img alt="" src="'+ dt[i+1]['R_Os']+ '" style="font-family:arial;float:right"></td><td style="width:110px;height:30px"><span style="font-size:9pt">Research</span></td><td class="style6" style="width:98px;height:9px"><span style="font-size:9pt">'+ dt[i+1]['O_RR']+ '</td><td class="style6" style="width:98px;height:9px"><span style="font-size:9pt">'+ dt[i+1]['O_RS']+ '</span></td><td style="font-family:arial;text-align:center;background:#ffffff" rowspan="3"><span style="font-family:arial;font-size:10px"><span style="font-family:arial;color:#999999"><a href="'+ leftur + dt[i+1]['nm_page']+ '.html?sort=O&year='+ (Number(yr)+2009)+ '&subject='+sv+hs+'" target="_blank">View full university profile</a></span></span></td></tr>';
-                                dt[i+1]['info']+='<tr style="font-family:arial;height:26px;background:'+ dt[i+1]['I_Color4']+ '"><td style="font-family:arial;width:50px;height:21px"><img alt="" src="'+ dt[i+1]['I_Os']+ '" style="font-family:arial;float:right"></td><td class="style6" style="width:110px;height:30px"><span style="font-size:9pt">Internationalization</span></td><td class="style6" style="width:98px;height:9px"><span style="font-size:9pt">'+ dt[i+1]['O_IR']+ '</span></td><td class="style6" style="width:98px;height:9px"><span style="font-size:9pt">'+ dt[i+1]['O_IS']+ '</span></td></tr>';
-                                dt[i+1]['info']+='<tr style="font-family:arial;background:'+ dt[i+1]['F_Color4']+ ';height:26px"><td style="font-family:arial;background:#ffffff"></td><td style="font-family:arial;width:50px;height:9px"><img alt="" src="'+ dt[i+1]['F_Os']+ '" style="font-family:arial;float:right"></td><td class="style6" style="width:110px;height:30px"><span style="font-size:9pt">Finances</span></td><td class="style6" style="width:98px;height:9px"><span style="font-size:9pt">'+ dt[i+1]['O_FR']+ '</span></td><td class="style6" style="width:98px;height:9px"><span style="font-size:9pt">'+ dt[i+1]['O_FS']+ '</span></td></tr></tbody></table></div>';
+                                dt[i+1]['info']+='<tr><td colspan="6">&nbsp;</td></tr><tr><td></td><td colspan="4" style="font-family:arial;border-top: '+ dt[i+1]['O_Color1']+ ' 0 solid"></td><td></td></tr>';
+                                dt[i+1]['info']+='<tr style="background-color: rgb(var(--card_color_' + dt[i+1]['icon'] + '_rgb), 0.2)"><td style="background-color: white; font-family:arial;width:114px;text-align:center;" rowspan="6"><div style="font-family:arial;height:85px;width:85px"><img src="'+ dt[i+1]['O_80p']+ '" style=";width: 5em;height: 5em;" alt=""><br><div style="font-family:arial;color: #fff; font-size:14pt;font-weight:bold;padding-top:25px">'+ dt[i+1]['O_WR']+ '</div></div>';
+                                dt[i+1]['info']+='<div style="font-family:arial;width:80px"><strong><span style="color: '+ dt[i+1]['O_Color1']+ '"><span style="font-size:13pt">'+ dt[i+1]['O_WR']+ '</span></span></strong></div><div style="font-family:arial;width:80px"><strong><span style="color: '+ dt[i+1]['O_Color1']+ '"><span style="font-size:13pt">'+ dt[i+1]['League']+ '</span></span></strong></div></td>';
+                                dt[i+1]['info']+='<td style="font-family:arial;width:50px;height:7px"></td><td class="style6" style="width:110px;height:7px"><span style="font-size:9pt"><b>Dimension</b></span></td><td class="style6" style="font-family:arial;width:98px;height:7px"><span style="font-size:9pt"><b>Rank</b></span></td><td style="font-family:arial;width:63px;height:7px" class="style6"><span style="font-size:9pt"><b>Score</b></span></td><td style="background-color: white; font-family:arial;text-align:center" rowspan="4"><p class="style1"><span style="color: '+ dt[i+1]['O_Color1']+ '"><strong>Country rank</strong></span></p><p><span style="font-size:12pt"><span style="color: '+ dt[i+1]['O_Color1']+ '"><strong>'+ dt[i+1]['O_CR']+ '</strong></span></span></p></td></tr>';
+                                dt[i+1]['info']+='<tr style="font-family:arial;height:0px"><td colspan="4" style="font-family:arial;border-top: '+ dt[i+1]['O_Color1']+ ' 2px solid"></td><td></td></tr>';
+                                dt[i+1]['info']+='<tr style="font-family:arial;background-color: '+ dt[i+1]['O_Color4']+ ';height:35px"><td style="font-family:arial;width:50px" class="style1"><img alt="" src="'+ dt[i+1]['O_O_s']+ '" style="font-family:arial;float:right"></td><td class="style6" style="width:110px"><span style="font-size:9pt">Overall</span></td><td class="style6" style="width:98px;height:9px"><span style="font-size:9pt">'+ dt[i+1]['O_WR']+ '</span></td><td class="style6" style="width:98px;height:9px"><span style="font-size:9pt">'+ dt[i+1]['O_WS']+ '</span></td></tr>';
+                                dt[i+1]['info']+='<tr style="font-family:arial;height:20px;background-color: '+ dt[i+1]['T_Color4']+ '"><td style="font-family:arial;width:50px"><img alt="" src="'+ dt[i+1]['T_Os']+ '" style="font-family:arial;float:right"></td><td style="width:110px"><span style="font-size:9pt">Teaching</span></td><td class="style6" style="width:98px"><span style="font-size:9pt">'+ dt[i+1]['O_TR']+ '</td><td class="style6" style="width:98px"><span style="font-size:9pt">'+ dt[i+1]['O_TS']+ '</span></td></tr>';
+                                dt[i+1]['info']+='<tr style="font-family:arial;background-color: '+ dt[i+1]['R_Color4']+ '"><td style="font-family:arial;width:50px;height:22px"><img alt="" src="'+ dt[i+1]['R_Os']+ '" style="font-family:arial;float:right"></td><td style="width:110px;height:30px"><span style="font-size:9pt">Research</span></td><td class="style6" style="width:98px;height:9px"><span style="font-size:9pt">'+ dt[i+1]['O_RR']+ '</td><td class="style6" style="width:98px;height:9px"><span style="font-size:9pt">'+ dt[i+1]['O_RS']+ '</span></td><td style="font-family:arial;text-align:center;background:#ffffff" rowspan="3"><span style="font-family:arial;font-size:10px"><span style="font-family:arial;color: #999999;"><a href="'+ leftur + dt[i+1]['nm_page']+ '.html?sort=O&year='+ (Number(yr)+2009)+ '&subject='+sv+hs+'" target="_blank">View full university profile</a></span></span></td></tr>';
+                                dt[i+1]['info']+='<tr style="font-family:arial;height:26px;background-color: '+ dt[i+1]['I_Color4']+ '"><td style="font-family:arial;width:50px;height:21px"><img alt="" src="'+ dt[i+1]['I_Os']+ '" style="font-family:arial;float:right"></td><td class="style6" style="width:110px;height:30px"><span style="font-size:9pt">Internationalization</span></td><td class="style6" style="width:98px;height:9px"><span style="font-size:9pt">'+ dt[i+1]['O_IR']+ '</span></td><td class="style6" style="width:98px;height:9px"><span style="font-size:9pt">'+ dt[i+1]['O_IS']+ '</span></td></tr>';
+                                dt[i+1]['info']+='<tr style="font-family:arial;background-color: '+ dt[i+1]['F_Color4']+ ';height:26px"><td style="font-family:arial;background:#ffffff"></td><td style="font-family:arial;width:50px;height:9px"><img alt="" src="'+ dt[i+1]['F_Os']+ '" style="font-family:arial;float:right"></td><td class="style6" style="width:110px;height:30px"><span style="font-size:9pt">Finances</span></td><td class="style6" style="width:98px;height:9px"><span style="font-size:9pt">'+ dt[i+1]['O_FR']+ '</span></td><td class="style6" style="width:98px;height:9px"><span style="font-size:9pt">'+ dt[i+1]['O_FS']+ '</span></td></tr></tbody></table></div>';
                                 
                                 if (i == 0) {
                                     console.log('i0: ', dt[i+1]);
