@@ -381,6 +381,7 @@ $(document).ready(function ()
                         listeners: {
                             afterrender: closeTooltip
                         },
+                        style: 'background-color: white;', // $('.x-window').css('background-color', 'white')
                         buttons: [],
                         tools: [{
                             type:'refresh',
@@ -391,7 +392,11 @@ $(document).ready(function ()
                         ]
                     }).show();
                     popup.setPosition(undefined);
+                    setTimeout(function () {
+                        $('.x-window-header, .x-window-tc, .x-window-tr, .x-window-tl, .x-window-ml, .x-window-mr, .x-window-bc, .x-window-br, .x-window-bl').css('background-color', 'white');
+                    }, 20);
                 }, 10);
+                
 
                 let city;
                 var lt;
