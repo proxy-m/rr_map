@@ -292,7 +292,7 @@ Ext.application({
             autoLoad: true,
             proxy: {
                 type: 'ajax',
-                url: '/all/pro/roundranking/data-router.php?key=tk34hdrfv&format=json&encoding=UTF-8&topic=country&limit=200',
+                url: '/all/pro/roundranking/data-router.php?key=tk34hdrfv&format=json&encoding=UTF-8&topic=country', //+'&limit=200',
                 //url: 'https://roundranking.com/final/getcntrdata_gmap22.php?year=13&justmap=1&subj=1&reg=0&cntr=0&_dc=1679328036903',
                 actionMethods: {
                     read: 'POST',
@@ -386,7 +386,7 @@ Ext.application({
                         $.ajax({
                             type: 'POST',
                             url: 'https://theylied.info/all/pro/roundranking/data-router.php?key=tk34hdrfv&format=json&encoding=UTF-8',
-                            data: 'topic=univ&where=year=' + yr + '&limit=300',
+                            data: 'topic=univ&where=year=' + yr, //+ '&limit=300',
                         }).done(function (data) {
                             console.log(data);
                             

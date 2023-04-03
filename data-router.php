@@ -480,8 +480,12 @@ function main () {
     }
 
     $sql1 .= (!empty($argv['where']) ? (' WHERE ' . $argv['where']) : ('') );
-    $sql_order = ' ORDER BY O_WR DESC'; // last is smaller and better
-    $sql .= $sql_order;
+    if ($argv['topic'] == 'univ') {
+        $sql_order = ' ORDER BY O_WR DESC'; // last is smaller and better
+    } else {
+        $sql_order = '';
+    }
+    $sql1 .= $sql_order;
     $sql1 .= (!empty($argv['limit']) ? (' LIMIT ' . $argv['limit']) : (' LIMIT -1') );
 	$STH1 = PreExecSQL_all($sql1, $arr1, $first);
 	if ($first) {
