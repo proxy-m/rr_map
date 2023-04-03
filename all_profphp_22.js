@@ -522,7 +522,8 @@ else
 
 /*********block 1*/				
 			$('.page-header').css('border-bottom','4px solid '+data['O_Color1']);
-			$('.page-header:lt(1)').css('border-bottom','none');
+			$('.page-header:eq(2)').css('border-bottom','none');
+			$('.page-header:eq(1)').css('border-bottom','none');
 			var cdttoexp='<div class="cdttexp" style="display:none;color:'+data['O_Color1']+'"><input type="hidden" id="texp_wr" value="'+undt['O_WR']+'"/><input type="hidden" id="texp_wclr" value="'+data['O_Color1']+'"/><input type="hidden" id="texp_cr" value="'+data['O_CR']+'"/></div>';
 			//alert(cdttoexp);
 			//htkd=htkd+'<div class="univercity az-uni-profile color2" id="uncont" data-border-color="[sort]_Color1"><div class="uni-top"><div class="uni-top-osn"><div class="uni-logo"><img src=".'+data['logo']+'" alt="" data-src="Logo" /></div><div class="uni-league"><div class="uni-score"><img src=".'+data['O_80p']+'" alt="" style="width: 40px; height: 40px;"/></div><div class="uni-name"  style="color:'+data['O_Color1']+'">'+data['O_OL']+'</div></div><div class="uni-info"><div class="uni-info-title">';
@@ -1006,7 +1007,9 @@ else
                         target: 'map', // div#map
                         renderer: 'canvas',
                         layers: [new ol.layer.Tile({
-                          source: new ol.source.OSM()
+                          source: new ol.source.OSM({
+                            url: 'https://{a-c}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=1d9dac89153143559cbd69253649c9d7', ///url: 'https://osmap.{s}.tile.mapcdn.net/en/map/v1/{z}/{x}/{y}.png', ///url: 'https://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                          }),
                         })],
                         controls: ol.control.defaults().extend([
                             new ol.control.FullScreen({
