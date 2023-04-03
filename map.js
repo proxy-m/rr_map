@@ -215,6 +215,7 @@ Ext.onReady(() => {
                             afterrender: closeTooltip
                         },
                         style: 'background-color: white;', // $('.x-window').css('background-color', 'white')
+                        resizable: false, //resizeHandles: 'w e',
                         buttons: [],
                         tools: [{
                             type:'refresh',
