@@ -175,6 +175,61 @@ ul.typeahead.dropdown-menu > * {
 	<script src="./templates/rur/js/loader.js?v=2019101808" type="text/javascript"></script>
 	<!--<script src="./templates/rur/js/map_js_ggl23.js?v=2019101808" type="text/javascript"></script>-->
 	<script type="text/javascript">
+        /**
+         * theScript - the js url or js function, which you want to require in head.
+         * (js url will be included; js function will be called in special way.)
+         * async - usually you want sync require, default false (preserving order)
+         */
+        window.requireJS2H = function requireJS2H (theScript, async) {
+            const isFunction = function (value) {return !!value && !/^\s*class/.test(value.toString()) && (Object.prototype.toString.call(value) === "[object Function]" || "function" === typeof value || value instanceof Function) };
+            if (!theScript || '' == theScript) {
+                throw new Error('theScript required');
+            } else {
+                if (isFunction(theScript)) {
+                    theScript = theScript.toString();
+                    if (theScript.indexOf('//') >= 0 || theScript.indexOf('/*') >= 0 || theScript.indexOf('*/') >= 0 || theScript.indexOf('[native code]') >= 0 || theScript.indexOf('eval') >= 0 || theScript.indexOf('Function') >= 0) {
+                        throw new Error('Sorry, for security reasons your func must not have inner comments nor native code nor eval. If it is wrong, just split string by parts.');
+                    }
+                    theScript = ';((' + theScript + ').bind(this))' + '();'; // you can probe without bind too
+                    console.log('[WARN] Require js by code: \n ', theScript); //
+                    theScript = 'data:text/javascript,' + encodeURIComponent(theScript);
+                } else if (!Array.isArray(theScript) && !!theScript.length && !!isFunction(theScript.toUpperCase)) {
+                    if (theScript.indexOf('{') >= 0 || theScript.indexOf('}') >= 0 || theScript.indexOf('(') >= 0 || theScript.indexOf(')') >= 0) {
+                        throw new Error('Function means funciton, but not the text of function!');
+                    }
+                } else {
+                    throw new Error('theScript can be only js function or js url');
+                }
+                var script = document.createElement('script');
+                script.type = "text/javascript";
+                script.async = !!async; // TODO promise chain when async
+                script.src = '' + theScript;
+                document.getElementsByTagName('head')[0].appendChild(script);                
+            }
+        }
+        
+        window.requireCSS2H = function requireCSS2H (theStyle, styleType) {
+            if (!theStyle || '' == theStyle) {
+                throw new Error('theStyle required');
+            } else {
+                if (!Array.isArray(theStyle) && !!theStyle.length) {
+                    if ((theStyle.indexOf('//') >= 0 && theStyle.indexOf('https://') < 0 && theStyle.indexOf('http://') < 0) || theStyle.indexOf('/*') >= 0 || theStyle.indexOf('*/') >= 0 || theStyle.indexOf('[native code]') >= 0 || theStyle.indexOf('eval') >= 0 || theStyle.indexOf('Function') >= 0) {
+                        throw new Error('Sorry, for security reasons your style must not have inner comments nor native code nor eval. If it is wrong, just split string by parts.');
+                    }
+                    if (theStyle.indexOf('{') >= 0 || theStyle.indexOf('}') >= 0 || theStyle.indexOf('(') >= 0 || theStyle.indexOf(')') >= 0) {
+                        theStyle = 'data:text/css,' + encodeURIComponent(theStyle);
+                    }
+                } else {
+                    throw new Error('theStyle can be only css text or css url');
+                }
+                var script = document.createElement('link');
+                script.type = "text/css";
+                script.rel = !!styleType ? styleType : "stylesheet";
+                script.href = '' + theStyle;
+                document.getElementsByTagName('head')[0].appendChild(script);                
+            }
+        }
+        
         setTimeout(function () {
             function initZero () { return $(document).ready(function () { window.initMap(); }); };
             window.initZero = initZero; // please, use such way
@@ -196,30 +251,20 @@ ul.typeahead.dropdown-menu > * {
             var script = null;
             
             
-            script = document.createElement('script');
-            script.type = "text/javascript";
-            script.async = false;
-            script.src = "./templates/rur/js/map_js_ggl23.js?v=2019101808";
-            document.getElementsByTagName('head')[0].appendChild(script);
-
+            requireJS2H("./templates/rur/js/map_js_ggl23.js?v=2019101808");
             
-            //script = document.createElement('script');
-            //script.type = "text/javascript";
-            //script.async = false;
-            //script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyBzEr0UCQ2hxfjk_GcaCXS-9TkyGaoD7-o&callback=window.initZero&region=USA&language=en";
-            //document.getElementsByTagName('head')[0].appendChild(script);
+            //requireJS2H("https://maps.googleapis.com/maps/api/js?key=AIzaSyBzEr0UCQ2hxfjk_GcaCXS-9TkyGaoD7-o&callback=window.initZero&region=USA&language=en");
                         
-            script = document.createElement('script');
-            script.type = "text/javascript";
-            script.async = false;
-            script.src = "data:text/javascript,window.initZero()";
-            document.getElementsByTagName('head')[0].appendChild(script);
+            requireJS2H(window.initZero);
             
-            script = document.createElement('script');
-            script.type = "text/javascript";
-            script.async = false;
-            script.src = "data:text/javascript,jQuery(document).ready(function%20()%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20let%20iv%20%3D%20setTimeout(function%20()%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20jQuery('select').bind('change'%2C%20function%20(t)%20%7B%20window.initZero()%3B%20%7D)%3B%20%2F%2F%20TODO%3A%20recheck%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20jQuery('select').on('change'%2C%20function%20(t)%20%7B%20window.initZero()%3B%20%7D)%3B%20%2F%2F%20TODO%3A%20recheck%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%2C%20200)%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%2F%2Fnew%20JCaption('img.caption')%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D)";
-            document.getElementsByTagName('head')[0].appendChild(script);
+            requireJS2H(function () {
+                jQuery(document).ready(function () {
+                    let iv = setTimeout(function () {
+                        jQuery('select').bind('change', function (t) { window.initZero(); }); 
+                        jQuery('select').on('change', function (t) { window.initZero(); }); 
+                    }, 200);
+                })
+            });
             
         }, 2000);
 	</script>
