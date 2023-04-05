@@ -72,6 +72,59 @@ class DockInfoWindow {
         }
     }
     
+    refresh (allInfoWindows = false, focusedWindow = null) {
+        if (allInfoWindows) {
+            this.windows = this.windows.concat(this.windowsOut);
+            this.windowsOut = [];
+        }
+        
+        var focusedIndex = (!focusedWindow) ? -1 : this.windows.indexOf(focusedWindow);
+        focusedWindow = (focusedIndex >= 0) ? this.windows[focusedIndex] : null;
+        if (!!focusedWindow) {
+            this.windows.splice(focusedIndex, 1);
+            this.windows.unshift(focusedWindow);
+        }
+        
+        for (var i=0; i<this.windows.length; ++i) {
+            var w = this.windows[i];
+            this.refreshWindowPosition(w);
+        }
+        
+        
+    }
+    
+    refreshWindowPosition (w) {
+        /////
+        let n = this.getInfoWindowNumber(w);
+        w = this.getInfoWindow(w);
+        w.show();
+        if (n < 0) {
+            return;
+        }
+        
+        let p;
+        if ('absolute' == $(document.getElementById(w.id)).css('position')) {
+            p = this.getAbsoluteClientRect();
+        } else {
+            p = this.getBoundingClientRect();
+        }
+        let h = this.getInfoWindowSizes()[1];
+        
+        let posBegin = w.getPosition() || [0, 0];
+        animateByJS (document.getElementById(w.id), function (e, k, rest) {
+            var w = this.getInfoWindow(e);
+            var processMovementOld = w.processMovement;
+            if (w.processMovement) {
+                w.processMovement = false;
+            }
+            w.setPosition(posBegin[0] + (p.left - posBegin[0]) * k, posBegin[1] + (p.top + h * (n) - posBegin[1]) * k); // TODO: incremented
+            if (0 === rest || processMovementOld) {
+                w.processMovement = true;
+            }
+        }.bind(this));
+        /////
+    }
+    
     getInfoWindowNumber (idOrElOrW) {
         if (Array.isArray(idOrElOrW) || idOrElOrW == '') {
             throw new Error('Must not be empty or array');
@@ -99,7 +152,7 @@ class DockInfoWindow {
     }
     
     getInfoWindow (idOrElOrW) {
-        var n = this.getInfoWindowNumber(idOrElOrW);
+        var n = (idOrElOrW === parseInt(+idOrElOrW)) ? idOrElOrW : this.getInfoWindowNumber(idOrElOrW);
         if (n >= 0) {
             return this.windows[n];
         } else if (n < 0) {
@@ -115,7 +168,7 @@ class DockInfoWindow {
     add (params) {
         let w = null;
         try {
-            this.windows.push(w = new this.Window(
+            this.windows.unshift(w = new this.Window(
                 $.extend(true, {
                     processMovement: false,
                     listeners: {
@@ -132,6 +185,7 @@ class DockInfoWindow {
                                     return;
                                 }
                                 this.windowsOut.push(theWin);
+                                this.refresh(false);
                                 console.log('' + theWin.id + 'moved: ', x, y);
                             } else if (j >= 0) {
                                 console.debug('Window is out and moved. Good.');
@@ -139,9 +193,34 @@ class DockInfoWindow {
                                 console.error('Unknown window:' + theWin.id);
                             }
                         }.bind(this),
+                        beforeclose: function (theWin, op) {
+                            var n = this.getInfoWindowNumber(theWin);
+                            if (n >= 0) {
+                                this.windows.splice(n, 1);
+                            } else if (n < 0) {
+                                this.windowsOut.splice(-1-n, 1);
+                            }
+                            this.refresh(false);
+                        }.bind(this),
                     },
                 },
-                params))); // TODO identifying to disable duplicates
+                params, {
+                    tools: [{
+                        type: 'refresh',
+                        tooltip: null,
+                        handler: function (event, toolEl, panel) {
+                            console.log('!!!resresh 7');
+                            if (panel.id.endsWith('_header')) {
+                                var idTmp = panel.id.split('_header')[0];
+                                var n = this.getInfoWindowNumber(idTmp);
+                                var w = this.getInfoWindow(n);
+                                this.refresh(n < 0, w);
+                            } else {
+                                throw new Error('Unknown refresh click: ' + panel.id);
+                            }
+                        }.bind(this),
+                    }]    
+                }))); // TODO identifying to disable duplicates
         } catch (e) {
             console.debug('wrong params: ', params);
             params = null;
@@ -150,34 +229,10 @@ class DockInfoWindow {
             throw new Error('InfoWindow must have correct params');
         }
         if (!!w) {
-            let n = this.getInfoWindowNumber(w);
-            w.show();
-            
-            let p;
-            if ('absolute' == $(document.getElementById(w.id)).css('position')) {
-                p = this.getAbsoluteClientRect();
-            } else {
-                p = this.getBoundingClientRect();
-            }
-            let h = this.getInfoWindowSizes()[1];
-            
-            let posBegin = w.getPosition() || [0, 0];
-            animateByJS (document.getElementById(w.id), function (e, k, rest) {
-                var w = this.getInfoWindow(e);
-                if (w.processMovement) {
-                    console.warn('[WARN] Why processMovement?');
-                    return;
-                }
-                w.setPosition(posBegin[0] + (p.left - posBegin[0]) * k, posBegin[1] + (p.top + h * (n) - posBegin[1]) * k); // TODO: incremented
-                if (0 === rest) {
-                    w.processMovement = true;
-                }
-            }.bind(this));
+            this.refreshWindowPosition(w); // one new
+            this.refresh(); // all
         }
         
-        
-        
-        // TODO: animation of positon move to dock
         return w;
     }
     
