@@ -374,7 +374,9 @@ $(document).ready(function ()
                 lastMissed = wasClickedTrigger;
                 
                 setTimeout(function () {
-                    Ext.create('Ext.window.Window', {
+                    // Info: new Ext.window.Window({}) is actually same as Ext.create('Ext.window.Window', {});
+                    window.windowDock = window.windowDock || new DockInfoWindow('info_windows', Ext.window.Window); ///
+                    window.windowDock.add({
                         layout: 'fit',
                         html: $('#popup').html(),
                         renderTo: 'perfectmap_div', ///'wrapper-parent',

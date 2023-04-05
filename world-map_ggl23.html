@@ -247,9 +247,12 @@ ul.typeahead.dropdown-menu > * {
             });
             jQuery(function($){ initTooltips(); $("body").on("subform-row-add", initTooltips); function initTooltips (event, container) { container = container || document;$(container).find(".hasTooltip").tooltip({"html": true,"container": "body"});} });
             jQuery(function($){ initPopovers(); $("body").on("subform-row-add", initPopovers); function initPopovers (event, container) { $(container || document).find(".hasPopover").popover({"html": true,"trigger": "hover focus","container": "body"});} });
-            
-            var script = null;
-            
+
+            try {
+                requireJS2H("./deps/dockinfowindow.js");
+            } catch (e567345334) {
+                console.log('failed: ', 'dockinfowindow.js');
+            }
             
             requireJS2H("./templates/rur/js/map_js_ggl23.js?v=2019101808");
             
