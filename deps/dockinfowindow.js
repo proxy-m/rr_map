@@ -10,15 +10,48 @@ class DockInfoWindow {
     constructor (dockDivId, InfoWindow) {
         this.divId = dockDivId;
         this.Window = InfoWindow;
-        this.windows = [];
-        
-        this.tmpCounter = 1000;
-        
         if (!this.divId || !this.Window) {
             throw new Error('Wrong input for DockInfoWindow');
         }
         
+        this.divId = this.divId.trim();
+        if (0 === this.divId.indexOf('#')) {
+            this.divId = this.divId.substring(1);
+            if (this.divId.trim() !== this.divId) {
+                throw new Error('Spaces here is error');
+            }
+        }
+        if (0 === this.divId.indexOf('.')) {
+            throw new Error('You need id selector instead of class selector');
+        }
         
+        this.div = document.getElementById(this.divId);
+        if (!this.div) {
+            throw new Error('Target DockInfoWindow div not found: #' + this.divId);
+        }
+        
+        this.windows = [];
+        
+        this.tmpCounter = 1000;
+        
+        
+        
+        
+    }
+    
+    getBoundingClientRect () {
+        this.div = document.getElementById(this.divId);
+        return this.div.getBoundingClientRect();
+    }
+    
+    getInfoWindowSizes () {
+        var w = this.windows[this.windows.length - 1];
+        var e = document.getElementById(w.id);
+        if (!w || !e) {
+            return [0, 0];
+        } else {
+            return [e.clientWidth, e.clientHeight];
+        }
     }
 
     /**
@@ -49,7 +82,11 @@ class DockInfoWindow {
         if (!!w) {
             w.show();
             
-            w.setPosition(0, 0);
+            var p = this.getBoundingClientRect();
+            var h = this.getInfoWindowSizes()[1];
+            console.log([p.left, p.top + h * (this.windows.length - 1)]);
+            
+            w.setPosition(p.left, p.top + h * (this.windows.length - 1)); // TODO: incremented
         }
         
         
