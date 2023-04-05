@@ -71,12 +71,49 @@ class DockInfoWindow {
             return [e.clientWidth, e.clientHeight];
         }
     }
+    
+    getInfoWindowNumber (idOrElOrW) {
+        if (Array.isArray(idOrElOrW) || idOrElOrW == '') {
+            throw new Error('Must not be empty or array');
+        }
+        if (!idOrElOrW.length && !!idOrElOrW.id) {
+            idOrElOrW = idOrElOrW.id;
+        }
+        if (idOrElOrW.length > 0) {
+            idOrElOrW = document.getElementById(idOrElOrW);
+        }
+        if (!idOrElOrW.id) {
+            return NaN;
+        }
+        for (var i=0; i<this.windows.length; ++i) {
+            if (this.windows[i].id == idOrElOrW.id) {
+                return i;
+            }
+        }
+        for (var i=0; i<this.windowsOut.length; ++i) {
+            if (this.windowsOut[i].id == idOrElOrW.id) {
+                return -i-1;
+            }
+        }
+        return NaN;
+    }
+    
+    getInfoWindow (idOrElOrW) {
+        var n = this.getInfoWindowNumber(idOrElOrW);
+        if (n >= 0) {
+            return this.windows[n];
+        } else if (n < 0) {
+            return this.windowsOut[-1-n];
+        } else {
+            return null;
+        }
+    }
 
     /**
       * Add/create InfoWindow
       */
     add (params) {
-        var w = null;
+        let w = null;
         try {
             this.windows.push(w = new this.Window(
                 $.extend(true, {
@@ -113,20 +150,29 @@ class DockInfoWindow {
             throw new Error('InfoWindow must have correct params');
         }
         if (!!w) {
+            let n = this.getInfoWindowNumber(w);
             w.show();
             
-            var p;
+            let p;
             if ('absolute' == $(document.getElementById(w.id)).css('position')) {
                 p = this.getAbsoluteClientRect();
             } else {
                 p = this.getBoundingClientRect();
             }
-            var h = this.getInfoWindowSizes()[1];
-            console.log([p.left, p.top + h * (this.windows.length - 1)]);
+            let h = this.getInfoWindowSizes()[1];
             
-            w.setPosition(p.left, p.top + h * (this.windows.length - 1)); // TODO: incremented
-            
-            w.processMovement = true;
+            let posBegin = w.getPosition() || [0, 0];
+            animateByJS (document.getElementById(w.id), function (e, k, rest) {
+                var w = this.getInfoWindow(e);
+                if (w.processMovement) {
+                    console.warn('[WARN] Why processMovement?');
+                    return;
+                }
+                w.setPosition(posBegin[0] + (p.left - posBegin[0]) * k, posBegin[1] + (p.top + h * (n) - posBegin[1]) * k); // TODO: incremented
+                if (0 === rest) {
+                    w.processMovement = true;
+                }
+            }.bind(this));
         }
         
         
@@ -153,3 +199,56 @@ function cumulativeOffset (element) {
         top: top,
     };
 };
+
+function sleep (ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function animateByJS (element, funcOrStyle, timeout=500, ticks=50) {
+    const isFunction = function (value) {return !!value && !/^\s*class/.test(value.toString()) && (Object.prototype.toString.call(value) === "[object Function]" || "function" === typeof value || value instanceof Function) };
+    if (!element || !funcOrStyle) {
+        throw new Error('element and funcOrStyle are required to animate');
+    }
+    timeout = parseInt(+timeout);
+    ticks = parseInt(+ticks);
+    if (isNaN(timeout) || isNaN(ticks) || timeout <= 9 || ticks <= 9 || timeout <= ticks) {
+        throw new Error('If you want custom timeout or ticks they must be positive integer numbers (timeout more ticks and both more 9)');
+    }
+    if (ticks > 500) {
+        ticks = 500;
+    }
+    if (timeout <= ticks) {
+        timeout = ticks * 10;
+        console.log('[WARN] Greate timeout, because of wrong input. Ticks must not be more 500 (usually 50).');
+    }
+    
+    var delta = parseInt(timeout/ticks);
+    var r = timeout%ticks;
+    if (r > 0) {
+        ticks += 1;
+    }
+    if (ticks * delta == timeout) {
+        r = 0;
+    }
+    
+    if (isFunction(funcOrStyle)) {
+        var restTime = timeout;
+        var k = 0;
+        for (k=0; k<ticks-1; ++k) {
+            restTime -= delta;
+            funcOrStyle(element, (timeout-restTime)/timeout, restTime);
+            await sleep(delta);
+        }
+        restTime -= delta;
+        if (restTime <= 0) {
+            restTime = 0;
+        }
+        if (restTime !== 0) {
+            console.error('Wrong rest time: ', restTime);
+        }
+        restTime = 0; //
+        funcOrStyle(element, (timeout-restTime)/timeout, restTime);
+    } else { // TODO
+        $(element).animate(funcOrStyle, timeout, function () { /* complete */ }); // TODO
+    }
+}
