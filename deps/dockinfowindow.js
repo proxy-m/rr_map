@@ -31,12 +31,30 @@ class DockInfoWindow {
         }
         
         this.windows = [];
+        this.windowsOut = [];
         
         this.tmpCounter = 1000;
         
         
         
         
+    }
+    
+    getAbsoluteClientRect () {
+        this.div = document.getElementById(this.divId);
+        var o = cumulativeOffset(this.div);
+        if (!o || !o.left || !o.top) {
+            return undefined;
+        }
+        var p = this.getBoundingClientRect();
+        return {
+            left: o.left,
+            top: o.top,
+            right: p.right + (o.left - p.left),
+            bottom: p.bottom + (o.top - p.top),
+            width: p.right - p.left,
+            height: p.bottom - p.top,
+        };
     }
     
     getBoundingClientRect () {
@@ -61,15 +79,30 @@ class DockInfoWindow {
         var w = null;
         try {
             this.windows.push(w = new this.Window(
-                $.extend({
-                    /*move: function (theWin, x, y, op) {
-                        if (this.tmpCounter > 0) {
-                            if (x != 0 || y != 0) {
-                                theWin.setPosition(0, 0);
+                $.extend(true, {
+                    processMovement: false,
+                    listeners: {
+                        move: function (theWin, x, y, op) {
+                            if (!theWin.processMovement) {
+                                return;
                             }
-                            --this.tmpCounter;
-                        }
-                    },*/
+                            var i = this.windows.indexOf(theWin);
+                            var j = this.windowsOut.indexOf(theWin);
+                            if (i >= 0) {
+                                this.windows.splice(i, 1);
+                                if (j >= 0) {
+                                    console.error('Window is not out yet! We will ignore broken window.');
+                                    return;
+                                }
+                                this.windowsOut.push(theWin);
+                                console.log('' + theWin.id + 'moved: ', x, y);
+                            } else if (j >= 0) {
+                                console.debug('Window is out and moved. Good.');
+                            } else {
+                                console.error('Unknown window:' + theWin.id);
+                            }
+                        }.bind(this),
+                    },
                 },
                 params))); // TODO identifying to disable duplicates
         } catch (e) {
@@ -82,11 +115,18 @@ class DockInfoWindow {
         if (!!w) {
             w.show();
             
-            var p = this.getBoundingClientRect();
+            var p;
+            if ('absolute' == $(document.getElementById(w.id)).css('position')) {
+                p = this.getAbsoluteClientRect();
+            } else {
+                p = this.getBoundingClientRect();
+            }
             var h = this.getInfoWindowSizes()[1];
             console.log([p.left, p.top + h * (this.windows.length - 1)]);
             
             w.setPosition(p.left, p.top + h * (this.windows.length - 1)); // TODO: incremented
+            
+            w.processMovement = true;
         }
         
         
@@ -98,3 +138,18 @@ class DockInfoWindow {
     // TODO
 };
 
+
+
+function cumulativeOffset (element) {
+    var top = 0, left = 0;
+    do {
+        top += element.offsetTop  || 0;
+        left += element.offsetLeft || 0;
+        element = element.offsetParent;
+    } while(element);
+
+    return {
+        left: left,
+        top: top,
+    };
+};
