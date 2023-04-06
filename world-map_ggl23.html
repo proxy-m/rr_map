@@ -269,10 +269,16 @@ ul.typeahead.dropdown-menu > * {
                         jQuery('select').bind('change', function (t) { window.initZero(); }); 
                         jQuery('select').on('change', function (t) { window.initZero(); }); 
                     }, 200);
+                    
+                    try {
+                        requireCSS2H('button.mfilter-select-arrow {display: inline-block }');
+                    } catch (e6y745454624743) {
+                        jQuery('button.mfilter-select-arrow').css({"display": 'inline-block' });
+                    }
                 })
             });
             
-        }, 2000);
+        }, 500);
 	</script>
 	<style>
 .form-search {
