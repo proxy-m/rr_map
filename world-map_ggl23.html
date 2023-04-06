@@ -23,7 +23,6 @@
 	<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>-->
 	<script src="./templates/rur/js/bootstrap.min.js?v=2019101808" type="text/javascript"></script>
 	<!--<script src="./templates/rur/js/ttlip.js?v=2019101808" type="text/javascript"></script>-->
-	<script src="./templates/rur/js/bootstrap-typeahead.js" type="text/javascript"></script>   
 	<script src="./templates/rur/sweetalert-master/dist/sweetalert.min.js?v=2019101808" type="text/javascript"></script>
 	<!--<script src="./templates/rur/js/jquery.json.js?v=2019101808" type="text/javascript"></script>-->
 
@@ -247,6 +246,10 @@ ul.typeahead.dropdown-menu > * {
             });
             jQuery(function($){ initTooltips(); $("body").on("subform-row-add", initTooltips); function initTooltips (event, container) { container = container || document;$(container).find(".hasTooltip").tooltip({"html": true,"container": "body"});} });
             jQuery(function($){ initPopovers(); $("body").on("subform-row-add", initPopovers); function initPopovers (event, container) { $(container || document).find(".hasPopover").popover({"html": true,"trigger": "hover focus","container": "body"});} });
+            
+            requireJS2H("./deps/es6-shim-polyfill.es5.js");
+            
+            requireJS2H("./templates/rur/js/bootstrap-typeahead.js");
 
             try {
                 requireJS2H("./deps/dockinfowindow.js");
