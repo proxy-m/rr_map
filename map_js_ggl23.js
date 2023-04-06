@@ -16,10 +16,32 @@ let lastMissed = 0;
 let missedCount = 0;
 window.lastWindowCoord = null;
 
+if (!window.polyfillNavigatorUserAgentData) {
+    try {
+        requireJS2H('/deps/user-agent-data.js');
+        requireJS2H(function () { return window.polyfillNavigatorUserAgentData() });
+    } catch (e6545243536) {
+        console.error('[ERR] No user-agent-data (desktop/mobile) !!!');
+    }
+}
+
 $(document).ready(function () 
 {
     let container = null;
     let content = null;
+    
+    $('#inch').remove();
+    var inch = $('<div id="inch" style="width:1in; background-color: green; position: absolute; display: block; visibility: hidden;">.</div>')[0];
+    document.body.append(inch);
+    function getInchDiag () { // formula: PIXEL = INCHES / (1 / DPI);
+        function getPxDiag () {
+           var scW = screen.width, scH = screen.height;
+           //return Math.hypot(scW, scH); // not on IE
+           return Math.sqrt( Math.pow(scW, 2) + Math.pow(scH, 2) );
+        }
+        var DPI = inch.clientWidth;
+        return getPxDiag() * (1/DPI);
+    };
     
   	$('.item-111').removeClass('active');
 	$('.item-111').removeClass('carent');
@@ -374,30 +396,28 @@ $(document).ready(function ()
                 lastMissed = wasClickedTrigger;
                 
                 setTimeout(function () {
-                    // Info: new Ext.window.Window({}) is actually same as Ext.create('Ext.window.Window', {});
-                    window.windowDock = window.windowDock || new DockInfoWindow('info_windows', Ext.window.Window); ///
-                    window.windowDock.add({
-                        layout: 'fit',
-                        html: $('#popup').html(),
-                        renderTo: 'perfectmap_div', ///'wrapper-parent',
-                        listeners: {
-                            afterrender: closeTooltip
-                        },
-                        style: 'background-color: white;', // $('.x-window').css('background-color', 'white')
-                        resizable: false, //resizeHandles: 'w e',
-                        buttons: [],
-                        tools: [{
-                            type:'refresh',
-                            tooltip: null,
-                            handler: function (event, toolEl, panel) {
-                            }
-                        },
-                        ]
-                    }).show();
-                    popup.setPosition(undefined);
-                    setTimeout(function () {
-                        $('.x-window-header, .x-window-tc, .x-window-tr, .x-window-tl, .x-window-ml, .x-window-mr, .x-window-bc, .x-window-br, .x-window-bl').css('background-color', 'white');
-                    }, 20);
+                    if (!!window.navigator && ((!!navigator.userAgentData && navigator.userAgentData.mobile === false) || getInchDiag() > 9.5)) { // infowindow only for desktop
+                        // Info: new Ext.window.Window({}) is actually same as Ext.create('Ext.window.Window', {});
+                        window.windowDock = window.windowDock || new DockInfoWindow('info_windows', Ext.window.Window); ///
+                        window.windowDock.add({
+                            layout: 'fit',
+                            html: $('#popup').html(),
+                            renderTo: 'perfectmap_div', ///'wrapper-parent',
+                            listeners: {
+                                afterrender: closeTooltip
+                            },
+                            style: 'background-color: white;', // $('.x-window').css('background-color', 'white')
+                            resizable: false, //resizeHandles: 'w e',
+                            buttons: [],
+                        }).show();
+                        popup.setPosition(undefined);
+                        setTimeout(function () {
+                            $('.x-window-header, .x-window-tc, .x-window-tr, .x-window-tl, .x-window-ml, .x-window-mr, .x-window-bc, .x-window-br, .x-window-bl').css('background-color', 'white');
+                        }, 20);
+                    } else {
+                        console.log($('#dt_i' + wasClickedTrigger + ' > table span > a')[1]);
+                        window.open('' + $('#dt_i' + wasClickedTrigger + ' > table span > a')[1].href);
+                    }
                 }, 10);
                 
 
@@ -601,7 +621,7 @@ $(document).ready(function ()
 						  	default:dt[i]['icon']='world';dt[i]['iconurl']='./images_rur/Konf/worldw.png';
 						}
 
-						dt[i]['info']='<div style="overflow:auto;font-family:arial; border:2px '+ dt[i]['O_Color1']+ 'solid; border: 2px '+ dt[i]['O_Color1']+ ' solid;padding:10px;padding-right:32px;padding-bottom:16px"><table style="font-family:arial;width:560px;height:300px;border-collapse:collapse" class="style5" border="0"><tbody><tr>';
+						dt[i]['info']='<div id="dt_i' + i + '" style="overflow:auto;font-family:arial; border:2px '+ dt[i]['O_Color1']+ 'solid; border: 2px '+ dt[i]['O_Color1']+ ' solid;padding:10px;padding-right:32px;padding-bottom:16px"><table style="font-family:arial;width:560px;height:300px;border-collapse:collapse" class="style5" border="0"><tbody><tr>';
 						dt[i]['info']+='<td style="font-family:arial;text-align:center" rowspan="10" colspan="2"><img src="'+ dt[i]['logo']+ '" style="vertical-align:top;width: 8em;height: 8em;" ></td><td colspan="4" style="font-family:arial;text-align:left"><span style="font-family:arial;color:'+ dt[i]['O_Color1']+ ';font-size:17px"><strong>'+ dt[i]['univ_name']+ '</strong></span></td></tr>';
 						dt[i]['info']+='<tr><td style="width:110px"><span style="font-size:9pt"><b>Foundation year:</b></span></td>';
 						dt[i]['info']+='<td style="width:98px"><span style="font-size:9pt">'+ dt[i]['found']+ '</span></td>';

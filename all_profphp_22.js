@@ -85,6 +85,16 @@ window.lastWindowCoord = null;
         requireCSS2H("/deps/ol.css");
     }
     
+    requireJS2H(function () {
+        jQuery(document).ready(function () {
+            try {
+                requireCSS2H('button.filter-select-arrow {display: inline-block }');
+            } catch (e6y745454624743) {
+                jQuery('button.filter-select-arrow').css({"display": 'inline-block' });
+            }
+        })
+    });
+    
 	$.format3dight = function (value) {
 		return value.split(',').join('.').toFixed(3).toString().split('.').join(',');
 	}

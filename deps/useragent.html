@@ -1,0 +1,122 @@
+<h3>native navigator.userAgentData</h3>
+<pre><code id="naviveUserAgentData">...</code></pre>
+
+<h3>polyfilled navigator.userAgentData</h3>
+<pre><code id="customUserAgentData">...</code></pre>
+
+<script type="text/javascript">
+window.$ = (s, c = document) => c.querySelector(s);
+
+        /**
+         * theScript - the js url or js function, which you want to require in head.
+         * (js url will be included; js function will be called in special way.)
+         * async - usually you want sync require, default false (preserving order)
+         */
+        window.requireJS2H = function requireJS2H (theScript, async) {
+            const isFunction = function (value) {return !!value && !/^\s*class/.test(value.toString()) && (Object.prototype.toString.call(value) === "[object Function]" || "function" === typeof value || value instanceof Function) };
+            if (!theScript || '' == theScript) {
+                throw new Error('theScript required');
+            } else {
+                if (isFunction(theScript)) {
+                    theScript = theScript.toString();
+                    if (theScript.indexOf('//') >= 0 || theScript.indexOf('/*') >= 0 || theScript.indexOf('*/') >= 0 || theScript.indexOf('[native code]') >= 0 || theScript.indexOf('eval') >= 0 || theScript.indexOf('Function') >= 0) {
+                        throw new Error('Sorry, for security reasons your func must not have inner comments nor native code nor eval. If it is wrong, just split string by parts.');
+                    }
+                    theScript = ';((' + theScript + ').bind(this))' + '();'; // you can probe without bind too
+                    console.log('[WARN] Require js by code: \n ', theScript); //
+                    theScript = 'data:text/javascript,' + encodeURIComponent(theScript);
+                } else if (!Array.isArray(theScript) && !!theScript.length && !!isFunction(theScript.toUpperCase)) {
+                    if (theScript.indexOf('{') >= 0 || theScript.indexOf('}') >= 0 || theScript.indexOf('(') >= 0 || theScript.indexOf(')') >= 0) {
+                        throw new Error('Function means funciton, but not the text of function!');
+                    }
+                } else {
+                    throw new Error('theScript can be only js function or js url');
+                }
+                var script = document.createElement('script');
+                if (async === 'module') {
+                    script.type = "module";
+                    async = undefined;
+                } else {
+                    script.type = "text/javascript";
+                }
+                script.async = !!async; // TODO promise chain when async
+                script.src = '' + theScript;
+                document.getElementsByTagName('head')[0].appendChild(script);                
+            }
+        }
+        
+        window.requireCSS2H = function requireCSS2H (theStyle, styleType) {
+            if (!theStyle || '' == theStyle) {
+                throw new Error('theStyle required');
+            } else {
+                if (!Array.isArray(theStyle) && !!theStyle.length) {
+                    if ((theStyle.indexOf('//') >= 0 && theStyle.indexOf('https://') < 0 && theStyle.indexOf('http://') < 0) || theStyle.indexOf('/*') >= 0 || theStyle.indexOf('*/') >= 0 || theStyle.indexOf('[native code]') >= 0 || theStyle.indexOf('eval') >= 0 || theStyle.indexOf('Function') >= 0) {
+                        throw new Error('Sorry, for security reasons your style must not have inner comments nor native code nor eval. If it is wrong, just split string by parts.');
+                    }
+                    if (theStyle.indexOf('{') >= 0 || theStyle.indexOf('}') >= 0 || theStyle.indexOf('(') >= 0 || theStyle.indexOf(')') >= 0) {
+                        theStyle = 'data:text/css,' + encodeURIComponent(theStyle);
+                    }
+                } else {
+                    throw new Error('theStyle can be only css text or css url');
+                }
+                var script = document.createElement('link');
+                script.type = "text/css";
+                script.rel = !!styleType ? styleType : "stylesheet";
+                script.href = '' + theStyle;
+                document.getElementsByTagName('head')[0].appendChild(script);                
+            }
+        }
+
+
+</script>
+
+<script type="module">
+    requireJS2H('./user-agent-data.mjs' , 'module'); /// import {ponyfillNavigatorUserAgentData, polyfillNavigatorUserAgentData} from './user-agent-data.mjs';
+</script>
+
+<script type="text/javascript">
+    requireJS2H(function mainA () {
+        if (!window.polyfillNavigatorUserAgentData) {
+            requireJS2H('./user-agent-data.js');
+        }
+    });
+</script>
+
+<script>
+
+function main() {
+  if (location.protocol !== 'https:') {
+    $('#naviveUserAgentData').textContent = 'navigator.userAgentData is not available in insecure context';
+    $('#customUserAgentData').textContent = 'navigator.userAgentData polyfill is designed to work in secure context';
+    return;
+  }
+  let keys = ['platformVersion', 'architecture', 'bitness', 'model', 'fullVersionList'];
+  if (!navigator.userAgentData) {
+    $('#naviveUserAgentData').textContent = 'Your browser doesn\'t support client hints';
+  } else {
+    navigator.userAgentData.getHighEntropyValues(keys).then((result) => {
+      $('#naviveUserAgentData').textContent = JSON.stringify(result, null, 2);
+    });
+  }
+
+  window.polyfillNavigatorUserAgentData();
+  
+  ///var userAgentData = window.ponyfillNavigatorUserAgentData() || ponyfillNavigatorUserAgentData();
+  navigator.userAgentData.getHighEntropyValues(keys).then((result) => {
+    $('#customUserAgentData').textContent = JSON.stringify(result, null, 2);
+  });
+}
+
+</script>
+
+<script type="module">
+    setTimeout(function () {
+        document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', main) : main();
+    }, 1000);
+</script>
+
+<script type="text/javascript">
+    setTimeout(function () {
+        document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', main) : main();
+    }, 3000);
+</script>
