@@ -1061,7 +1061,7 @@ else
                             center: city,
                             zoom: 2,
                         }),
-                        moveTolerance: 50,
+                        moveTolerance: 20,
                     });
                 }
 
