@@ -273,11 +273,11 @@ ul li {
   position: relative;
   float: left;
   font-size: 16px;
-	margin: 0 0 0 2.65em;
+margin: 1em 0 1em 3.8em;
   /*text-transform: uppercase;*/
 }
 .main-nav li:first-child {
-  margin: 0;
+ margin: 1em auto;
 }
 .main-nav a {
   color: #000;
@@ -2441,10 +2441,11 @@ div.tt-suggestion {
   width: 20px;
   height: 100%;
 }
-	.mfilter-select-arrow {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
+button.mfilter-select-arrow {
+  /*display: -webkit-box;*/
+  /*display: -ms-flexbox;*/
+  /*display: flex;*/
+  display: inline-block;
   -webkit-box-align: center;
   align-items: center;
   -webkit-box-pack: center;
