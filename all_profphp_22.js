@@ -73,9 +73,12 @@ window.lastWindowCoord = null;
     if (!window.ol || !ol.View) {
         let script = null;
         
-        requireJS2H("/deps/ext-6.2.0/build/ext-all.js");
+        requireJS2H("/deps/ext-6.2.0/build/ext-min.js");
         
         requireCSS2H("/deps/ext-6.2.0/build/classic/theme-gray/resources/theme-gray-all.css");
+        
+        requireJS2H("/deps/es6-shim-polyfill.es5.js");
+        requireJS2H("/templates/rur/js/bootstrap-typeahead.js");
         
         requireJS2H("/deps/ol.js");
         
@@ -1058,6 +1061,7 @@ else
                             center: city,
                             zoom: 2,
                         }),
+                        moveTolerance: 50,
                     });
                 }
 

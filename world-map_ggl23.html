@@ -131,6 +131,7 @@ ul.typeahead.dropdown-menu > * {
                                             center: city,
                                             zoom: 2,
                                         }),
+                                        moveTolerance: 50,
                                     });  
                                     
                                     setTimeout(function () {
@@ -248,7 +249,6 @@ ul.typeahead.dropdown-menu > * {
             jQuery(function($){ initPopovers(); $("body").on("subform-row-add", initPopovers); function initPopovers (event, container) { $(container || document).find(".hasPopover").popover({"html": true,"trigger": "hover focus","container": "body"});} });
             
             requireJS2H("./deps/es6-shim-polyfill.es5.js");
-            
             requireJS2H("./templates/rur/js/bootstrap-typeahead.js");
 
             try {
