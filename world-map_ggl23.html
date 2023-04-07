@@ -230,6 +230,13 @@ ul.typeahead.dropdown-menu > * {
             }
         }
         
+        window.rndStr = function (randomStringPrefix = 't') {
+            if (!randomStringPrefix || Array.isArray(randomStringPrefix) || !randomStringPrefix.length || !(typeof randomStringPrefix === 'string' || randomStringPrefix instanceof String)) {
+                randomStringPrefix = 'tn_';
+            }
+            return '' + randomStringPrefix + ((Math.random() + 5) * (new Date().getSeconds() + 2) / 10 % 2 + 3).toString(36).substring(4);
+        }
+        
         setTimeout(function () {
             function initZero () { return $(document).ready(function () { window.initMap(); }); };
             window.initZero = initZero; // please, use such way
@@ -249,16 +256,16 @@ ul.typeahead.dropdown-menu > * {
             jQuery(function($){ initPopovers(); $("body").on("subform-row-add", initPopovers); function initPopovers (event, container) { $(container || document).find(".hasPopover").popover({"html": true,"trigger": "hover focus","container": "body"});} });
             
             requireJS2H("./deps/es6-shim-polyfill.es5.js");
-            requireJS2H("./templates/rur/js/bootstrap-typeahead.js");
+            requireJS2H("./templates/rur/js/bootstrap-typeahead.js?k=" + rndStr());
 
             try {
-                requireJS2H("./deps/dockinfowindow.js");
+                requireJS2H("./deps/dockinfowindow.js?k=" + rndStr());
             } catch (e567345334) {
                 console.log('failed: ', 'dockinfowindow.js');
-                ///requireJS2H("./deps/dockinfowindow_old.es5.js"); ///
+                ///requireJS2H("./deps/dockinfowindow_old.es5.js?k=" + rndStr()); ///
             }
             
-            requireJS2H("./templates/rur/js/map_js_ggl23.js?v=2019101808");
+            requireJS2H("./templates/rur/js/map_js_ggl23.js?k=" + rndStr("2023041808t"));
             
             //requireJS2H("https://maps.googleapis.com/maps/api/js?key=AIzaSyBzEr0UCQ2hxfjk_GcaCXS-9TkyGaoD7-o&callback=window.initZero&region=USA&language=en");
                         

@@ -239,6 +239,7 @@ $(document).ready(function ()
             window.needClickOnFirst = false;
             mappanel.map.getLayers().getArray().map((e, i) => {if (i>0) mappanel.map.getLayers().getArray().splice(1) }); // rest only first layer
         } else {
+            console.log(true, [Object.values(mrks[0])]); //
             window.needClickOnFirst = true;
         }
         //console.log('markers: ', mrks); ///
@@ -490,7 +491,11 @@ $(document).ready(function ()
             console.warn('You should use only one of arguments: title, i');
             return null;
         }
-        return dt[i]['O_WR'];
+        return {
+            "label": dt[i]['O_WR'],
+            "i": i,
+            "title": title,
+        };
     }
     
     window.lastURL = '';
@@ -506,6 +511,16 @@ $(document).ready(function ()
                     document.getElementsByClassName("mapinfo")[0].outerHTML = '';
                 } catch (e5632534) {
                 }
+            }
+            
+            if (!forceFull && window.location.hash && window.location.hash.length > 2) {
+                sb = 1;
+                cntr = 0;
+                reg = 0;
+                
+                $('.mfilter-subject select option:selected').val(sb);
+                $('.mfilter-country select option:selected').val(cntr);
+                $('.mfilter-region select option:selected').val(reg);
             }
             
             if (forceFull && !(sb == 1 && cntr == 0 && reg == 0)) {
@@ -698,7 +713,7 @@ $(document).ready(function ()
                     let title = dt[i+1]['univ_name'];
                     mrks.push([
                         {lat: +((''+dt[i+1]['lat']).trim()), lng: +((''+dt[i+1]['lng']).trim())},
-                        `#${getWorldRating(dt, title, i + 1)} - ${title}`, //`#${dt[i + 1]['League']} - ${title}`,
+                        `#${getWorldRating(dt, title, i + 1).label} - ${title}`, //`#${dt[i + 1]['League']} - ${title}`,
                         dt[i+1]['iconurl'],
                         dt[i+1]['info'],
                     ]);
@@ -779,7 +794,35 @@ $(document).ready(function ()
                             zoom: scale, ///record.data['scale'] ?? 12,
                         }));
                     }   
-                    addMarkers(mrks);             
+                    addMarkers(mrks);
+                    
+                    if (!forceFull) {
+                        try {
+                            if (window.location.hash && window.location.hash.length > 2) {
+                                var mrks0 = decodeURIComponent(window.location.hash.substring(1)); /// For test use: window.location = 'https://roundranking.com/world-map_ggl23.html#{"lat": 34.137764,"lng": -118.125258,"z": 15},%231%20California%20Institute%20of%20Technology%20(Caltech),.%2Fimages_rur%2FKonf%2Fworldw.png,%23D6F5FF'
+                                window.location.hash = '';
+                                var p1 = -1;
+                                if (!(mrks0[0] !== '{' || (p1 = mrks0.indexOf('}')) < 0)) {
+                                    var mrks1 = JSON.parse(mrks0.substring(0, p1 + 1));
+                                    var mrks2 = mrks0.substring(p1 + 1).trim().split(',').filter(function (el) { return !!el && !!(el.trim()) });
+                                    var mrks3 = [].concat(mrks1, mrks2);
+                                    console.log(null, [Object.values(mrks3)]); //
+                                    if (mrks3.length === 4 && mrks3[0].lat !== undefined && mrks3[0].lng !== undefined) {
+                                        var title = mrks3[1].substring(mrks3[1].indexOf(' ') + 1);
+                                        var wrData = getWorldRating(dt, title, null);
+                                        if (mrks3[1] === `#${wrData.label} ${title}`) {
+                                            mrks3[3] = dt[wrData.i]['info'] || mrks3[3];
+                                            mrks3[2] = dt[wrData.i]['iconurl'] || mrks3[2];
+                                            addMarkers([mrks3], true); // TODO: z scale
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (e56345r3442) {
+                            window.location.hash = '';
+                            console.warn('[WARN] Hash parse error', e56345r3442);
+                        }
+                    }
                     
                     return; /// !!!   
                 }
@@ -899,7 +942,7 @@ $(document).ready(function ()
                     let title = unnm;
                     var mrks = [{
                         0: coord, // position coord
-                        1: `#${getWorldRating(dt, title, null)} - ${title}`, // title
+                        1: `#${getWorldRating(dt, title, null).label} - ${title}`, // title
                         2: icnsrc, // icon
                         3: uninfo, // info content
                     }]; // only one marker
@@ -921,7 +964,7 @@ $(document).ready(function ()
                   let title = unnm;
 				  const marker = new google.maps.Marker({
 				    position: uluru,
-				    title: `#${getWorldRating(dt, title, null)} - ${title}`,
+				    title: `#${getWorldRating(dt, title, null).label} - ${title}`,
 				    icon:icnsrc,
 				    cont:uninfo,
 				    map: map,

@@ -70,19 +70,26 @@ window.lastWindowCoord = null;
         }
     }
     
+    window.rndStr = function (randomStringPrefix = 't') {
+        if (!randomStringPrefix || Array.isArray(randomStringPrefix) || !randomStringPrefix.length || !(typeof randomStringPrefix === 'string' || randomStringPrefix instanceof String)) {
+            randomStringPrefix = 'tn_';
+        }
+        return '' + randomStringPrefix + ((Math.random() + 5) * (new Date().getSeconds() + 2) / 10 % 2 + 3).toString(36).substring(4);
+    }
+    
     if (!window.ol || !ol.View) {
         let script = null;
         
         requireJS2H("/deps/ext-6.2.0/build/ext-min.js");
         
-        requireCSS2H("/deps/ext-6.2.0/build/classic/theme-gray/resources/theme-gray-all.css");
+        requireCSS2H("/deps/ext-6.2.0/build/classic/theme-gray/resources/theme-gray-all.css?k=" + rndStr());
         
         requireJS2H("/deps/es6-shim-polyfill.es5.js");
-        requireJS2H("/templates/rur/js/bootstrap-typeahead.js");
+        requireJS2H("/templates/rur/js/bootstrap-typeahead.js?k=" + rndStr());
         
         requireJS2H("/deps/ol.js");
         
-        requireCSS2H("/deps/ol.css");
+        requireCSS2H("/deps/ol.css?k=" + rndStr());
     }
     
     requireJS2H(function () {
@@ -1043,8 +1050,9 @@ else
 				var lg=Number(lngvl);
 				zummap=Number(12);
 				var unic=image;
-				var uninfo='<div style="background-color: '+data['O_Color3']+'"><a href="https://www.google.com/maps/@'+lt+','+lg+',15z" target="_blank" style="font-size: 1.2em;">View<br><b>'+data['univ_name']+'</b><br>in Goole Map</a></div>';
-				var unnm='#'+data['O_WR']+' '+data['univ_name'];
+				///var uninfo = '<div style="background-color: '+data['O_Color3']+'"><a href="https://www.google.com/maps/@'+lt+','+lg+',15z" target="_blank" style="font-size: 1.2em;">View<br><b>'+data['univ_name']+'</b><br>in Goole Map</a></div>';
+                var unnm='#'+data['O_WR']+' '+data['univ_name'];
+                var uninfo = '<div style="background-color: '+data['O_Color3']+'"><a href=\'/world-map_ggl23.html#' + ('{"lat": '+lt+',"lng": '+lg+',"z": 15}' + (encodeURIComponent(','+unnm+',./images_rur/Konf/worldw.png,'+data['O_Color3']).replaceAll('%2C', ','))) + '\' target="_blank" style="font-size: 1.2em;">View<br><b>'+data['univ_name']+'</b><br>in OpenLayers + OSM Map</a></div>';
 				var icnsrc='';
 				var url = './images_rur/Konf/';
 				$('.gm-style-iw-d').css('background-color','antiquewhite');
