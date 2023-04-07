@@ -516,37 +516,26 @@ $(document).ready(function ()
                 }
             }
             
-            if (!forceFull && window.location.hash && window.location.hash.length > 2) {
-                sb = 1;
-                cntr = 0;
-                reg = 0;
-                
-                $('.mfilter-subject select option:selected').val(sb);
-                $('.mfilter-country select option:selected').val(cntr);
-                $('.mfilter-region select option:selected').val(reg);
-            }
+            const udtService = new UnivDataService().getInstance();
             
-            if (forceFull && !(sb == 1 && cntr == 0 && reg == 0)) {
-                forceFull = false;
+            var udtController = new UnivDataController(udtService);
+            var code = null;
+            forceFull = udtController.setForceFull(forceFull);
+            ({year: yr, subject: sb, country: cntr, region: reg, code} = udtController.setState({
+                code: code,
+                year: yr, // warn: strange year number (not like 20xx)
+                subject: sb,
+                country: cntr,
+                region: reg,
+            })); // See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
+            if (code === 0) {
                 return;
-            }
-            
-			var ur='./final/getunivdata_gmap23.php?year='+yr+'&subj='+sb+'&cntr='+cntr+'&reg='+reg + (!forceFull ? '&mode=head' : '');
-            if (window.lastURL == ur) {
-                return;
-            } else {
-                window.lastURL = ur;
             }
 			
 			//alert(ur);
 			leftur='https://roundranking.com/universities/';hs='';
           	
-			$.ajax(
-			{
-	  		url: ur,
-	  			success: function(data)
-	  	 		{
-		  	 		
+			udtController.getPromise().then(function success (data) {
 		  	 		switch (Number(sb))
 					{
 						case 1:sv='SO';break;
@@ -898,8 +887,9 @@ $(document).ready(function ()
 				}
 				/*if(Number(cntr)==45)
 					{alert(cntr);}*/
-			}
-			});	
+			}, function fail (err) {
+                console.error('[ERR] ', err);
+            });
 		}
 		else
 		{
