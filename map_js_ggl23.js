@@ -407,9 +407,9 @@ $(document).ready(function ()
                             layout: 'fit',
                             html: $('#popup').html(),
                             renderTo: 'perfectmap_div', ///'wrapper-parent',
-                            listeners: {
-                                afterrender: closeTooltip
-                            },
+//                            listeners: {
+//                                afterrender: closeTooltip
+//                            },
                             style: 'background-color: white;', // $('.x-window').css('background-color', 'white')
                             resizable: false, //resizeHandles: 'w e',
                             buttons: [],

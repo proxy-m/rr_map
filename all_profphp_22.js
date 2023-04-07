@@ -966,9 +966,9 @@ else
                         layout: 'fit',
                         html: $('#popup').html(),
                         renderTo: 'map', /// 'perfectmap_div', /// Ext.getBody(),
-                        listeners: {
-                            afterrender: closeTooltip
-                        },
+//                        listeners: {
+//                            afterrender: closeTooltip
+//                        },
                         buttons: [],
                         tools: [{
                             type:'refresh',
