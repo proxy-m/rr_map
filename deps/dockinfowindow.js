@@ -168,7 +168,7 @@ class DockInfoWindow {
     add (params) {
         let w = null;
         try {
-            this.windows.unshift(w = new this.Window(
+            w = new this.Window(
                 $.extend(true, {
                     processMovement: false,
                     listeners: {
@@ -220,9 +220,16 @@ class DockInfoWindow {
                             }
                         }.bind(this),
                     }]    
-                }))); // TODO identifying to disable duplicates
+                })); // TODO identifying to disable duplicates
+                
+                if (!this.isOpenedAlready(w)) {
+                    this.windows.unshift(w);
+                    w.show();
+                } else {
+                    w = null;
+                }
         } catch (e) {
-            console.debug('wrong params: ', params);
+            console.debug('wrong params: ', params, e);
             params = null;
         }
         if (!params) {
@@ -236,7 +243,22 @@ class DockInfoWindow {
         return w;
     }
     
-    // TODO
+    isOpenedAlready (otherW) { // it is dependant of InfoWindow style formatting
+        if (!this.windows.length && !this.windowsOut.length) {
+            return false;
+        }
+        var allWindows = [].concat(this.windows, this.windowsOut);        
+        for (var w of allWindows) {
+            if (w === otherW || w.getEl().dom == otherW.getEl().dom 
+                || ($(w.getEl().dom).find('strong').html() == $(otherW.getEl().dom).find('strong').html()
+                && $(w.getEl().dom).find('a:contains(View full university profile)')[0].href.split('year=')[0] == $(otherW.getEl().dom).find('a:contains(View full university profile)')[0].href.split('year=')[0])) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    // TODO: getter ??
 };
 
 
