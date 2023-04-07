@@ -231,19 +231,24 @@ $(document).ready(function ()
     }
     
     function addMarkers (mrks, needClickOnFirst) {
-        if (!mrks || !mrks.length || mrks.length < 1) {
+        if (!mrks || undefined === mrks.length || mrks.length < 0) {
             console.log('ERR: mrks is not defined');
             return;
         }
         if (!needClickOnFirst) {
+            console.log(false, mrks.length)
             window.needClickOnFirst = false;
             mappanel.map.getLayers().getArray().map((e, i) => {if (i>0) mappanel.map.getLayers().getArray().splice(1) }); // rest only first layer
         } else {
-            console.log(true, [Object.values(mrks[0])]); //
+            console.log(true, mrks.length, [Object.values(mrks[0])]); //
             window.needClickOnFirst = true;
         }
         //console.log('markers: ', mrks); ///
-        //console.log(mrks[0]);    
+        //console.log(mrks[0]);  
+        if (mrks.length < 1) {
+            console.log('WARN: mrks array is empty');
+            return;
+        }
         
         try {
             document.getElementById('popup').outerHTML = '';
@@ -274,11 +279,9 @@ $(document).ready(function ()
         
         var features = [];
         mrks.forEach(function (m, i) {
-            //console.log(dt[i+1]);
-            
             var iconFeature = new ol.Feature({
-                ///geometry: new ol.geom.Point(ol.proj.transform([106.8478695, -6.1568562], 'EPSG:4326', 'EPSG:3857'))
                 geometry: new ol.geom.Point(ol.proj.fromLonLat([m[0].lng, m[0].lat])), /// [106.8478695, -6.1568562]))),
+                //z: (!!m[0].z) ? m[0].z : undefined,
                 n: i+1,
                 type: 'Point',
                 info: (!!m[3] ? m[3] : '<div><h3>Missing info</h3></div>'),
@@ -434,11 +437,11 @@ $(document).ready(function ()
                     lg = coordinate[0];
                     city = [lg, lt];
                 }
-                console.log(lg, lt);
-                    
+                console.log(lg, lt, mrks[wasClickedTrigger-1][0], wasClickedTrigger-1, mrks[wasClickedTrigger-1]);
+                
                 window.mappanel.map.setView(new ol.View({
                     center: city,
-                    zoom: window.mappanel.map.getView().getZoom(), ///zoom: 12, /// ???
+                    zoom: (!!mrks[wasClickedTrigger-1][0].z) ? mrks[wasClickedTrigger-1][0].z : window.mappanel.map.getView().getZoom(), ///zoom: 12, /// ???
                 }));
             } else {
                 if (!wasClickedTrigger) {
@@ -771,9 +774,40 @@ $(document).ready(function ()
 					}
                 
                 if (window.mappanel && window.mappanel.map && window.mappanel.map.setView && window.ol && ol.View) {
-                    let pos = [coord.lat, coord.lng]; /// JSON.parse('['+record.data['cord']+']');
-                    pos = [pos[1], pos[0]];
+                    let pos = [coord.lng, coord.lat]; /// JSON.parse('['+record.data['cord']+']');
                     let city = ol.proj.fromLonLat(pos);
+                    var mrks3 = [];
+                    
+                    if (!forceFull) {
+                        try {
+                            if (window.location.hash && window.location.hash.length > 2) {
+                                var mrks0 = decodeURIComponent(window.location.hash.substring(1)); /// For test use: window.location = 'https://roundranking.com/world-map_ggl23.html#{"lat": 34.137764,"lng": -118.125258,"z": 15},%231%20California%20Institute%20of%20Technology%20(Caltech),.%2Fimages_rur%2FKonf%2Fworldw.png,%23D6F5FF'
+                                window.location.hash = '';
+                                var p1 = -1;
+                                if (!(mrks0[0] !== '{' || (p1 = mrks0.indexOf('}')) < 0)) {
+                                    var mrks1 = JSON.parse(mrks0.substring(0, p1 + 1));
+                                    var mrks2 = mrks0.substring(p1 + 1).trim().split(',').filter(function (el) { return !!el && !!(el.trim()) });
+                                    mrks3 = [].concat(mrks1, mrks2);
+                                    console.log(null, [Object.values(mrks3)]); //
+                                    if (mrks3.length === 4 && mrks3[0].lat !== undefined && mrks3[0].lng !== undefined) {
+                                        var title = mrks3[1].substring(mrks3[1].indexOf(' ') + 1);
+                                        var wrData = getWorldRating(dt, title, null);
+                                        if (mrks3[1] === `#${wrData.label} ${title}`) {
+                                            mrks3[3] = dt[wrData.i]['info'] || mrks3[3];
+                                            mrks3[2] = dt[wrData.i]['iconurl'] || mrks3[2];
+                                            pos = [mrks3[0].lng, mrks3[0].lat]; //
+                                            city = ol.proj.fromLonLat(pos); //
+                                            scale = +(mrks3[0].z); //
+                                            addMarkers([], false);
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (e56345r3442) {
+                            window.location.hash = '';
+                            console.warn('[WARN] Hash parse error', e56345r3442);
+                        }
+                    }
                     
                     /// yr+'&subj='+sb+'&cntr='+cntr+'&reg='+reg
                     if (sb == 1 && cntr == 0 && reg == 0) { // default full world
@@ -791,37 +825,12 @@ $(document).ready(function ()
                     if (!forceFull) {
                         window.mappanel.map.setView(new ol.View({
                             center: city,
-                            zoom: scale, ///record.data['scale'] ?? 12,
+                            zoom: scale, //
                         }));
                     }   
                     addMarkers(mrks);
-                    
-                    if (!forceFull) {
-                        try {
-                            if (window.location.hash && window.location.hash.length > 2) {
-                                var mrks0 = decodeURIComponent(window.location.hash.substring(1)); /// For test use: window.location = 'https://roundranking.com/world-map_ggl23.html#{"lat": 34.137764,"lng": -118.125258,"z": 15},%231%20California%20Institute%20of%20Technology%20(Caltech),.%2Fimages_rur%2FKonf%2Fworldw.png,%23D6F5FF'
-                                window.location.hash = '';
-                                var p1 = -1;
-                                if (!(mrks0[0] !== '{' || (p1 = mrks0.indexOf('}')) < 0)) {
-                                    var mrks1 = JSON.parse(mrks0.substring(0, p1 + 1));
-                                    var mrks2 = mrks0.substring(p1 + 1).trim().split(',').filter(function (el) { return !!el && !!(el.trim()) });
-                                    var mrks3 = [].concat(mrks1, mrks2);
-                                    console.log(null, [Object.values(mrks3)]); //
-                                    if (mrks3.length === 4 && mrks3[0].lat !== undefined && mrks3[0].lng !== undefined) {
-                                        var title = mrks3[1].substring(mrks3[1].indexOf(' ') + 1);
-                                        var wrData = getWorldRating(dt, title, null);
-                                        if (mrks3[1] === `#${wrData.label} ${title}`) {
-                                            mrks3[3] = dt[wrData.i]['info'] || mrks3[3];
-                                            mrks3[2] = dt[wrData.i]['iconurl'] || mrks3[2];
-                                            addMarkers([mrks3], true); // TODO: z scale
-                                        }
-                                    }
-                                }
-                            }
-                        } catch (e56345r3442) {
-                            window.location.hash = '';
-                            console.warn('[WARN] Hash parse error', e56345r3442);
-                        }
+                    if (!!mrks3 && mrks3.length > 0) {
+                        addMarkers([mrks3], true); // TODO: after add recheck twice: z scale
                     }
                     
                     return; /// !!!   
