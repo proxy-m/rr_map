@@ -184,7 +184,7 @@ $(document).ready(function()
 	reg=$('#region option:selected').val();
 	cntr=$('#country option:selected').val();
 	//yr
-	var ur='final/getunivdata_ymap.php?year='+yr+'&subj='+sb+'&cntr='+cntr+'&reg='+reg;
+	var ur='https://roundranking.com/final/getunivdata_gmap22.php?year='+yr+'&subj='+sb+'&cntr='+cntr+'&reg='+reg;
 	//alert(ur);
 	/*if(Number(cntr)==0)
 	{leftur='https://roundranking.com/universities/';hs='';}
@@ -418,7 +418,7 @@ $(document).ready(function()
 		yr=Number($('.point.active .point-text').text()-2009);
 		reg=$('#region option:selected').val();
 		cntr=$('#country option:selected').val();
-		var urlc='final/getunivdata_ymap.php?year='+yr+'&subj='+sb+'&reg='+reg+'&cntr='+cntr;
+		var urlc='https://roundranking.com/final/getcntrdata_gmap22.php?year='+yr+'&subj='+sb+'&reg='+reg+'&cntr='+cntr;
 		//alert(urlc);
 		
 		$.ajax(
