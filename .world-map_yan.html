@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WORLD MAP</title>
+    <base href="world-map.html" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
+    <link href="./templates/rur/sweetalert-master/dist/sweetalert.css" rel="stylesheet" type="text/css" />
+    <link href="./templates/rur/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="./templates/rur/css/all.css" rel="stylesheet" type="text/css" />
+    <link href="./templates/rur/css/jquery.fancybox.css" rel="stylesheet" type="text/css" />
+    <link href="./templates/rur/css/ttlip.css" rel="stylesheet" type="text/css" />
+    <link href="./templates/rur/css/frontediting.css" rel="stylesheet" type="text/css" />
+	<link href="./templates/rur/css/header.css?v=2019101808" rel="stylesheet" type="text/css" />
+
+    <script src="https://api-maps.yandex.ru/2.1.78/?lang=en_US&amp;apikey=7aa8edef-e0bd-43c4-a43a-70b34591a2c7&mode=release" type="text/javascript"></script>
+    <script src="./templates/rur/js/jquery-3.6.0.js" type="text/javascript"></script>
+    <script src="./templates/rur/js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="./templates/rur/js/ttlip.js" type="text/javascript"></script>
+    <script src="./templates/rur/js/bootstrap-typeahead.js" type="text/javascript"></script>   
+    <script src="./templates/rur/sweetalert-master/dist/sweetalert.min.js" type="text/javascript"></script>
+    <script src="./templates/rur/js/ymap.js" type="text/javascript"></script>
+    	<script src="./templates/rur/js/mobmenu.js?v=2019101808" type="text/javascript"></script>
+
+    <script type="text/javascript">
+		jQuery(window).on('load',  function() {new JCaption('img.caption');});
+		jQuery(function($){ initTooltips(); $("body").on("subform-row-add", initTooltips); function initTooltips (event, container) { container = container || document;$(container).find(".hasTooltip").tooltip({"html": true,"container": "body"});} });
+		jQuery(function($){ initPopovers(); $("body").on("subform-row-add", initPopovers); function initPopovers (event, container) { $(container || document).find(".hasPopover").popover({"html": true,"trigger": "hover focus","container": "body"});} });
+	</script>
+	<style>
+
+  	.search-pages-counter{display:none;}
+ 	.dropdown-toggle{display:none;}
+ 	
+	.jQtooltip.mini{top: 4em;left: 1.5em;}
+	.mapinfo{position: relative;display: block;width: 100%;margin: auto;margin-top:0.5em;}
+	#map{position: relative;display: block;height:40em;width: 90%;margin: auto;/*border:1px solid #438df1;*/}
+	.point{width: 2.8%;}
+	.fltr{width: 105%;margin-left:-2.5em;}
+	.mpsrch{position: relative;display: none;z-index: 9999;margin-left: 3.1em; padding-top: 0.5em;padding-bottom: 0.5em;}
+	#mapsrchbtn{position: relative; display: inline-block;right: 2.1em;background: #FFD633;width: 50%;}
+	#tphsel{display: none;}
+	#mapsrchvl{z-index: 9999;top:2em;width: 100%;}
+	.map-legendbox{padding: 1em 8em;padding-top: 1em;padding-right: 1em;padding-bottom: 1em;padding-left: 10em;position: relative;display: block;width: 86%;margin: auto;}
+	#blbtnvz{position:relative;display:block; margin-left: 2.8em}
+	@media screen and (max-width: 980px) {
+	#mapsrchvl{margin-left: -6.6em;width: 50%;}#mapsrchbtn{right: -21em;width: 10%;top:-2.4em;}
+	.fltr{left:0em;width:100%;position: relative;}#ctrvz{margin-left:-3.5em;}#map{width: 80%;left:0.6em;top:-2.2em;}}
+	/*.emptmap{position: relative;display: block;width: 100%;height: 40em;}*/
+	@media screen and (max-width: 950px){#map{left:0em;}}
+	@media screen and (max-width: 910px){#map{left:-1.2em;}}
+	@media screen and (max-width: 850px){#map{left:-2.5em;}}
+	@media screen and (max-width: 800px){#map{left:-1.5em;width:90%;}.mpsrch {margin-left: 8em;}#mapsrchbtn{right: -18em;}}
+	@media screen and (max-width: 760px){.fltr{left:1em;}}	
+	@media screen and (max-width: 760px){#mapsrchbtn{right: -14em;width: 15%;}}	
+	@media screen and (max-width: 560px){#mapsrchbtn{right: -10em;width: 20%;}}
+	@media screen and (max-width: 420px){#mapsrchbtn{right: -18em;}#mapsrchvl{width: 60%;margin-left: 0em}.mpsrch{margin-left: -0.4em;}#ctrvz{top:0.5em;}}	
+</style>
+</head>
+<body>
+<div id="wrapper" style="min-height: 1px;">
+<header id="header">
+	<div class="header-top">
+				<div class="logo">
+					<a href="/"><img src="/images/logo.png" alt=""><img src="/images/powered.jpg" style="width:130px; height:60px;" alt=""></a>
+				<div class="logo-text">Round University Ranking is a ranking of leading world universities</div>
+			</div>
+			<div class="header-info">
+	<form id="mod-finder-searchform" action="/component/finder/search.html" method="get" class="form-search">
+	<div class="finder">
+				<button class="finder searchbutton" type="submit" title="Search">
+		<i class="icon-search icon-white"></i>
+		</button>
+		<input type="text" name="q" id="mod-finder-searchword" class="search-query input-medium" size="25" value=""/>
+		
+						<input type="hidden" name="Itemid" value="101" />	</div>
+</form><br><br>
+					<div class="header-phone">+995 322 19 33 69</div>
+					<div class="header-mail"><a href="mailto:info@roundranking.com">info@roundranking.com</a></div>
+					<div class="main_mob_icn"><img src="images_rur/Konf/mob_menu.png" alt="" /></div>
+ 				<!--div class="header-webs social">
+					<a href="https://www.youtube.com/channel/UCTtKoAaBlfgX-eOoSEqDf_w" target="_blank" class="social-yt"><img src="/images/social/youtube-sq.png" alt=""></a>
+					<a href="mailto:info@roundranking.com" class="social-em"><img src="/images/web3.png" alt=""></a>
+					</div-->
+			</div>
+		</div>
+	<nav class="main-nav" role="navigation">
+	<ul class="nav menu mod-list jmoddiv" data-jmodediturl="http://test-2.roundranking.com/index.php?option=com_config&controller=config.display.modules&id=89&Itemid=111&return=aHR0cDovL3Rlc3QtMi5yb3VuZHJhbmtpbmcuY29tL2NvbXBhcmVfY291bnRyaWVzLmh0bWw%3D" data-target="_self" data-jmodtip="&lt;strong&gt;Edit module&lt;/strong&gt;&lt;br /&gt;Main Menu&lt;br /&gt;Position: position-1"><li class="item-101 default"><a href="/" >HOME</a></li><li class="item-131"><a href="/about-us.html" >ABOUT US</a></li><li class="item-103 deeper parent"><a href="/ranking/world-university-rankings.html" >RANKINGS</a><ul class="nav-child unstyled small"><li class="item-221"><a href="/ranking/rankings-overview.html" >Rankings Overview</a></li><li class="item-222"><a href="/ranking/world-university-rankings.html" >World University Rankings</a></li><li class="item-129"><a href="/ranking/subject-rankings.html" title="_show" class="_show">Subject Rankings</a></li><li class="item-1955"><a href="/ranking/indicator_ranking.html" title="_show" class="_show">Rankings by Indicators</a></li><li class="item-148"><a href="/ranking/reputation-rankings.html" >Reputation Rankings</a></li><li class="item-172"><a href="/ranking/academic-rankings.html" >Academic Rankings </a></li></ul></li><li class="item-2066 deeper parent"><a href="/country-rankings/countries-rankings.html" >COUNTRY RANKINGS</a><ul class="nav-child unstyled small"><li class="item-2067"><a href="/country-rankings/countries-rankings-overview.html" >Rankings Overview</a></li><li class="item-2068"><a href="/country-rankings/countries-rankings.html" >Countries Rankings</a></li><li class="item-2070"><a href="/country-rankings/rankings-by-indicators.html" >Rankings by Indicators</a></li><li class="item-2072"><a href="/cntr_profil/institutional-profiles-by-countries.html" >Institutional Profiles</a></li></ul></li><li class="item-104"><a href="/universities/universitiess.html?sort=O&amp;year=2019&amp;subject=SO" >UNIVERSITIES</a></li><li class="item-110"><a href="/world-map.html" >WORLD MAP</a></li><li class="item-111 current active"><a href="/geocountries.html" >COUNTRIES</a></li><li class="item-112"><a href="/methodology.html" >METHODOLOGY</a><ul class="nav-child unstyled small"><li class="item-115"><a href="/methodology/methodology.html" >Methodology</a></li><li class="item-1165"><a href="/methodology/reputation_rankings.html" >RUR Reputation Rankings</a></li><li class="item-180"><a href="/methodology/academic-ranking.html" >RUR Academic Ranking</a></li><li class="item-123"><a href="/methodology/classification.html" >Classification</a></li><li class="item-124"><a href="/methodology/participation.html" >Participation                      </a></li></ul></li><li class="item-102"><a href="/news.html" >NEWS</a></li><li class="item-117"><a href="/contacts.html" >CONTACTS</a></li></ul>
+</nav>	
+    <div class="color-line">
+		<div class="c-line line1"></div>
+		<div class="c-line line2"></div>
+		<div class="c-line line3"></div>
+		<div class="c-line line4"></div>
+	</div>
+<p style="font-family:Open Sans,Helvetica Neue,Helvetica,Arial,sans-serif;font-size: 16px;line-height: 1.5625;color: #494343;">RUR World Map shows the geographical location of universities included in the ranking, their distribution by countries and continents. You can also see world map by different subject areas, countries and geographical regions.<br> To view institutional profile, please click on university symbol on a map. For more detailed data about the university, click "View Full University Profile" in the right corner of the small profile located at the bottom right.</p>
+<!--<p>&nbsp;</p>-->
+<section class="line-block">
+	<div class="line-holder">
+	<div class="line">&nbsp;</div>
+		<div class="points">
+			<span class="point"><span class="point-round"></span><span class="point-text">2010</span></span>
+			<span class="point"><span class="point-round"></span><span class="point-text">2011</span></span>	
+			<span class="point"><span class="point-round"></span><span class="point-text">2012</span></span>
+			<span class="point"><span class="point-round"></span><span class="point-text">2013</span></span>	
+			<span class="point"><span class="point-round"></span><span class="point-text">2014</span></span>
+			<span class="point"><span class="point-round"></span><span class="point-text">2015</span></span>
+			<span class="point"><span class="point-round"></span><span class="point-text">2016</span></span>	
+			<span class="point"><span class="point-round"></span><span class="point-text">2017</span></span>
+			<span class="point"><span class="point-round"></span><span class="point-text">2018</span></span>
+			<span class="point"><span class="point-round"></span><span class="point-text">2019</span></span>
+			<span class="point"><span class="point-round"></span><span class="point-text">2020</span></span>
+			<span class="point active"><span class="point-round"></span><span class="point-text">2021</span></span>
+		</div>
+	</div>
+</section>
+<div class="container">
+	<div class="fltr row">
+		<div class="col-md-3">
+						<Label>Subject</Label>
+						<span class="jQtooltip mini" id="gglmapsbj"  title="Select one of six  RUR Subjects: Humanities, Life Sciences, Medical Sciences, Natural Sciences, Social Sciences,Technical Sciences  and click Visualize"><b>?</b></span>
+						<select  id="subj" name="Subject" class="az-sort-by-s select-item form-control">
+							<option value="1">World University Ranking</option>
+							<option value="2">Humanities</option>
+							<option value="3">Life Sciences</option>
+							<option value="4">Medical Sciences</option>
+							<option value="5">Natural Sciencest</option>
+							<option value="6">Social Sciences</option>
+							<option value="7">Technical Sciences</option>
+						</select>
+					</div>	
+		<div class="col-md-2 ptb2">
+				<Label>Country</Label>
+				<span class="jQtooltip mini" id="gglmapcntr"  title="Choose a country for which there is a rating by country  and click Visualize"><b>?</b></span>
+				<select name="" id="country" class="az-sort-by-cntr select-item  form-control">
+					<option value="0">Word</option>
+				</select>
+				</div>
+		<div class="ggl_cntr col-md-2 ptb2">
+				<Label>Region</Label>
+				<span class="jQtooltip mini" id="gglmapreg"  title="Select a region to view universities in the region and click Visualize."><b>?</b></span>
+					<select name="" id="region" class="az-sort-by-r select-item  form-control">
+						<option value="0">World</option>
+						<option value="1">Africa</option>
+						<option value="2">Asia</option>
+						<option value="3">Europe</option>
+						<option value="4">Latin America</option>
+						<option value="5">North America</option>
+						<option value="6">Oceania</option>
+					</select>
+				</div>
+		<div class="ggl_cntr col-md-2"></div>
+		<div class="col-md-1 ptb1" id="blbtnvz">
+				<Label>&nbsp;</Label>
+					<button class="btn btn-default active az-btn" id="ctrvz">Visualize</button>
+				</div>
+	</div>
+</div>
+</header>
+</div>
+<div class="container">
+<div class="mpsrch row">
+		<div class="tphinp col-md-5">
+			<input type="text" class="form-control" id="mapsrchvl" placeholder="Enter the name of the university"/>
+		</div>
+		<div class="col-md-2">
+			<input type="submit" class="form-control" id="mapsrchbtn" value="Search"/>
+		</div>
+		<select id="tphsel"></select>
+		
+	</div>
+	</div>
+<!--<div class="emptmap"></div>-->
+<input type="hidden" id="hdun" value="0"/>
+<div class="container">
+<div class="mapinfo">
+	<div id="map"></div> 
+</div>			
+ </div>   
+ 
+ 	<div class="map-legendbox row">
+			<div class="col-md-4 col-sm-6 diamond">Diamond League (Rank 1-100)</div>
+			<div class="col-md-4 col-sm-6 golden">Golden League (Rank 101-200)</div>
+			<div class="col-md-4 col-sm-6 silver">Silver League (Rank 201-300)</div>
+			<div class="col-md-4 col-sm-6 bronze">Bronze League (Rank 301-400)</div>
+			<div class="col-md-4 col-sm-6 cooper">Copper League (Rank 401-500)</div>
+			<div class="col-md-4 col-sm-6 world">World League (501+)</div>
+		</div>
+ <div style="position: reltive; display:block; width: 100%;height: 4em;"></div>
+	<div class="moduletable jmoddiv" data-jmodediturl="http://test-2.roundranking.com/index.php?option=com_config&controller=config.display.modules&id=88&Itemid=111&return=aHR0cDovL3Rlc3QtMi5yb3VuZHJhbmtpbmcuY29tL2NvbXBhcmVfY291bnRyaWVzLmh0bWw%3D" data-target="_self" data-jmodtip="&lt;strong&gt;Edit module&lt;/strong&gt;&lt;br /&gt;footer&lt;br /&gt;Position: position-11">
+						
+
+<div class="custom">
+	<footer id="footer">
+		<div class="footer-holder">
+			<div class="footer-item">
+				<div class="footer-icon"><img src="/images/f-icon1.png" alt=""></div>
+				<div class="footer-content">
+					<div class="footer-title">Round University Rankin LLC</div>
+					<div class="footer-text"><a href="/contacts.html">0177 Georgia, Tbilisi, Saburtalo district, Nutsubidze plateau, IV micro / district, building 21</a></div>
+				</div>
+			</div>
+			<div class="footer-item">
+				<div class="footer-icon"><a href="tel:+995591757446"><img src="/images/f-icon2.png" alt=""></a></div>
+				<div class="footer-content">
+					<div class="footer-title">Phone</div>
+					<div class="footer-text"><a href="tel:+995591757446">+995 322 19 33 69</a></div>
+				</div>
+			</div>
+			<div class="footer-item">
+				<div class="footer-icon"><a href="mailto:info@roundranking.com"><img src="/images/f-icon3.png" alt=""></a></div>
+				<div class="footer-content">
+					<div class="footer-title">E-mail</div>
+					<div class="footer-text"><a href="mailto:info@roundranking.com">info@roundranking.com</a></div>
+				</div>
+			</div>
+			<!--div class="footer-item last">
+				<div class="footer-title">Follow us</div>	
+				<div class="footer-webs">
+					<!--a href="https://www.facebook.com/RURrank?fref=ts" target="_blank"><img src="/images/f-web1.png" alt=""></a>
+					<a href="https://twitter.com/RURrank" target="_blank"><img src="/images/f-web2.png" alt=""></a>
+					<a href="https://www.youtube.com/channel/UCTtKoAaBlfgX-eOoSEqDf_w" target="_blank"><img src="/images/social/youtube-gray.png" style="padding-top: 3px; width: 40px;" alt=""></a>
+				</div>
+			</div-->
+		</div>
+	</footer>
+<div class="fdv"></div>	</div>
+		</div>
+ 	<script>
+jQuery('.item-111 ul').css('width','210px');
+</script>
+	<script type="text/javascript">
+var _gaq = _gaq || [];
+
+
+
+  _gaq.push(['_setAccount', 'UA-44423568-1']);
+
+
+
+  _gaq.push(['_trackPageview']);
+
+
+
+
+
+
+
+  (function() {
+
+
+
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+
+
+
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+
+
+
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+
+
+
+  })();
+
+
+
+
+
+
+	//alert ($('#subj option:selected').text());
+</script>
+ 
+</body>
+</html>
