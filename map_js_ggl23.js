@@ -30,17 +30,22 @@ $(document).ready(function ()
     let container = null;
     let content = null;
     
-    $('#inch').remove();
-    var inch = $('<div id="inch" style="width:1in; background-color: green; position: absolute; display: block; visibility: hidden;">.</div>')[0];
-    document.body.append(inch);
-    function getInchDiag () { // formula: PIXEL = INCHES / (1 / DPI);
+    //$('#inch').remove();
+    //var inch = $('<div id="inch" style="width: 1in; height: 1in; background-color: green; position: absolute; display: block; visibility: hidden;">.</div>')[0];
+    //document.body.append(inch);
+    let getInchDiagWas = 0;
+    window.getInchDiag = function getInchDiag () { // formula: PIXEL = INCHES / (1 / DPI);
         function getPxDiag () {
            var scW = screen.width, scH = screen.height;
-           //return Math.hypot(scW, scH); // not on IE
            return Math.sqrt( Math.pow(scW, 2) + Math.pow(scH, 2) );
         }
-        var DPI = inch.clientWidth;
-        return getPxDiag() * (1/DPI);
+        if (getInchDiagWas != 0) {
+            //$(inch).html('' + getInchDiagWas);  $(inch).css({visibility: 'visible'});
+            return getInchDiagWas;
+        }
+        var DPI = 100 * (!!window.devicePixelRatio ? window.devicePixelRatio : 1); /// inch is always wrong 96 px, but must be 72..120 px. ///inch.clientWidth * window.devicePixelRatio;
+        //var DPI_h = inch.clientHeight;
+        return getInchDiagWas = Math.round((getPxDiag() * (1/DPI) * 100)) / 100.0;
     };
     
   	$('.item-111').removeClass('active');
@@ -400,7 +405,8 @@ $(document).ready(function ()
                 lastMissed = wasClickedTrigger;
                 
                 setTimeout(function () {
-                    if (!!window.navigator && ((!!navigator.userAgentData && navigator.userAgentData.mobile === false) || getInchDiag() > 9.5)) { // infowindow only for desktop
+                    console.log('Inch Diag: ', getInchDiag());
+                    if (!!window.navigator && (getInchDiag() > 4 && (!!navigator.userAgentData && (navigator.userAgentData.mobile === false || getInchDiag() > 9.5) && screen.width > screen.height)) && document.body.clientHeight * document.body.clientWidth >= 640 * 480) { // infowindow only for desktop
                         // Info: new Ext.window.Window({}) is actually same as Ext.create('Ext.window.Window', {});
                         window.windowDock = window.windowDock || new DockInfoWindow('info_windows', Ext.window.Window); ///
                         window.windowDock.add({
