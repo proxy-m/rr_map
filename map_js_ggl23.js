@@ -24,6 +24,9 @@ if (!window.polyfillNavigatorUserAgentData) {
         console.error('[ERR] No user-agent-data (desktop/mobile) !!!');
     }
 }
+window.isMobile = function isMobile() {
+    return !( !!window.navigator && (getInchDiag() > 4 && (!!navigator.userAgentData && (navigator.userAgentData.mobile === false || getInchDiag() > 9.5) && screen.width > screen.height)) && document.body.clientHeight * document.body.clientWidth >= 640 * 480 );
+}
 
 $(document).ready(function () 
 {
@@ -406,7 +409,7 @@ $(document).ready(function ()
                 
                 setTimeout(function () {
                     console.log('Inch Diag: ', getInchDiag());
-                    if (!!window.navigator && (getInchDiag() > 4 && (!!navigator.userAgentData && (navigator.userAgentData.mobile === false || getInchDiag() > 9.5) && screen.width > screen.height)) && document.body.clientHeight * document.body.clientWidth >= 640 * 480) { // infowindow only for desktop
+                    if (!window.isMobile()) { // infowindow only for desktop
                         // Info: new Ext.window.Window({}) is actually same as Ext.create('Ext.window.Window', {});
                         window.windowDock = window.windowDock || new DockInfoWindow('info_windows', Ext.window.Window); ///
                         window.windowDock.add({
