@@ -19,6 +19,7 @@ function getClientHints(navigator) {
   let m2;
   // detect platform
   if ((m = /Windows NT (\d+(\.\d+)*)/.exec(platformInfo)) !== null) {
+    m2 = m[2] || m[1];
     platform = 'Windows';
     // see https://docs.microsoft.com/en-us/microsoft-edge/web-platform/how-to-detect-win11
     let nt2win = {
@@ -36,6 +37,7 @@ function getClientHints(navigator) {
       bitness = '64';
     }
   } else if ((m = /Android (\d+(\.\d+)*)/.exec(platformInfo)) !== null) {
+    m2 = m[2] || m[1];
     platform = 'Android';
     platformVersion = padVersion(m[1]);
     if ((m2 = /Linux (\w+)/.exec(navigator.platform)) !== null) {
@@ -46,20 +48,25 @@ function getClientHints(navigator) {
       }
     }
   } else if ((m = /(iPhone|iPod touch); CPU iPhone OS (\d+(_\d+)*)/.exec(platformInfo)) !== null) {
+    m2 = m[2] || m[1];
     // see special notes at https://www.whatismybrowser.com/guides/the-latest-user-agent/safari
     platform = 'iOS';
     platformVersion = padVersion(m[2].replace(/_/g, '.'));
   } else if ((m = /(iPad); CPU OS (\d+(_\d+)*)/.exec(platformInfo)) !== null) {
+    m2 = m[2] || m[1];
     platform = 'iOS';
     platformVersion = padVersion(m[2].replace(/_/g, '.'));
   } else if ((m = /Macintosh; (Intel|\w+) Mac OS X (\d+(_\d+)*)/.exec(platformInfo)) !== null) {
+    m2 = m[2] || m[1];
     platform = 'macOS';
     platformVersion = padVersion(m2[2].replace(/_/g, '.'));
   } else if ((m = /Linux/.exec(platformInfo)) !== null) {
+    m2 = m[2] || m[1];
     platform = 'Linux';
     platformVersion = '';
     // TODO
   } else if ((m = /CrOS (\w+) (\d+(\.\d+)*)/.exec(platformInfo)) !== null) {
+    m2 = m[2] || m[1];
     platform = 'Chrome OS';
     platformVersion = padVersion(m[2]);
     m2 = parseArch(m[1]);

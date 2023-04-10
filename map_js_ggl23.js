@@ -19,7 +19,7 @@ window.lastWindowCoord = null;
 if (!window.polyfillNavigatorUserAgentData) {
     try {
         requireJS2H('/deps/user-agent-data.js');
-        requireJS2H(function () { return window.polyfillNavigatorUserAgentData() });
+        requireJS2H(function () { window.polyfillNavigatorUserAgentData(); if (!navigator.userAgentData.brands || !navigator.userAgentData.brands.length) { Object.defineProperty(navigator, 'userAgentData', { get: () => ponyfillNavigatorUserAgentData() });  } });
     } catch (e6545243536) {
         console.error('[ERR] No user-agent-data (desktop/mobile) !!!');
     }
