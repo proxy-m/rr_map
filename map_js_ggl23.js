@@ -477,41 +477,6 @@ $(document).ready(function ()
 
     }
     
-    function getWorldRating (dt, title, i) {
-        if (!dt) {
-            return undefined;
-        }
-        if (!title && (!i || i == 0 || i < 0)) {
-            return null;
-        }
-        if (!title || title === true || Array.isArray(title) || !title.length || title.trim().length == 0) {
-            title = null;
-        } else if (!i || i == 0 || i < 0) {
-            i = 0; // dt starts from index 1
-        }
-        
-        if (i > 0 && !title) {
-            title = dt[i]['univ_name'];
-        } else {
-            i = -1;
-            for (let j=1; !!dt[j]; ++j) {
-                if (dt[j]['univ_name'] == title) {
-                    i = j;
-                    break;
-                }
-            }
-        }
-        if (i <= 0 || dt[i]['univ_name'] != title) {
-            console.warn('You should use only one of arguments: title, i');
-            return null;
-        }
-        return {
-            "label": dt[i]['O_WR'],
-            "i": i,
-            "title": title,
-        };
-    }
-    
     window.lastURL = '';
 	function initMap (forceFull)
 	{
@@ -773,7 +738,7 @@ $(document).ready(function ()
 								scale=2;	
 							}
 					}
-                
+                //////////////////////////
                 if (window.mappanel && window.mappanel.map && window.mappanel.map.setView && window.ol && ol.View) {
                     let pos = [coord.lng, coord.lat]; /// JSON.parse('['+record.data['cord']+']');
                     let city = ol.proj.fromLonLat(pos);
