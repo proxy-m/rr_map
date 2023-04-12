@@ -159,88 +159,9 @@ class UnivDataService {
 	  	 			{
 						//alert(data[4][i]);
 						dt[i]=[]; //dtmap=[];
-						
-						dt[i]['univ_name']=$.trim(data[1][i]['univ_name']);
-						dt[i]['country']=data[1][i]['country'];
-						dt[i]['region']=data[1][i]['region'];
-						dt[i]['Students']=data[1][i]['Students'];
-						dt[i]['Faculty']=data[1][i]['Faculty'];
-						dt[i]['FS']=data[1][i]['FS'];
-						dt[i]['flag']=data[1][i]['flag'];
-						dt[i]['logo']=data[1][i]['logo'];
-						dt[i]['loc']=data[1][i]['loc'];
-						dt[i]['found']=data[1][i]['found'];
-						dt[i]['sh_nm']=data[1][i]['sh_nm'];
-						dt[i]['type']=data[1][i]['type'];
-						dt[i]['website']=data[1][i]['website'];
-                        dt[i]['id_univ']=data[1][i]['id_univ']; ///
-						
-						var crd=data[1][i]['cord'].split(',');
-						dt[i]['lat']=crd[0];
-						dt[i]['lng']=crd[1];
-						//if(Number(cntr)==45)
-						//{alert(dt[i]['lat']);}
-						//alert(data[1][i]['cord']+'\n'+dt[i]['lat']+'\n'+dt[i]['lng']);
-						dt[i]['nm_page']=data[1][i]['nm_page'];
-						dt[i]['O_CR']=data[1][i]['O_CR'];dt[i]['League']=data[1][i]['League'];
-						dt[i]['O_WR']=data[1][i]['O_WR'];dt[i]['O_WS']=data[1][i]['O_WS'];
-						dt[i]['O_TR']=data[1][i]['O_TR'];dt[i]['O_TS']=data[1][i]['O_TS'];
-						dt[i]['O_RR']=data[1][i]['O_RR'];dt[i]['O_RS']=data[1][i]['O_RS'];
-						dt[i]['O_IR']=data[1][i]['O_IR'];dt[i]['O_IS']=data[1][i]['O_IS'];
-						dt[i]['O_FR']=data[1][i]['O_FR'];dt[i]['O_FS']=data[1][i]['O_FS'];
-						
-						dt[i]['O_80p']=data[1][i]['O_80p'];
-						dt[i]['O_O_s']=data[1][i]['O_O_s'];dt[i]['O_Color1']=data[1][i]['O_Color1'];
-						dt[i]['O_Color3']=data[1][i]['O_Color3'];dt[i]['O_Color4']=data[1][i]['O_Color4'];
-						
-						dt[i]['T_Os']=data[1][i]['T_Os'];dt[i]['T_Color1']=data[1][i]['T_Color1'];
-						dt[i]['T_Color3']=data[1][i]['T_Color3'];dt[i]['T_Color4']=data[1][i]['T_Color4'];
-						
-						dt[i]['R_Os']=data[1][i]['R_Os'];dt[i]['R_Color1']=data[1][i]['R_Color1'];
-						dt[i]['R_Color3']=data[1][i]['R_Color3'];dt[i]['R_Color3']=data[1][i]['R_Color3'];
-						
-						dt[i]['I_Os']=data[1][i]['I_Os'];dt[i]['I_Color1']=data[1][i]['I_Color1'];
-						dt[i]['I_Color3']=data[1][i]['I_Color3'];dt[i]['I_Color4']=data[1][i]['I_Color4'];
-						
-						dt[i]['F_Os']=data[1][i]['F_Os'];dt[i]['F_Color1']=data[1][i]['F_Color1'];
-						dt[i]['F_Color3']=data[1][i]['F_Color3'];dt[i]['F_Color4']=data[1][i]['F_Color4'];
-						
-						switch (dt[i]['League'])
-						{
-							case 'Diamond League':dt[i]['icon']='diamond';dt[i]['iconurl']='./images_rur/Konf/diamondw.png';break;
-				 			case 'Golden League':dt[i]['icon']='gold';dt[i]['iconurl']='./images_rur/Konf/goldw.png';break;
-				 			case 'Silver League':dt[i]['icon']='silver';dt[i]['iconurl']='./images_rur/Konf/silverw.png';break;
-				 			case 'Bronze League':dt[i]['icon']='bronze';dt[i]['iconurl']='./images_rur/Konf/bronzew.png';break;
-				 			case 'Copper League':dt[i]['icon']='cooper';dt[i]['iconurl']='./images_rur/Konf/cooperw.png';break;
-				 			case 'World League':dt[i]['icon']='world';dt[i]['iconurl']='./images_rur/Konf/worldw.png';break;
-						  	default:dt[i]['icon']='world';dt[i]['iconurl']='./images_rur/Konf/worldw.png';
-						}
-
-						dt[i]['info']='<div id="dt_i' + i + '" style="overflow:auto;font-family:arial; border:2px '+ dt[i]['O_Color1']+ 'solid; border: 2px '+ dt[i]['O_Color1']+ ' solid;padding:10px;padding-right:32px;padding-bottom:16px"><table style="font-family:arial;width:560px;height:300px;border-collapse:collapse" class="style5" border="0"><tbody><tr>';
-						dt[i]['info']+='<td style="font-family:arial;text-align:center" rowspan="10" colspan="2"><img src="'+ dt[i]['logo']+ '" style="vertical-align:top;width: 8em;height: 8em;" ></td><td colspan="4" style="font-family:arial;text-align:left"><span style="font-family:arial;color:'+ dt[i]['O_Color1']+ ';font-size:17px"><strong>'+ dt[i]['univ_name']+ '</strong></span></td></tr>';
-						dt[i]['info']+='<tr><td style="width:110px"><span style="font-size:9pt"><b>Foundation year:</b></span></td>';
-						dt[i]['info']+='<td style="width:98px"><span style="font-size:9pt">'+ dt[i]['found']+ '</span></td>';
-						dt[i]['info']+='<td rowspan="9" colspan="2" style="font-family:arial;text-align:center"><img src="'+ dt[i]['flag']+ '" style="vertical-align:top" height="80"><br><span style="font-family:arial;font-size:10px"></span><span style="font-family:arial;color:'+ dt[i]['O_Color1']+ '"><strong></strong></span></td></tr>';
-						dt[i]['info']+='<tr><td style="width:110px"><span style="font-size:9pt"><b>Short name:</b></span></td><td style="width:98px"><span style="font-size:9pt">'+ dt[i]['sh_nm']+ '</span></td></tr>';
-						dt[i]['info']+='<tr><td style="width:110px"><span style="font-size:9pt"><b>Type:</b></span></td><td style="width:98px"><span style="font-size:9pt">'+ dt[i]['type']+ '</span></td></tr>';
-						dt[i]['info']+='<tr><td style="width:110px"><span style="font-size:9pt"><b>Students:</b></span></td><td style="width:98px"><span style="font-size:9pt">'+ dt[i]['Students']+ '</span></td></tr>';
-						dt[i]['info']+='<tr><td style="width:110px"><span style="font-size:9pt"><b>Faculty:<b></b></b></span></td><td style="width:98px"><span style="font-size:9pt">'+ dt[i]['Faculty']+ '</span></td></tr>';
-						dt[i]['info']+='<tr><td style="width:110px"><span style="font-size:9pt"><b>Web-site:<b></b></b></span></td><td style="width:98px"><span style="font-size:9pt"><a href="http://'+ dt[i]['website']+ '" target="_blank">'+ dt[i]['website']+ '</a></span></td></tr>';
-						dt[i]['info']+='<tr><td style="width:110px"><span style="font-size:9pt"><b>Region:<b></b></b></span></td><td style="width:98px"><span style="font-size:9pt">'+ dt[i]['region']+ '</span></td></tr>';
-						dt[i]['info']+='<tr><td style="width:110px"><span style="font-size:9pt"><b>Location:<b></b></b></span></td><td style="width:98px"><span style="font-size:9pt">'+ dt[i]['loc']+ '</span></td></tr>';
-						dt[i]['info']+='<tr><td colspan="6">&nbsp;</td></tr><tr><td></td><td colspan="4" style="font-family:arial;border-top:'+ dt[i]['O_Color1']+ ' 2px solid"></td><td></td></tr>';
-						dt[i]['info']+='<tr><td style="font-family:arial;width:114px;text-align:center" rowspan="6"><div style="font-family:arial;height:85px;width:85px"><img src="'+ dt[i]['O_80p']+ '" style=";width: 5em;height: 5em;" alt=""><br><div style="font-family:arial;color:#fff;font-size:14pt;font-weight:bold;padding-top:25px">'+ dt[i]['O_WR']+ '</div></div>';
-						dt[i]['info']+='<div style="font-family:arial;width:80px"><strong><span style="color:'+ dt[i]['O_Color1']+ '"><span style="font-size:13pt">'+ dt[i]['O_WR']+ '</span></span></strong></div><div style="font-family:arial;width:80px"><strong><span style="color:'+ dt[i]['O_Color1']+ '"><span style="font-size:13pt">'+ dt[i]['League']+ '</span></span></strong></div></td>';
-						dt[i]['info']+='<td style="font-family:arial;width:50px;height:7px"></td><td class="style6" style="width:110px;height:7px"><span style="font-size:9pt"><b>Dimension</b></span></td><td class="style6" style="font-family:arial;width:98px;height:7px"><span style="font-size:9pt"><b>Rank</b></span></td><td style="font-family:arial;width:63px;height:7px" class="style6"><span style="font-size:9pt"><b>Score</b></span></td><td style="font-family:arial;text-align:center" rowspan="4"><p class="style1"><span style="color:'+ dt[i]['O_Color1']+ '"><strong>Country rank</strong></span></p><p><span style="font-size:12pt"><span style="color:'+ dt[i]['O_Color1']+ '"><strong>'+ dt[i]['O_CR']+ '</strong></span></span></p></td></tr>';
-						dt[i]['info']+='<tr style="font-family:arial;height:0px"><td colspan="4" style="font-family:arial;border-top:'+ dt[i]['O_Color1']+ ' 2px solid"></td><td></td></tr>';
-						dt[i]['info']+='<tr style="font-family:arial;background:'+ dt[i]['O_Color4']+ ';height:35px"><td style="font-family:arial;width:50px" class="style1"><img alt="" src="'+ dt[i]['O_O_s']+ '" style="font-family:arial;float:right"></td><td class="style6" style="width:110px"><span style="font-size:9pt">Overall</span></td><td class="style6" style="width:98px;height:9px"><span style="font-size:9pt">'+ dt[i]['O_WR']+ '</span></td><td class="style6" style="width:98px;height:9px"><span style="font-size:9pt">'+ dt[i]['O_WS']+ '</span></td></tr>';
-						dt[i]['info']+='<tr style="font-family:arial;height:20px;background:'+ dt[i]['T_Color4']+ '"><td style="font-family:arial;width:50px"><img alt="" src="'+ dt[i]['T_Os']+ '" style="font-family:arial;float:right"></td><td style="width:110px"><span style="font-size:9pt">Teaching</span></td><td class="style6" style="width:98px"><span style="font-size:9pt">'+ dt[i]['O_TR']+ '</td><td class="style6" style="width:98px"><span style="font-size:9pt">'+ dt[i]['O_TS']+ '</span></td></tr>';
-						dt[i]['info']+='<tr style="font-family:arial;background:'+ dt[i]['R_Color4']+ '"><td style="font-family:arial;width:50px;height:22px"><img alt="" src="'+ dt[i]['R_Os']+ '" style="font-family:arial;float:right"></td><td style="width:110px;height:30px"><span style="font-size:9pt">Research</span></td><td class="style6" style="width:98px;height:9px"><span style="font-size:9pt">'+ dt[i]['O_RR']+ '</td><td class="style6" style="width:98px;height:9px"><span style="font-size:9pt">'+ dt[i]['O_RS']+ '</span></td><td style="font-family:arial;text-align:center;background:#ffffff" rowspan="3"><span style="font-family:arial;font-size:10px"><span style="font-family:arial;color:#999999"><a href="'+ leftur + dt[i]['nm_page']+ '.html?sort=O&year='+ (Number(yr)+2009)+ '&subject='+sv+hs+'" target="_blank">View full university profile</a></span></span></td></tr>';
-						dt[i]['info']+='<tr style="font-family:arial;height:26px;background:'+ dt[i]['I_Color4']+ '"><td style="font-family:arial;width:50px;height:21px"><img alt="" src="'+ dt[i]['I_Os']+ '" style="font-family:arial;float:right"></td><td class="style6" style="width:110px;height:30px"><span style="font-size:9pt">Internationalization</span></td><td class="style6" style="width:98px;height:9px"><span style="font-size:9pt">'+ dt[i]['O_IR']+ '</span></td><td class="style6" style="width:98px;height:9px"><span style="font-size:9pt">'+ dt[i]['O_IS']+ '</span></td></tr>';
-						dt[i]['info']+='<tr style="font-family:arial;background:'+ dt[i]['F_Color4']+ ';height:26px"><td style="font-family:arial;background:#ffffff"></td><td style="font-family:arial;width:50px;height:9px"><img alt="" src="'+ dt[i]['F_Os']+ '" style="font-family:arial;float:right"></td><td class="style6" style="width:110px;height:30px"><span style="font-size:9pt">Finances</span></td><td class="style6" style="width:98px;height:9px"><span style="font-size:9pt">'+ dt[i]['O_FR']+ '</span></td><td class="style6" style="width:98px;height:9px"><span style="font-size:9pt">'+ dt[i]['O_FS']+ '</span></td></tr></tbody></table></div>';
-						
-						//dt[i]['info']=data[4][i];
-						//alert(dt[i]['info']);
+                        dt[i] = this.genBasicData(i, data[1], dt)[i];
+                        dt[i] = this.genLeagueStyles(i, data[1], dt)[i];
+                        dt[i] = this.genCardInfo(i, data[1], dt)[i];
 					}
                     
                     ///if (!this.dtWorld || this.dtWorld.length !== dt.length) {
@@ -385,6 +306,104 @@ class UnivDataService {
         }.bind(this));
         
         return this.requestAjax;
+    }
+    
+    genBasicData (i, data_1, dt) {
+						if (!dt) {
+							dt = [];
+						}
+						if (!dt[i]) {
+							dt[i] = [];
+						}
+						dt[i]['univ_name']=$.trim(data_1[i]['univ_name']);
+						dt[i]['country']=data_1[i]['country'];
+						dt[i]['region']=data_1[i]['region'];
+						dt[i]['Students']=data_1[i]['Students'];
+						dt[i]['Faculty']=data_1[i]['Faculty'];
+						dt[i]['FS']=data_1[i]['FS'];
+						dt[i]['flag']=data_1[i]['flag'];
+						dt[i]['logo']=data_1[i]['logo'];
+						dt[i]['loc']=data_1[i]['loc'];
+						dt[i]['found']=data_1[i]['found'];
+						dt[i]['sh_nm']=data_1[i]['sh_nm'];
+						dt[i]['type']=data_1[i]['type'];
+						dt[i]['website']=data_1[i]['website'];
+                        dt[i]['id_univ']=data_1[i]['id_univ']; ///
+						
+						var crd=data_1[i]['cord'].split(',');
+						dt[i]['lat']=crd[0];
+						dt[i]['lng']=crd[1];
+						//if(Number(cntr)==45)
+						//{alert(dt[i]['lat']);}
+						//alert(data_1[i]['cord']+'\n'+dt[i]['lat']+'\n'+dt[i]['lng']);
+                        return dt;
+    }
+    
+    genLeagueStyles (i, data_1, dt) {
+						dt[i]['nm_page']=data_1[i]['nm_page'];
+						dt[i]['O_CR']=data_1[i]['O_CR'];dt[i]['League']=data_1[i]['League'];
+						dt[i]['O_WR']=data_1[i]['O_WR'];dt[i]['O_WS']=data_1[i]['O_WS'];
+						dt[i]['O_TR']=data_1[i]['O_TR'];dt[i]['O_TS']=data_1[i]['O_TS'];
+						dt[i]['O_RR']=data_1[i]['O_RR'];dt[i]['O_RS']=data_1[i]['O_RS'];
+						dt[i]['O_IR']=data_1[i]['O_IR'];dt[i]['O_IS']=data_1[i]['O_IS'];
+						dt[i]['O_FR']=data_1[i]['O_FR'];dt[i]['O_FS']=data_1[i]['O_FS'];
+						
+						dt[i]['O_80p']=data_1[i]['O_80p'];
+						dt[i]['O_O_s']=data_1[i]['O_O_s'];dt[i]['O_Color1']=data_1[i]['O_Color1'];
+						dt[i]['O_Color3']=data_1[i]['O_Color3'];dt[i]['O_Color4']=data_1[i]['O_Color4'];
+						
+						dt[i]['T_Os']=data_1[i]['T_Os'];dt[i]['T_Color1']=data_1[i]['T_Color1'];
+						dt[i]['T_Color3']=data_1[i]['T_Color3'];dt[i]['T_Color4']=data_1[i]['T_Color4'];
+						
+						dt[i]['R_Os']=data_1[i]['R_Os'];dt[i]['R_Color1']=data_1[i]['R_Color1'];
+						dt[i]['R_Color3']=data_1[i]['R_Color3'];dt[i]['R_Color3']=data_1[i]['R_Color3'];
+						
+						dt[i]['I_Os']=data_1[i]['I_Os'];dt[i]['I_Color1']=data_1[i]['I_Color1'];
+						dt[i]['I_Color3']=data_1[i]['I_Color3'];dt[i]['I_Color4']=data_1[i]['I_Color4'];
+						
+						dt[i]['F_Os']=data_1[i]['F_Os'];dt[i]['F_Color1']=data_1[i]['F_Color1'];
+						dt[i]['F_Color3']=data_1[i]['F_Color3'];dt[i]['F_Color4']=data_1[i]['F_Color4'];
+						
+						switch (dt[i]['League'])
+						{
+							case 'Diamond League':dt[i]['icon']='diamond';dt[i]['iconurl']='./images_rur/Konf/diamondw.png';break;
+				 			case 'Golden League':dt[i]['icon']='gold';dt[i]['iconurl']='./images_rur/Konf/goldw.png';break;
+				 			case 'Silver League':dt[i]['icon']='silver';dt[i]['iconurl']='./images_rur/Konf/silverw.png';break;
+				 			case 'Bronze League':dt[i]['icon']='bronze';dt[i]['iconurl']='./images_rur/Konf/bronzew.png';break;
+				 			case 'Copper League':dt[i]['icon']='cooper';dt[i]['iconurl']='./images_rur/Konf/cooperw.png';break;
+				 			case 'World League':dt[i]['icon']='world';dt[i]['iconurl']='./images_rur/Konf/worldw.png';break;
+						  	default:dt[i]['icon']='world';dt[i]['iconurl']='./images_rur/Konf/worldw.png';
+						}
+                        return dt;
+    }
+    
+    genCardInfo (i, data_1, dt) {
+						dt[i]['info']='<div id="dt_i' + i + '" style="overflow:auto;font-family:arial; border:2px '+ dt[i]['O_Color1']+ 'solid; border: 2px '+ dt[i]['O_Color1']+ ' solid;padding:10px;padding-right:32px;padding-bottom:16px"><table style="font-family:arial;width:560px;height:300px;border-collapse:collapse" class="style5" border="0"><tbody><tr>';
+						dt[i]['info']+='<td style="font-family:arial;text-align:center" rowspan="10" colspan="2"><img src="'+ dt[i]['logo']+ '" style="vertical-align:top;width: 8em;height: 8em;" ></td><td colspan="4" style="font-family:arial;text-align:left"><span style="font-family:arial;color:'+ dt[i]['O_Color1']+ ';font-size:17px"><strong>'+ dt[i]['univ_name']+ '</strong></span></td></tr>';
+						dt[i]['info']+='<tr><td style="width:110px"><span style="font-size:9pt"><b>Foundation year:</b></span></td>';
+						dt[i]['info']+='<td style="width:98px"><span style="font-size:9pt">'+ dt[i]['found']+ '</span></td>';
+						dt[i]['info']+='<td rowspan="9" colspan="2" style="font-family:arial;text-align:center"><img src="'+ dt[i]['flag']+ '" style="vertical-align:top" height="80"><br><span style="font-family:arial;font-size:10px"></span><span style="font-family:arial;color:'+ dt[i]['O_Color1']+ '"><strong></strong></span></td></tr>';
+						dt[i]['info']+='<tr><td style="width:110px"><span style="font-size:9pt"><b>Short name:</b></span></td><td style="width:98px"><span style="font-size:9pt">'+ dt[i]['sh_nm']+ '</span></td></tr>';
+						dt[i]['info']+='<tr><td style="width:110px"><span style="font-size:9pt"><b>Type:</b></span></td><td style="width:98px"><span style="font-size:9pt">'+ dt[i]['type']+ '</span></td></tr>';
+						dt[i]['info']+='<tr><td style="width:110px"><span style="font-size:9pt"><b>Students:</b></span></td><td style="width:98px"><span style="font-size:9pt">'+ dt[i]['Students']+ '</span></td></tr>';
+						dt[i]['info']+='<tr><td style="width:110px"><span style="font-size:9pt"><b>Faculty:<b></b></b></span></td><td style="width:98px"><span style="font-size:9pt">'+ dt[i]['Faculty']+ '</span></td></tr>';
+						dt[i]['info']+='<tr><td style="width:110px"><span style="font-size:9pt"><b>Web-site:<b></b></b></span></td><td style="width:98px"><span style="font-size:9pt"><a href="http://'+ dt[i]['website']+ '" target="_blank">'+ dt[i]['website']+ '</a></span></td></tr>';
+						dt[i]['info']+='<tr><td style="width:110px"><span style="font-size:9pt"><b>Region:<b></b></b></span></td><td style="width:98px"><span style="font-size:9pt">'+ dt[i]['region']+ '</span></td></tr>';
+						dt[i]['info']+='<tr><td style="width:110px"><span style="font-size:9pt"><b>Location:<b></b></b></span></td><td style="width:98px"><span style="font-size:9pt">'+ dt[i]['loc']+ '</span></td></tr>';
+						dt[i]['info']+='<tr><td colspan="6">&nbsp;</td></tr><tr><td></td><td colspan="4" style="font-family:arial;border-top:'+ dt[i]['O_Color1']+ ' 2px solid"></td><td></td></tr>';
+						dt[i]['info']+='<tr><td style="font-family:arial;width:114px;text-align:center" rowspan="6"><div style="font-family:arial;height:85px;width:85px"><img src="'+ dt[i]['O_80p']+ '" style=";width: 5em;height: 5em;" alt=""><br><div style="font-family:arial;color:#fff;font-size:14pt;font-weight:bold;padding-top:25px">'+ dt[i]['O_WR']+ '</div></div>';
+						dt[i]['info']+='<div style="font-family:arial;width:80px"><strong><span style="color:'+ dt[i]['O_Color1']+ '"><span style="font-size:13pt">'+ dt[i]['O_WR']+ '</span></span></strong></div><div style="font-family:arial;width:80px"><strong><span style="color:'+ dt[i]['O_Color1']+ '"><span style="font-size:13pt">'+ dt[i]['League']+ '</span></span></strong></div></td>';
+						dt[i]['info']+='<td style="font-family:arial;width:50px;height:7px"></td><td class="style6" style="width:110px;height:7px"><span style="font-size:9pt"><b>Dimension</b></span></td><td class="style6" style="font-family:arial;width:98px;height:7px"><span style="font-size:9pt"><b>Rank</b></span></td><td style="font-family:arial;width:63px;height:7px" class="style6"><span style="font-size:9pt"><b>Score</b></span></td><td style="font-family:arial;text-align:center" rowspan="4"><p class="style1"><span style="color:'+ dt[i]['O_Color1']+ '"><strong>Country rank</strong></span></p><p><span style="font-size:12pt"><span style="color:'+ dt[i]['O_Color1']+ '"><strong>'+ dt[i]['O_CR']+ '</strong></span></span></p></td></tr>';
+						dt[i]['info']+='<tr style="font-family:arial;height:0px"><td colspan="4" style="font-family:arial;border-top:'+ dt[i]['O_Color1']+ ' 2px solid"></td><td></td></tr>';
+						dt[i]['info']+='<tr style="font-family:arial;background:'+ dt[i]['O_Color4']+ ';height:35px"><td style="font-family:arial;width:50px" class="style1"><img alt="" src="'+ dt[i]['O_O_s']+ '" style="font-family:arial;float:right"></td><td class="style6" style="width:110px"><span style="font-size:9pt">Overall</span></td><td class="style6" style="width:98px;height:9px"><span style="font-size:9pt">'+ dt[i]['O_WR']+ '</span></td><td class="style6" style="width:98px;height:9px"><span style="font-size:9pt">'+ dt[i]['O_WS']+ '</span></td></tr>';
+						dt[i]['info']+='<tr style="font-family:arial;height:20px;background:'+ dt[i]['T_Color4']+ '"><td style="font-family:arial;width:50px"><img alt="" src="'+ dt[i]['T_Os']+ '" style="font-family:arial;float:right"></td><td style="width:110px"><span style="font-size:9pt">Teaching</span></td><td class="style6" style="width:98px"><span style="font-size:9pt">'+ dt[i]['O_TR']+ '</td><td class="style6" style="width:98px"><span style="font-size:9pt">'+ dt[i]['O_TS']+ '</span></td></tr>';
+						dt[i]['info']+='<tr style="font-family:arial;background:'+ dt[i]['R_Color4']+ '"><td style="font-family:arial;width:50px;height:22px"><img alt="" src="'+ dt[i]['R_Os']+ '" style="font-family:arial;float:right"></td><td style="width:110px;height:30px"><span style="font-size:9pt">Research</span></td><td class="style6" style="width:98px;height:9px"><span style="font-size:9pt">'+ dt[i]['O_RR']+ '</td><td class="style6" style="width:98px;height:9px"><span style="font-size:9pt">'+ dt[i]['O_RS']+ '</span></td><td style="font-family:arial;text-align:center;background:#ffffff" rowspan="3"><span style="font-family:arial;font-size:10px"><span style="font-family:arial;color:#999999"><a href="'+ leftur + dt[i]['nm_page']+ '.html?sort=O&year='+ (Number(yr)+2009)+ '&subject='+sv+hs+'" target="_blank">View full university profile</a></span></span></td></tr>';
+						dt[i]['info']+='<tr style="font-family:arial;height:26px;background:'+ dt[i]['I_Color4']+ '"><td style="font-family:arial;width:50px;height:21px"><img alt="" src="'+ dt[i]['I_Os']+ '" style="font-family:arial;float:right"></td><td class="style6" style="width:110px;height:30px"><span style="font-size:9pt">Internationalization</span></td><td class="style6" style="width:98px;height:9px"><span style="font-size:9pt">'+ dt[i]['O_IR']+ '</span></td><td class="style6" style="width:98px;height:9px"><span style="font-size:9pt">'+ dt[i]['O_IS']+ '</span></td></tr>';
+						dt[i]['info']+='<tr style="font-family:arial;background:'+ dt[i]['F_Color4']+ ';height:26px"><td style="font-family:arial;background:#ffffff"></td><td style="font-family:arial;width:50px;height:9px"><img alt="" src="'+ dt[i]['F_Os']+ '" style="font-family:arial;float:right"></td><td class="style6" style="width:110px;height:30px"><span style="font-size:9pt">Finances</span></td><td class="style6" style="width:98px;height:9px"><span style="font-size:9pt">'+ dt[i]['O_FR']+ '</span></td><td class="style6" style="width:98px;height:9px"><span style="font-size:9pt">'+ dt[i]['O_FS']+ '</span></td></tr></tbody></table></div>';
+						
+						//dt[i]['info']=data[4][i];
+						//alert(dt[i]['info']);
+                        return dt;      
     }
 
 };
