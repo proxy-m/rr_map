@@ -1,4 +1,5 @@
 'use strict';
+'use strict';
 
 let wasClickedTrigger = 0;
 let ti = null;

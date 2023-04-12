@@ -5,6 +5,7 @@ var tphcord=new Array;	//массив координат поиска
 var tphunnm=new Array;	//массив имен вузов поиска
 var cordtph=new Array;	//массив координат вузов по поиску
 var map=new Object;
+var zummap;
 var data;
 //this.dtcntr //var dtcntr=new Array;	//массив данных стран для карт
 var n,sv,lftur,hs;
@@ -17,10 +18,10 @@ var code = null;
 ///var mrks_world = {};
 var data;
 
-var sb; // subject
-var yr; // year
-var cntr; // country
-var reg; // region
+window.sb = null; // subject
+window.yr = null; // year
+window.cntr = null; // country
+window.reg = null; // region
 
 var coord;
 var scale;
@@ -445,9 +446,8 @@ class UnivDataController {
                     //console.log('mrks[0][0]: ', mrks[0][0]);
                 }
                 this.mrks = mrks;
-				
-					if(+($('.mfilter-country select').val()) != 0 && +($('.mfilter-country select option:selected').val()) != 0) {
-                        this.dtcntr = this.countryList();
+					this.dtcntr = this.countryList();
+					if(+($('.mfilter-country select').val()) != 0 && +($('.mfilter-country select option:selected').val()) != 0 && !!this.dtcntr && this.dtcntr > 0) {
 						scale = +(this.dtcntr[$('.mfilter-country select option:selected').val()]['scale']);
 						crd = this.dtcntr[$('.mfilter-country select option:selected').val()]['cord'].split(',');
 						coord = { lat: +(crd[0]), lng: +(crd[1]) };
@@ -510,7 +510,9 @@ class UnivDataController {
             return err;
         }.bind(this));
         
-        return this.promise;
+        var res = this.promise;
+        this.promise = Promise.resolve(!0);
+        return res;
     }
     
     countryList () {
@@ -526,7 +528,7 @@ class UnivDataController {
 					this.dtcntr=[];
 					//var urlc='final/getunivdata_ymap.php?year='+yr+'&subj='+sb+'&reg='+reg+'&cntr='+cntr;
 					var urlc='./final/getcntrdata_gmap22.php?year='+yr+'&subj='+sb+'&reg='+reg+'&cntr='+cntr;
-                    if (this.oldUrlc === urlc && !!this.dtcntr && this.dtcntr.length > 0) {
+                    if (this.oldUrlc === urlc && !!this.dtcntr && this.dtcntr.length > 1) {
                         return this.dtcntr; ///
                     } else {
                         this.oldUrlc = urlc;
