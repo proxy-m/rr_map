@@ -1,5 +1,5 @@
 var yr,sb,cntr,reg,n,sv,lftur,hs;
-var dt=new Array;var dtmap=new Array; var dtrow=new Array;
+var dt=new Array;var dtmap=new Array;
 var tph = '';				//текст массива вузов для typehead
 var tphcord=new Array;	//массив координат поиска
 var tphunnm=new Array;	//массив имен вузов поиска
@@ -667,8 +667,6 @@ $(document).ready(function ()
             
 			if(Number(unnm.length)>0 && unnmA==(unnm + ' _' + dt[$('#tphsel').val()]['id_univ']))
 			{
-				//console.log(unnm+'\n'+unic +'\n'+dtrow[$('#tphsel').val()]); 
-				//console.log('dtrow #tphsel', dtrow[$('#tphsel').val()]); 
 				//console.log('uninfo', uninfo);
 				switch (unic)
 				{

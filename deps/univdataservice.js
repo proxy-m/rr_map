@@ -1,7 +1,7 @@
 'use strict';
 
 var yr,sb,cntr,reg,n,sv,lftur,hs;
-var dt=new Array;var dtmap=new Array; var dtrow=new Array;
+var dt=new Array;var dtmap=new Array; ///var dtrow=new Array;
 var tph = '';				//текст массива вузов для typehead
 var tphcord=new Array;	//массив координат поиска
 var tphunnm=new Array;	//массив имен вузов поиска
@@ -25,6 +25,7 @@ class UnivDataService {
             return UnivDataService._instance;
         }
         this.forceFull = false;
+        this.firstLoad = true;
         this.url = null;
         this.requestAjax = null;
         this.yearWorld = -1;
@@ -90,6 +91,14 @@ class UnivDataService {
         return this.mrks;
     }
     
+    clearSearchIngredients (tphselId) {
+        $('#'+tphselId).html('');
+    }
+    
+    addSearchIngredient (tphselId, dt, i) {
+        $('#'+tphselId).append('<option value="'+i+'">' + dt[i]['univ_name'] + ' _' + dt[i]['id_univ'] +'</option>');
+    }
+    
     request () {
         this.requestAjax = $.ajax({
             "url": this.url, 
@@ -111,6 +120,7 @@ class UnivDataService {
             var dt = [];
             if (forceFull && !stateParamsNew.pos) {
                 this.dtWorld = dt;
+                this.firstLoad = false;
             }
             var tph;
             this.dt = dt;
@@ -235,30 +245,29 @@ class UnivDataService {
                     
                     ///if (!this.dtWorld || this.dtWorld.length !== dt.length) {
                         tph = '';
-                        dtrow = [];
+                        ///dtrow = [];
                     ///}
+                    
+                    if (forceFull && !stateParamsNew.pos) {
+                        this.clearSearchIngredients('tphsel');
+                    }
                     
                     //for(var i=1;i<=dtFullTmp.length-1;i++) {
                     for(var i=1;i<=dt.length-1;i++) {
                         //if (!!dtrow[i] && !!this.dtWorld && this.dtWorld.length === dt.length) { // TODO reset dtrow and tph only after year change
                         //    continue;
                         //}
-                        dtrow[i]=[];
-                        //dtrow[i]={Number(dt[i]['lat']),Number(dt[i]['lng']),dt[i]['info'],dt[i]['icon']};
+                        ///dtrow[i]=[];
+						///dtrow[i].push(Number(dt[i]['lat']));
+						///dtrow[i].push(Number(dt[i]['lng']));
+						///dtrow[i].push(dt[i]['info']);
 						
-						dtrow[i].push(Number(dt[i]['lat']));
-						dtrow[i].push(Number(dt[i]['lng']));
-						dtrow[i].push(dt[i]['info']);
+						///dtrow[i].push(dt[i]['icon']);
+						tph = tph + '{ID:'+i+', Name: "' + dt[i]['univ_name'] + ' _' + dt[i]['id_univ'] + '"},';
 						
-						dtrow[i].push(dt[i]['icon']);
-						//dtrow[i].push(dt[i]['univ_name']);
-						//dtmap.push(dtrow[i]);
-						//alert(dtmap);
-						//alert(sv+'\n'+dt[i]['icon']+'\n'+ dt[i]['icon_pct']+'\n'+ dt[i]['info']);
-						//alert(dtrow[i]);
-						tph=tph+'{ID:'+i+', Name: "' + dt[i]['univ_name'] + ' _' + dt[i]['id_univ'] + '"},';
-						
-						$('#tphsel').append('<option value="'+i+'">' + dt[i]['univ_name'] + ' _' + dt[i]['id_univ'] +'</option>');
+                        if ((forceFull && !stateParamsNew.pos) || this.firstLoad) {
+                            this.addSearchIngredient('tphsel', dt, i);
+                        }
                         
                         cordtph[i]=[dt[i]['lat'],dt[i]['lng']];
                     }
@@ -369,6 +378,7 @@ class UnivDataService {
 					var tphtxt='$("#mapsrchvl").typeahead({autoSelect:false,source: ['+tph+'],displayField: "Name",valueField: "ID",limit:"20", afterSelect: function (item) { console.log("after selected: ", item); setTimeout(function () { $(\'input[type="button"]#mapsrchbtn,input[type="submit"]#mapsrchbtn\')[0].focus(); }, 100); return item; }, });';
 					eval(tphtxt);
                 }
+                this.firstLoad = false;
                 return data;
         }.bind(this), function onFail (err) {
             console.error('[ERR0] ', err);
