@@ -31,6 +31,7 @@ class UnivDataService {
         this.tphWorld = ''; // tph and tphtxt can be only about world
         this.dtWorld = []; // dtWorld (wider) and dt are different
         this.dt = null;
+        this.mrksWorld = [];
         this.mrks = [];
         
         
@@ -56,8 +57,8 @@ class UnivDataService {
         }
         this.stateParamsNew = urlToParams(this.url);
         if ((!!this.stateParamsNew.yr && this.yearWorld != +this.stateParamsNew.yr) || this.yearWorld != +this.stateParamsNew.year) {
-            this.dtWorld = [];
-            this.tphWorld = '';
+            ///this.dtWorld = []; // better to change after request finished
+            ///this.tphWorld = '';
             this.yearWorld = +this.stateParamsNew.yr || +this.stateParamsNew.year;
         }
         this.stateParamsNew.forceFull = this.forceFull;
@@ -79,6 +80,10 @@ class UnivDataService {
     
     getDt () {
         return this.dt;
+    }
+    
+    getMrksWorld () {
+        return this.mrksWorld;
     }
     
     getMrks () {
@@ -266,26 +271,46 @@ class UnivDataService {
 				///var mrkstr='var mrks=[';	
                 var konf=[];var infwnd=[];
                 var mrks=[];
-			
-				for(var i=0;i<n;i++)
-				{
-					konf[i]=dt[i+1]['iconurl'];
-					infwnd[i]=dt[i+1]['info'];
-                    let title = dt[i+1]['univ_name'];
-                    mrks.push([
-                        {lat: +((''+dt[i+1]['lat']).trim()), lng: +((''+dt[i+1]['lng']).trim())},
-                        `#${getWorldRating(dt, title, i + 1).label} - ${title}`, //`#${dt[i + 1]['League']} - ${title}`,
-                        dt[i+1]['iconurl'],
-                        dt[i+1],
-                        dt[i+1]['info'],
-                    ]);
-					///mrkstr+='[{lat:'+dt[i+1]['lat']+',lng:'+dt[i+1]['lng']+'},"'+dt[i+1]['univ_name']+'"],';
-					//alert(infwnd[i]);
-				}
-				///mrkstr+='];';
-				//alert(mrkstr);
-				///eval(mrkstr);
-                //console.log('mrks[0][0]: ', mrks[0][0]);
+                
+                var mrksWorldPart = $.extend(true, [], this.getMrksWorld() || this.getMrks());
+                if (!forceFull && !!mrksWorldPart && !!mrksWorldPart.length) {
+                    //dt = this.getDtWorld(); ///
+                    mrksWorldPart = mrksWorldPart.map(function (e1, i1) {
+                        for (var t=0; t<dt.length-1; ++t) {
+                            if (dt[t+1]['univ_name'] === e1[3]['univ_name']) {
+                                return e1;
+                            }
+                        }
+                        return false;
+                    }).filter(function (e1, i1) { return !!e1; });
+                    
+                    mrks = mrksWorldPart;
+                    //dt = this.getDt();
+                }
+                if (!mrks || !mrks.length) {
+                    mrksWorldPart = [];
+                    mrks = [];
+                    
+                    for(var i=0;i<n;i++)
+                    {
+                        //konf[i]=dt[i+1]['iconurl'];
+                        //infwnd[i]=dt[i+1]['info'];
+                        let title = dt[i+1]['univ_name'];
+                        mrks.push([
+                            {lat: +((''+dt[i+1]['lat']).trim()), lng: +((''+dt[i+1]['lng']).trim())},
+                            `#${getWorldRating(dt, title, i + 1).label} - ${title}`, //`#${dt[i + 1]['League']} - ${title}`,
+                            dt[i+1]['iconurl'],
+                            dt[i+1],
+                            dt[i+1]['info'],
+                        ]);
+                        ///mrkstr+='[{lat:'+dt[i+1]['lat']+',lng:'+dt[i+1]['lng']+'},"'+dt[i+1]['univ_name']+'"],';
+                        //alert(infwnd[i]);
+                    }
+                    ///mrkstr+='];';
+                    //alert(mrkstr);
+                    ///eval(mrkstr);
+                    //console.log('mrks[0][0]: ', mrks[0][0]);
+                }
                 this.mrks = mrks;
 				
 					if(Number($('.mfilter-country select').val())!=0)			
@@ -336,6 +361,7 @@ class UnivDataService {
                 }
                 if (forceFull && !stateParamsNew.pos) {
                     this.tphWorld = tph;
+                    this.mrksWorld = this.mrks;
                     //alert(tph);
                     //console.log('tphsel: ', $('#tphsel').html());
                     console.log('tph: ', tph); //
