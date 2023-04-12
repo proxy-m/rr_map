@@ -1,5 +1,4 @@
 'use strict';
-'use strict';
 
 let wasClickedTrigger = 0;
 let ti = null;
@@ -47,7 +46,7 @@ $(document).ready(function ()
 	$('.item-110').addClass('active');
   	//$.gmap3({key: 'AIzaSyD7fU9MnAARspyROArfcaxENAgguWvDQHg'});
 	
-	sb=$('.mfilter-subject select option:selected').val();
+	subj=$('.mfilter-subject select option:selected').val();
 	yr=$('.mfilter-year select option:selected').val();
 	reg=$('.mfilter-region select option:selected').val();
     yr = Number(yr);
@@ -68,7 +67,7 @@ $(document).ready(function ()
 	///setTimeout(function(){initMap();},100);
 
     window.commandVisualize = function commandVisualize () {
-        sb=$('.mfilter-subject select option:selected').val();
+        subj=$('.mfilter-subject select option:selected').val();
 		yr=$('.mfilter-year select option:selected').val();
 		reg=$('.mfilter-region select option:selected').val();
 		if(Number($('.mfilter-country select option:selected').val()))
@@ -114,7 +113,7 @@ $(document).ready(function ()
 		{
 			//$('.az-sort-by-s').attr('disabled',true);
 			//$('.az-sort-by-r').attr('disabled',true);
-			sb=$('.mfilter-subject select option:selected').val();
+			subj=$('.mfilter-subject select option:selected').val();
 			yr=$('.mfilter-year select option:selected').val();
 			reg=$('.mfilter-region select option:selected').val();
 			if(Number($('.mfilter-country select option:selected').val()))
@@ -125,7 +124,7 @@ $(document).ready(function ()
 		{
 			$('.mfilter-region select').removeAttr('disabled');
 			$('.mfilter-subject select').removeAttr('disabled');
-			sb=$('.mfilter-subject select option:selected').val();
+			subj=$('.mfilter-subject select option:selected').val();
 			yr=$('.mfilter-year select option:selected').val();
 			reg=$('.mfilter-region select option:selected').val();
 			if(Number($('.mfilter-country select option:selected').val()))
@@ -151,7 +150,7 @@ $(document).ready(function ()
 	$(document).on('change', '.maz-sort-by-s', function ()
 	{
 		yr=$('.mfilter-year select option:selected').val();
-		sb=$('.mfilter-subject select option:selected').val();
+		subj=$('.mfilter-subject select option:selected').val();
 		yr=$('.mfilter-year select option:selected').val();
 		reg=$('.mfilter-region select option:selected').val();
 		if(Number($('.mfilter-country select option:selected').val()))
@@ -493,7 +492,13 @@ $(document).ready(function ()
 			
 			//alert(ur);
           	
-			udtController.getPromise().then(function success (data) {
+			udtController.getPromise({
+                code: code,
+                year: yr,
+                subject: subj,
+                country: cntr,
+                region: reg,
+            }).then(function success (data) {
 		  	 	dt = udtController.getDt();
                 tph = udtController.getTphWorld();
                 mrks = udtController.getMrks();
@@ -537,8 +542,8 @@ $(document).ready(function ()
                         }
                     }
                     
-                    /// yr+'&subj='+sb+'&cntr='+cntr+'&reg='+reg
-                    if (sb == 1 && cntr == 0 && reg == 0) { // default full world
+                    /// yr+'&subj='+subj+'&cntr='+cntr+'&reg='+reg
+                    if (subj == 1 && cntr == 0 && reg == 0) { // default full world
                         if (!udtController.getDtWorld() || !udtController.getMrksWorld() || udtController.getDtWorld().length < dt.length || !udtController.getMrksWorld().length || forceFull) {
                             if (!forceFull) {
                                 setTimeout(function () {

@@ -18,7 +18,7 @@ var code = null;
 ///var mrks_world = {};
 var data;
 
-window.sb = null; // subject
+window.subj = null; // subject
 window.yr = null; // year
 window.cntr = null; // country
 window.reg = null; // region
@@ -101,10 +101,11 @@ class UnivDataService {
         this.requestAjax = this.requestAjax.then(function onSuccess (data) {
             'use strict';
             
-            sb = stateParamsNew.sb; // subject
-            yr = stateParamsNew.yr || stateParamsNew.year; // year
+            subj = stateParamsNew.subj; // subject
+            yr = stateParamsNew.yr || stateParamsNew.year || yr; // year
             cntr = stateParamsNew.cntr; // country
             reg = stateParamsNew.reg; // region
+            
             var forceFull = stateParamsNew.forceFull;
             var dt = [];
             if (forceFull && !stateParamsNew.pos) {
@@ -114,7 +115,7 @@ class UnivDataService {
             this.dt = dt;
             console.log('stateParamsNew: ', stateParamsNew);
                 
-            switch (Number(sb)) {
+            switch (Number(subj)) {
                 case 1:sv='SO';break;
                 case 2:sv='SH';break;
                 case 3:sv='SL';break;
@@ -342,6 +343,11 @@ class UnivDataController {
             $('.mfilter-country select option:selected').val(this.country);
             $('.mfilter-region select option:selected').val(this.region);
         }
+        subj = this.subject;
+        cntr = this.country;
+        reg = this.region;
+        yr = this.year || yr;
+        this.year = yr;
         
         if (this.forceFull && !(this.subject == 1 && this.country == 0 && this.region == 0)) {
             this.forceFull = false;
@@ -366,11 +372,11 @@ class UnivDataController {
         };
     }
     
-    getPromise () {
-        ({year: yr, subject: sb, country: cntr, region: reg, code} = this.setState({
+    getPromise (stateParams = undefined) {
+        ({year: yr, subject: subj, country: cntr, region: reg, code} = this.setState(stateParams || {
             code: code,
             year: yr, // warn: strange year number (not like 20xx)
-            subject: sb,
+            subject: subj,
             country: cntr,
             region: reg,
         })); // See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
@@ -381,7 +387,7 @@ class UnivDataController {
         this.promise = this.promise.then(function onSuccess (data) {
             let stateParamsNew = $.extend(true, {}, this.udtService.stateParamsNew);
             
-            sb = stateParamsNew.sb; // subject
+            subj = stateParamsNew.subj; // subject
             yr = stateParamsNew.yr || stateParamsNew.year; // year
             cntr = stateParamsNew.cntr; // country
             reg = stateParamsNew.reg; // region
@@ -516,7 +522,7 @@ class UnivDataController {
     }
     
     countryList () {
-					sb=$('.mfilter-subject select option:selected').val();
+					subj=$('.mfilter-subject select option:selected').val();
 					yr=$('.mfilter-year select option:selected').val();
 					reg=$('.mfilter-region select option:selected').val();
 					if(Number($('.mfilter-country select option:selected').val())) {
@@ -524,10 +530,10 @@ class UnivDataController {
                     } else{ 
                         cntr = 0;
                     }
-					//alert(sb+'\n'+yr+'\n'+reg+'\n'+cntr);
+					//alert(subj+'\n'+yr+'\n'+reg+'\n'+cntr);
 					this.dtcntr=[];
-					//var urlc='final/getunivdata_ymap.php?year='+yr+'&subj='+sb+'&reg='+reg+'&cntr='+cntr;
-					var urlc='./final/getcntrdata_gmap22.php?year='+yr+'&subj='+sb+'&reg='+reg+'&cntr='+cntr;
+					//var urlc='final/getunivdata_ymap.php?year='+yr+'&subj='+subj+'&reg='+reg+'&cntr='+cntr;
+					var urlc='./final/getcntrdata_gmap22.php?year='+yr+'&subj='+subj+'&reg='+reg+'&cntr='+cntr;
                     if (this.oldUrlc === urlc && !!this.dtcntr && this.dtcntr.length > 1) {
                         return this.dtcntr; ///
                     } else {
