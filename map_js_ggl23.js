@@ -58,7 +58,7 @@ $(document).ready(function ()
         
     var udtController = new UnivDataController(udtService);
     
-    dtcntr = udtController.countryList();
+    udtController.countryList();
     
 	subjectview();
   	//$('.mapinfo').html('<div id="map_div" style="display:none"></div><div id="nwmap"><h2>The map is loading.</h2></div>');
@@ -92,7 +92,7 @@ $(document).ready(function ()
 	{
 		yr=$('.mfilter-year select option:selected').val();
 		subjectview();
-		dtcntr = udtController.countryList();
+		udtController.countryList();
 		$('.mapinfo').html('<div id="map_div"></div>');
 		$('#mapsrchvl').attr('placeholder','Enter the name of the university');
       	$('#mapsrchvl').val('');
@@ -139,7 +139,7 @@ $(document).ready(function ()
 	{
 		$('.mapinfo').html('<div id="map_div"></div><div id="nwmap"></div>');
 		//$('.az-sort-by-cntr').html('<option value="0">World</option>');
-		dtcntr = udtController.countryList();
+		udtController.countryList();
 		$('#mapsrchvl').attr('placeholder','Enter the name of the university');
       	$('#mapsrchvl').val('');
         
@@ -156,7 +156,7 @@ $(document).ready(function ()
 		if(Number($('.mfilter-country select option:selected').val()))
 		{cntr=$('.mfilter-country select option:selected').val();}
 		else{cntr=0;}
-		dtcntr = udtController.countryList();
+		udtController.countryList();
 		$('.mapinfo').html('<div id="map_div"></div><div id="nwmap"></div>');
 		$('#mapsrchvl').attr('placeholder','Enter the name of the university');
       	$('#mapsrchvl').val('');

@@ -6,7 +6,7 @@ var tphunnm=new Array;	//массив имен вузов поиска
 var cordtph=new Array;	//массив координат вузов по поиску
 var map=new Object;
 var data;
-var dtcntr=new Array;	//массив данных стран для карт
+//this.dtcntr //var dtcntr=new Array;	//массив данных стран для карт
 var n,sv,lftur,hs;
 
 var map=new Object;
@@ -16,7 +16,6 @@ var code = null;
 ///var dt_world = {};
 ///var mrks_world = {};
 var data;
-var dtcntr = [];	//массив данных стран для карт
 
 var sb; // subject
 var yr; // year
@@ -277,10 +276,9 @@ class UnivDataController {
         this.promise = null;
         
         this.firstLoad = true;
-        if (!dtcntr) {
-            dtcntr = [];
+        if (!this.dtcntr) {
+            this.dtcntr = [];
         }
-        this.dtcntr = dtcntr;
         
         this.tphWorld = ''; // tph and tphtxt can be only about world
         this.mrksWorld = [];
@@ -451,12 +449,11 @@ class UnivDataController {
                 }
                 this.mrks = mrks;
 				
-					if(Number($('.mfilter-country select').val())!=0)			
-					{
-                        dtcntr = this.countryList();
-						scale=Number(dtcntr[$('.mfilter-country select option:selected').val()]['scale']);
-						crd = dtcntr[$('.mfilter-country select option:selected').val()]['cord'].split(',');
-						coord = { lat: Number(crd[0]), lng: Number(crd[1]) };
+					if(+($('.mfilter-country select').val()) != 0 && +($('.mfilter-country select option:selected').val()) != 0) {
+                        this.dtcntr = this.countryList();
+						scale = +(this.dtcntr[$('.mfilter-country select option:selected').val()]['scale']);
+						crd = this.dtcntr[$('.mfilter-country select option:selected').val()]['cord'].split(',');
+						coord = { lat: +(crd[0]), lng: +(crd[1]) };
 						//alert(crd[0]);
 					}
 					else
@@ -529,11 +526,11 @@ class UnivDataController {
                         cntr = 0;
                     }
 					//alert(sb+'\n'+yr+'\n'+reg+'\n'+cntr);
-					dtcntr=[];dtcntr.length=0;
+					this.dtcntr=[];
 					//var urlc='final/getunivdata_ymap.php?year='+yr+'&subj='+sb+'&reg='+reg+'&cntr='+cntr;
 					var urlc='./final/getcntrdata_gmap22.php?year='+yr+'&subj='+sb+'&reg='+reg+'&cntr='+cntr;
                     if (this.oldUrlc === urlc && !!this.dtcntr && this.dtcntr.length > 0) {
-                        return; ///
+                        return this.dtcntr; ///
                     } else {
                         this.oldUrlc = urlc;
                     }
@@ -547,29 +544,29 @@ class UnivDataController {
 					 		var j=0;
 					 		var m=Number(data[2]);
 					 		//alert(j+'\n'+m);
-                            if (!dtcntr || !dtcntr.length) {
-                                dtcntr = [];
+                            if (!this.dtcntr || !this.dtcntr.length) {
+                                this.dtcntr = [];
                             }
 					 		$.each(data[1], function(key, val)
 					 		{
-								dtcntr[key]=[];
-								//alert(key + '\n' + dtcntr[key]);
+								this.dtcntr[key]=[];
+								//alert(key + '\n' + this.dtcntr[key]);
 								$('.mfilter-country select').append('<option value="'+key+'">'+val['Country']+'</option>');
 								
-								dtcntr[key]['id_country']=val['id_country'];
-								dtcntr[key]['Country']=val['Country'];
-								dtcntr[key]['cord']=val['cord'];
+								this.dtcntr[key]['id_country']=val['id_country'];
+								this.dtcntr[key]['Country']=val['Country'];
+								this.dtcntr[key]['cord']=val['cord'];
 								
-								dtcntr[key]['scale']=val['scale'];
-								dtcntr[key]['cntr_code']=val['cntr_code'];
-								dtcntr[key]['cntr_iso']=val['cntr_iso'];
-								dtcntr[key]['code_cntr']=val['code_cntr'];
-								dtcntr[key]['code_reg']=val['code_reg'];
-								//alert(key + '\n' + dtcntr[key]);
+								this.dtcntr[key]['scale']=val['scale'];
+								this.dtcntr[key]['cntr_code']=val['cntr_code'];
+								this.dtcntr[key]['cntr_iso']=val['cntr_iso'];
+								this.dtcntr[key]['code_cntr']=val['code_cntr'];
+								this.dtcntr[key]['code_reg']=val['code_reg'];
+								//alert(key + '\n' + this.dtcntr[key]);
                                 
-							});
+							}.bind(this),);
                             
-                            this.dtcntr = dtcntr;
+                            //this.dtcntr = this.dtcntr;
 						}.bind(this),
                         error: function (err) {
                             this.dtcntr = null;
