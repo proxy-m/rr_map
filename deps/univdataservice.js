@@ -135,11 +135,10 @@ class UnivDataService {
 					///{$('.mapinfo').html('<div id="map_div"></div>');}
 					
 	  	 			dt.length=0;
-	  	 			$('#mapsrchvl').typeahead('destroy');
-                    var dtFullTmp = $.extend([], this.dtWorld || dt);
-                    dtFullTmp[0] = null;
+                    //var dtFullTmp = $.extend([], this.dtWorld || dt);
+                    //dtFullTmp[0] = null;
                     console.log('yr: ', yr);
-                    console.log('tmp.length: ', dtFullTmp.length);
+                    //console.log('tmp.length: ', dtFullTmp.length);
 	  	 			
 	  	 			for(var i=1;i<=n;i++)
 	  	 			{
@@ -234,28 +233,29 @@ class UnivDataService {
                         dtrow = [];
                     ///}
                     
-                    for(var i=1;i<=dtFullTmp.length-1;i++) {
-                        if (!!dtrow[i] && !!this.dtWorld && this.dtWorld.length === dt.length) { // TODO reset dtrow and tph only after year change
-                            continue;
-                        }
+                    //for(var i=1;i<=dtFullTmp.length-1;i++) {
+                    for(var i=1;i<=dt.length-1;i++) {
+                        //if (!!dtrow[i] && !!this.dtWorld && this.dtWorld.length === dt.length) { // TODO reset dtrow and tph only after year change
+                        //    continue;
+                        //}
                         dtrow[i]=[];
-                        //dtrow[i]={Number(dtFullTmp[i]['lat']),Number(dtFullTmp[i]['lng']),dtFullTmp[i]['info'],dtFullTmp[i]['icon']};
+                        //dtrow[i]={Number(dt[i]['lat']),Number(dt[i]['lng']),dt[i]['info'],dt[i]['icon']};
 						
-						dtrow[i].push(Number(dtFullTmp[i]['lat']));
-						dtrow[i].push(Number(dtFullTmp[i]['lng']));
-						dtrow[i].push(dtFullTmp[i]['info']);
+						dtrow[i].push(Number(dt[i]['lat']));
+						dtrow[i].push(Number(dt[i]['lng']));
+						dtrow[i].push(dt[i]['info']);
 						
-						dtrow[i].push(dtFullTmp[i]['icon']);
-						//dtrow[i].push(dtFullTmp[i]['univ_name']);
+						dtrow[i].push(dt[i]['icon']);
+						//dtrow[i].push(dt[i]['univ_name']);
 						//dtmap.push(dtrow[i]);
 						//alert(dtmap);
-						//alert(sv+'\n'+dtFullTmp[i]['icon']+'\n'+ dtFullTmp[i]['icon_pct']+'\n'+ dtFullTmp[i]['info']);
+						//alert(sv+'\n'+dt[i]['icon']+'\n'+ dt[i]['icon_pct']+'\n'+ dt[i]['info']);
 						//alert(dtrow[i]);
-						tph=tph+'{ID:'+i+', Name: "' + dtFullTmp[i]['univ_name'] + ' _' + dtFullTmp[i]['id_univ'] + '"},';
+						tph=tph+'{ID:'+i+', Name: "' + dt[i]['univ_name'] + ' _' + dt[i]['id_univ'] + '"},';
 						
-						$('#tphsel').append('<option value="'+i+'">' + dtFullTmp[i]['univ_name'] + ' _' + dtFullTmp[i]['id_univ'] +'</option>');
+						$('#tphsel').append('<option value="'+i+'">' + dt[i]['univ_name'] + ' _' + dt[i]['id_univ'] +'</option>');
                         
-                        cordtph[i]=[dtFullTmp[i]['lat'],dtFullTmp[i]['lng']];
+                        cordtph[i]=[dt[i]['lat'],dt[i]['lng']];
                     }
                     
                     ///if (!this.dtWorld || this.dtWorld.length !== dt.length) {
@@ -338,7 +338,8 @@ class UnivDataService {
                     this.tphWorld = tph;
                     //alert(tph);
                     //console.log('tphsel: ', $('#tphsel').html());
-                    //console.log('tph: ', tph);
+                    console.log('tph: ', tph); //
+                    $('#mapsrchvl').typeahead('destroy');
 					var tphtxt='$("#mapsrchvl").typeahead({autoSelect:false,source: ['+tph+'],displayField: "Name",valueField: "ID",limit:"20", afterSelect: function (item) { console.log("after selected: ", item); setTimeout(function () { $(\'input[type="button"]#mapsrchbtn,input[type="submit"]#mapsrchbtn\')[0].focus(); }, 100); return item; }, });';
 					eval(tphtxt);
                 }
