@@ -1,12 +1,4 @@
-var yr,sb,cntr,reg,n,sv,lftur,hs;
-var dt=new Array;
-var tph = '';				//текст массива вузов для typehead
-var tphcord=new Array;	//массив координат поиска
-var tphunnm=new Array;	//массив имен вузов поиска
-var cordtph=new Array;	//массив координат вузов по поиску
-var map=new Object;
-var data;
-var dtcntr=new Array;	//массив данных стран для карт
+'use strict';
 
 let wasClickedTrigger = 0;
 let ti = null;
@@ -61,7 +53,13 @@ $(document).ready(function ()
 	if(Number($('.mfilter-country select option:selected').val()))
 	{cntr=$('.mfilter-country select option:selected').val();}
 	else{cntr=0;}
-	country_list();
+	
+    const udtService = new UnivDataService().getInstance();
+        
+    var udtController = new UnivDataController(udtService);
+    
+    dtcntr = udtController.countryList();
+    
 	subjectview();
   	//$('.mapinfo').html('<div id="map_div" style="display:none"></div><div id="nwmap"><h2>The map is loading.</h2></div>');
 	//setTimeout(function(){setmap();},100);
@@ -94,7 +92,7 @@ $(document).ready(function ()
 	{
 		yr=$('.mfilter-year select option:selected').val();
 		subjectview();
-		country_list();
+		dtcntr = udtController.countryList();
 		$('.mapinfo').html('<div id="map_div"></div>');
 		$('#mapsrchvl').attr('placeholder','Enter the name of the university');
       	$('#mapsrchvl').val('');
@@ -141,7 +139,7 @@ $(document).ready(function ()
 	{
 		$('.mapinfo').html('<div id="map_div"></div><div id="nwmap"></div>');
 		//$('.az-sort-by-cntr').html('<option value="0">World</option>');
-		country_list();
+		dtcntr = udtController.countryList();
 		$('#mapsrchvl').attr('placeholder','Enter the name of the university');
       	$('#mapsrchvl').val('');
         
@@ -158,7 +156,7 @@ $(document).ready(function ()
 		if(Number($('.mfilter-country select option:selected').val()))
 		{cntr=$('.mfilter-country select option:selected').val();}
 		else{cntr=0;}
-		country_list();
+		dtcntr = udtController.countryList();
 		$('.mapinfo').html('<div id="map_div"></div><div id="nwmap"></div>');
 		$('#mapsrchvl').attr('placeholder','Enter the name of the university');
       	$('#mapsrchvl').val('');
@@ -479,11 +477,6 @@ $(document).ready(function ()
 	function initMap (forceFull)
 	{
         if (!window.google) { window.google = {} }; if (!google.maps) { google.maps = {} }; if (!google.maps.InfoWindow) { google.maps.InfoWindow = function () {} }; if (!google.maps.Map) { google.maps.Map = function () {} };  if (!google.maps.Marker) { google.maps.Marker = function () {} };  if (!google.maps.MapTypeId) { google.maps.MapTypeId = {} };
-		
-        const udtService = new UnivDataService().getInstance();
-        
-        var udtController = new UnivDataController(udtService);
-        var code = null;
         
 		if(Number($('#mapsrchvl').val().length)==0)
 		{
@@ -496,19 +489,8 @@ $(document).ready(function ()
             }
             
             forceFull = udtController.setForceFull(forceFull);
-            ({year: yr, subject: sb, country: cntr, region: reg, code} = udtController.setState({
-                code: code,
-                year: yr, // warn: strange year number (not like 20xx)
-                subject: sb,
-                country: cntr,
-                region: reg,
-            })); // See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
-            if (code === 0) {
-                return;
-            }
 			
 			//alert(ur);
-			leftur='https://roundranking.com/universities/';hs='';
           	
 			udtController.getPromise().then(function success (data) {
 		  	 	dt = udtController.getDt();
@@ -556,7 +538,7 @@ $(document).ready(function ()
                     
                     /// yr+'&subj='+sb+'&cntr='+cntr+'&reg='+reg
                     if (sb == 1 && cntr == 0 && reg == 0) { // default full world
-                        if (!udtController.getDtWorld() || !udtController.udtService.getMrksWorld() || udtController.getDtWorld().length < dt.length || !udtController.udtService.getMrksWorld().length || forceFull) {
+                        if (!udtController.getDtWorld() || !udtController.getMrksWorld() || udtController.getDtWorld().length < dt.length || !udtController.getMrksWorld().length || forceFull) {
                             if (!forceFull) {
                                 setTimeout(function () {
                                     initMap(true);
@@ -740,47 +722,4 @@ $(document).ready(function ()
 		}  		
 	}
     window.initMap = initMap;
-	function country_list()
-	{
-					sb=$('.mfilter-subject select option:selected').val();
-					yr=$('.mfilter-year select option:selected').val();
-					reg=$('.mfilter-region select option:selected').val();
-					if(Number($('.mfilter-country select option:selected').val()))
-					{cntr=$('.mfilter-country select option:selected').val();}
-					else{cntr=0;}
-					//alert(sb+'\n'+yr+'\n'+reg+'\n'+cntr);
-					dtcntr=[];dtcntr.length=0;
-					//var urlc='final/getunivdata_ymap.php?year='+yr+'&subj='+sb+'&reg='+reg+'&cntr='+cntr;
-					var urlc='./final/getcntrdata_gmap22.php?year='+yr+'&subj='+sb+'&reg='+reg+'&cntr='+cntr;
-					//alert(urlc);
-					$('.mfilter-country select').html('<option value="0">World</option>');
-					$.ajax(
-					{
-						url: urlc,
-						success: function(data)
-					 	{
-					 		var j=0;
-					 		var m=Number(data[2]);
-					 		//alert(j+'\n'+m);
-					 		$.each(data[1], function(key, val)
-					 		{
-								dtcntr[key]=[];
-								//alert(key + '\n' + dtcntr[key]);
-								$('.mfilter-country select').append('<option value="'+key+'">'+val['Country']+'</option>');
-								
-								dtcntr[key]['id_country']=val['id_country'];
-								dtcntr[key]['Country']=val['Country'];
-								dtcntr[key]['cord']=val['cord'];
-								
-								dtcntr[key]['scale']=val['scale'];
-								dtcntr[key]['cntr_code']=val['cntr_code'];
-								dtcntr[key]['cntr_iso']=val['cntr_iso'];
-								dtcntr[key]['code_cntr']=val['code_cntr'];
-								dtcntr[key]['code_reg']=val['code_reg'];
-								//alert(key + '\n' + dtcntr[key]);
-                                
-							});
-						}
-		});
-	}	
 });
