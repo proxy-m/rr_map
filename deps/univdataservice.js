@@ -1,7 +1,7 @@
 'use strict';
 
 var yr,sb,cntr,reg,n,sv,lftur,hs;
-var dt=new Array;var dtmap=new Array; ///var dtrow=new Array;
+var dt=new Array; ///var dtmap=new Array; ///var dtrow=new Array;
 var tph = '';				//текст массива вузов для typehead
 var tphcord=new Array;	//массив координат поиска
 var tphunnm=new Array;	//массив имен вузов поиска
@@ -164,26 +164,13 @@ class UnivDataService {
                         dt[i] = this.genCardInfo(i, data[1], dt)[i];
 					}
                     
-                    ///if (!this.dtWorld || this.dtWorld.length !== dt.length) {
-                        tph = '';
-                        ///dtrow = [];
-                    ///}
+                    tph = '';
                     
                     if (forceFull && !stateParamsNew.pos) {
                         this.clearSearchIngredients('tphsel');
                     }
                     
-                    //for(var i=1;i<=dtFullTmp.length-1;i++) {
-                    for(var i=1;i<=dt.length-1;i++) {
-                        //if (!!dtrow[i] && !!this.dtWorld && this.dtWorld.length === dt.length) { // TODO reset dtrow and tph only after year change
-                        //    continue;
-                        //}
-                        ///dtrow[i]=[];
-						///dtrow[i].push(Number(dt[i]['lat']));
-						///dtrow[i].push(Number(dt[i]['lng']));
-						///dtrow[i].push(dt[i]['info']);
-						
-						///dtrow[i].push(dt[i]['icon']);
+                    for (var i=1; i<=dt.length-1; i++) {
 						tph = tph + '{ID:'+i+', Name: "' + dt[i]['univ_name'] + ' _' + dt[i]['id_univ'] + '"},';
 						
                         if ((forceFull && !stateParamsNew.pos) || this.firstLoad) {
@@ -193,13 +180,8 @@ class UnivDataService {
                         cordtph[i]=[dt[i]['lat'],dt[i]['lng']];
                     }
                     
-                    ///if (!this.dtWorld || this.dtWorld.length !== dt.length) {
-                        tph = tph.replace('undefined', '');
-                        ///tph = tph.substring(0,tph.length - 1);
-                    ///}
-                
-				///var mrkstr='var mrks=[';	
-                var konf=[];var infwnd=[];
+                    tph = tph.replace('undefined', '');
+                    
                 var mrks=[];
                 
                 var mrksWorldPart = $.extend(true, [], this.getMrksWorld() || this.getMrks());
@@ -221,24 +203,17 @@ class UnivDataService {
                     mrksWorldPart = [];
                     mrks = [];
                     
-                    for(var i=0;i<n;i++)
-                    {
+                    for (var i=0;i<n;i++) {
                         //konf[i]=dt[i+1]['iconurl'];
-                        //infwnd[i]=dt[i+1]['info'];
                         let title = dt[i+1]['univ_name'];
                         mrks.push([
                             {lat: +((''+dt[i+1]['lat']).trim()), lng: +((''+dt[i+1]['lng']).trim())},
-                            `#${getWorldRating(dt, title, i + 1).label} - ${title}`, //`#${dt[i + 1]['League']} - ${title}`,
+                            `#${getWorldRating(dt, title, i + 1).label} - ${title}`,
                             dt[i+1]['iconurl'],
                             dt[i+1],
                             dt[i+1]['info'],
-                        ]);
-                        ///mrkstr+='[{lat:'+dt[i+1]['lat']+',lng:'+dt[i+1]['lng']+'},"'+dt[i+1]['univ_name']+'"],';
-                        //alert(infwnd[i]);
+                        ]);                        
                     }
-                    ///mrkstr+='];';
-                    //alert(mrkstr);
-                    ///eval(mrkstr);
                     //console.log('mrks[0][0]: ', mrks[0][0]);
                 }
                 this.mrks = mrks;

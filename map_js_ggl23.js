@@ -1,5 +1,5 @@
 var yr,sb,cntr,reg,n,sv,lftur,hs;
-var dt=new Array;var dtmap=new Array;
+var dt=new Array;
 var tph = '';				//текст массива вузов для typehead
 var tphcord=new Array;	//массив координат поиска
 var tphunnm=new Array;	//массив имен вузов поиска
@@ -590,7 +590,6 @@ $(document).ready(function ()
 			 	});
 			  
 				//var konf=['diamondw.png','goldw.png','silverw.png','bronzew.png','cooperw.png','worldw.png'];
-				//alert(konf[2]);
 			  // Create the markers.
 			  mrks.forEach(([position, title], i) => {
 			  	//alert(position.lat);
@@ -599,7 +598,7 @@ $(document).ready(function ()
 			      map,
 			      title: title,
 			      //label: `${i + 1} - ${title}`,
-			      icon:konf[i],
+			      icon: dt[i+1]['iconurl'], //konf[i],
 			      optimized: false,
 			      cont:dt[i+1]['info']
 			    });
