@@ -5,7 +5,6 @@ var tphcord=new Array;	//массив координат поиска
 var tphunnm=new Array;	//массив имен вузов поиска
 var cordtph=new Array;	//массив координат вузов по поиску
 var map=new Object;
-var dt_world = {};
 var mrks_world = {};
 var data;
 var dtcntr=new Array;	//массив данных стран для карт
@@ -558,8 +557,7 @@ $(document).ready(function ()
                     
                     /// yr+'&subj='+sb+'&cntr='+cntr+'&reg='+reg
                     if (sb == 1 && cntr == 0 && reg == 0) { // default full world
-                        if (!dt_world[yr] || !mrks_world[yr] || dt_world[yr].length < dt.length || forceFull) {
-                            dt_world[yr] = $.extend([], dt);
+                        if (!udtController.getDtWorld() || !mrks_world[yr] || udtController.getDtWorld().length < dt.length || forceFull) {
                             mrks_world[yr] = $.extend([], mrks);
                             if (!forceFull) {
                                 setTimeout(function () {
@@ -591,15 +589,12 @@ $(document).ready(function ()
 				    zoom: scale ,
 				    center: coord,
 				    mapTypeId: google.maps.MapTypeId.TERRAIN
-			 	});	
-				const tourStops = mrks;
-                
-                
+			 	});
 			  
 				//var konf=['diamondw.png','goldw.png','silverw.png','bronzew.png','cooperw.png','worldw.png'];
 				//alert(konf[2]);
 			  // Create the markers.
-			  tourStops.forEach(([position, title], i) => {
+			  mrks.forEach(([position, title], i) => {
 			  	//alert(position.lat);
 			    const marker = new google.maps.Marker({
 			      position,
@@ -651,7 +646,7 @@ $(document).ready(function ()
 		}
 		else
 		{
-			dt = $.extend([], dt_world[yr] || []);
+			dt = $.extend([], udtController.getDtWorld() || []);
 			var lt=Number(cordtph[$('#tphsel').val()][0]);
 			var lg=Number(cordtph[$('#tphsel').val()][1]);
 			zummap=Number(8);
