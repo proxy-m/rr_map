@@ -5,7 +5,6 @@ var tphcord=new Array;	//массив координат поиска
 var tphunnm=new Array;	//массив имен вузов поиска
 var cordtph=new Array;	//массив координат вузов по поиску
 var map=new Object;
-var mrks_world = {};
 var data;
 var dtcntr=new Array;	//массив данных стран для карт
 
@@ -557,8 +556,7 @@ $(document).ready(function ()
                     
                     /// yr+'&subj='+sb+'&cntr='+cntr+'&reg='+reg
                     if (sb == 1 && cntr == 0 && reg == 0) { // default full world
-                        if (!udtController.getDtWorld() || !mrks_world[yr] || udtController.getDtWorld().length < dt.length || forceFull) {
-                            mrks_world[yr] = $.extend([], mrks);
+                        if (!udtController.getDtWorld() || !udtController.udtService.getMrksWorld() || udtController.getDtWorld().length < dt.length || !udtController.udtService.getMrksWorld().length || forceFull) {
                             if (!forceFull) {
                                 setTimeout(function () {
                                     initMap(true);
