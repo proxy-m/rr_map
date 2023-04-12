@@ -522,9 +522,10 @@ class UnivDataController {
             return err;
         }.bind(this));
         
-        var res = this.promise;
-        this.promise = Promise.resolve(!0);
-        return res;
+        return this.promise;
+        //var res = this.promise;
+        //this.promise = Promise.resolve(!0);
+        //return res;
     }
     
     countryList () {
