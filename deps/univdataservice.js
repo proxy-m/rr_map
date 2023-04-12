@@ -261,16 +261,13 @@ class UnivDataService {
 
 class UnivDataController {
     constructor (udtService) {
-        if (!udtService) {
+        if (!udtService || !(udtService instanceof UnivDataService)) {
             this.udtService = null;
             throw new Error('[ERR] No udtService!');
         }
-        if (!UnivDataController._instance) {
-            UnivDataController._instance = {}; // WeakMap is better here, but we wont use it
-        }
-        this._udtService = '' + udtService + '_' + (udtService.yearWorld);
-        if (!!UnivDataController._instance[this._udtService]) {
-            return UnivDataController._instance[this._udtService];
+        //this._udtService = '' + udtService + '_' + (udtService.yearWorld);
+        if (!!UnivDataController._instance) {
+            return UnivDataController._instance;
         }
         this.udtService = udtService;
         this.promise = null;
@@ -284,7 +281,7 @@ class UnivDataController {
         this.mrksWorld = [];
         this.mrks = [];
         
-        UnivDataController._instance[this._udtService] = this;
+        UnivDataController._instance = this;
     }
     
     toString () {
