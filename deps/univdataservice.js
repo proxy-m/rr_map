@@ -7,8 +7,8 @@ var tphcord=new Array;	//массив координат поиска
 var tphunnm=new Array;	//массив имен вузов поиска
 var cordtph=new Array;	//массив координат вузов по поиску
 var map=new Object;
-var dt_world = {};
-var mrks_world = {};
+///var dt_world = {};
+///var mrks_world = {};
 var data;
 var dtcntr=new Array;	//массив данных стран для карт
 
@@ -31,6 +31,7 @@ class UnivDataService {
         this.tphWorld = ''; // tph and tphtxt can be only about world
         this.dtWorld = []; // dtWorld (wider) and dt are different
         this.dt = null;
+        this.mrks = [];
         
         
         
@@ -69,7 +70,7 @@ class UnivDataService {
     }
     
     getTphWorld () {
-        return {
+        return this.tphWorld;
     }
     
     getDtWorld () {
@@ -78,6 +79,10 @@ class UnivDataService {
     
     getDt () {
         return this.dt;
+    }
+    
+    getMrks () {
+        return this.mrks;
     }
     
     request () {
@@ -281,6 +286,7 @@ class UnivDataService {
 				//alert(mrkstr);
 				///eval(mrkstr);
                 //console.log('mrks[0][0]: ', mrks[0][0]);
+                this.mrks = mrks;
 				
 					if(Number($('.mfilter-country select').val())!=0)			
 					{
@@ -363,6 +369,22 @@ class UnivDataController {
     
     getForceFull () {
         return this.forceFull;
+    }
+    
+    getTphWorld () {
+        return this.udtService.getTphWorld();
+    }
+    
+    getDtWorld () {
+        return this.udtService.getDtWorld();
+    }
+    
+    getDt () {
+        return this.udtService.getDt();
+    }
+    
+    getMrks () {
+        return this.udtService.getMrks();
     }
     
     setState (state) {
