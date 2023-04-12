@@ -58,9 +58,8 @@ $(document).ready(function ()
         
     var udtController = new UnivDataController(udtService);
     
-    udtController.countryList();
-    
 	subjectview();
+    udtController.countryList();
   	//$('.mapinfo').html('<div id="map_div" style="display:none"></div><div id="nwmap"><h2>The map is loading.</h2></div>');
 	//setTimeout(function(){setmap();},100);
     
@@ -492,13 +491,7 @@ $(document).ready(function ()
 			
 			//alert(ur);
           	
-			udtController.getPromise({
-                code: code,
-                year: yr,
-                subject: subj,
-                country: cntr,
-                region: reg,
-            }).then(function success (data) {
+			udtController.getPromise().then(function success (data) {
 		  	 	dt = udtController.getDt();
                 tph = udtController.getTphWorld();
                 mrks = udtController.getMrks();

@@ -331,7 +331,7 @@ class UnivDataController {
         if (!(state instanceof Object)) {
             return null;
         }
-        this.state = 1; // 1 - good, 0 - stop, 2 - warn, 3 - later promise, 4 - later repeat, 5 - method required, 9 - log, -900 .. -2 - error, -1 - unknown error
+        this.code = 1; // 1 - good, 0 - stop, 2 - warn, 3 - later promise, 4 - later repeat, 5 - method required, 9 - log, -900 .. -2 - error, -1 - unknown error
         $.extend(this, state); //this = $.extend(this, state);
         
         if (!this.forceFull && window.location.hash && window.location.hash.length > 2) {
@@ -355,13 +355,17 @@ class UnivDataController {
             //return;
         }
         
-        
-        if (0 !== this.code && this.udtService.getStateURL() == this.udtService.setStateURL('/final/getunivdata_gmap23.php?year='+this.year+'&subj='+this.subject+'&cntr='+this.country+'&reg='+this.region, this.forceFull)) {
+        code = this.code;
+        console.log('code0: ', this.code);
+        if (this.udtService.getStateURL() == this.udtService.setStateURL('/final/getunivdata_gmap23.php?year='+this.year+'&subj='+this.subject+'&cntr='+this.country+'&reg='+this.region, this.forceFull) && 0 !== this.code) {
             this.code = 0;
             //return;
+            code = this.code;
         } else {
+            this.code = 1; /////
             this.promise = this.udtService.request();
         }
+        code = this.code;
         
         return {
             code: this.code,
@@ -374,12 +378,14 @@ class UnivDataController {
     
     getPromise (stateParams = undefined) {
         ({year: yr, subject: subj, country: cntr, region: reg, code} = this.setState(stateParams || {
-            code: code,
+            code: this.code,
             year: yr, // warn: strange year number (not like 20xx)
             subject: subj,
             country: cntr,
             region: reg,
         })); // See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
+        console.log('code1: ', this.code);
+        console.log('code2: ', code);
         if (code === 0) {
             return this.promise;
         }
@@ -451,13 +457,13 @@ class UnivDataController {
                     }
                     //console.log('mrks[0][0]: ', mrks[0][0]);
                 }
-                this.mrks = mrks;
-					this.dtcntr = this.countryList();
-					if(+($('.mfilter-country select').val()) != 0 && +($('.mfilter-country select option:selected').val()) != 0 && !!this.dtcntr && this.dtcntr > 0) {
+                this.mrks = mrks;					
+					if (+($('.mfilter-country select').val()) != 0 && +($('.mfilter-country select option:selected').val()) != 0) {
 						scale = +(this.dtcntr[$('.mfilter-country select option:selected').val()]['scale']);
 						crd = this.dtcntr[$('.mfilter-country select option:selected').val()]['cord'].split(',');
 						coord = { lat: +(crd[0]), lng: +(crd[1]) };
 						//alert(crd[0]);
+                        this.countryList();
 					}
 					else
 					{
@@ -535,7 +541,7 @@ class UnivDataController {
 					//var urlc='final/getunivdata_ymap.php?year='+yr+'&subj='+subj+'&reg='+reg+'&cntr='+cntr;
 					var urlc='./final/getcntrdata_gmap22.php?year='+yr+'&subj='+subj+'&reg='+reg+'&cntr='+cntr;
                     if (this.oldUrlc === urlc && !!this.dtcntr && this.dtcntr.length > 1) {
-                        return this.dtcntr; ///
+                        ///return this.dtcntr; ///
                     } else {
                         this.oldUrlc = urlc;
                     }
@@ -544,7 +550,7 @@ class UnivDataController {
 					$.ajax(
 					{
 						url: urlc,
-                        async: false, // you can ignore warning
+                        async: true, ///false, // you can ignore warning
 						success: function(data) {
 					 		var j=0;
 					 		var m=Number(data[2]);
@@ -578,7 +584,7 @@ class UnivDataController {
                             this.oldUrlc = null;
                         }.bind(this),
 		});
-        return this.dtcntr;
+        return null; ///this.dtcntr;
 	}
     
 };
