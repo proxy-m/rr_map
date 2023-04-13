@@ -458,13 +458,13 @@ class UnivDataController {
                     //console.log('mrks[0][0]: ', mrks[0][0]);
                 }
                 this.mrks = mrks;					
-					if (+($('.mfilter-country select').val()) != 0) { /// && +($('.mfilter-country select option:selected').val()) != 0) {
-                        this.countryList();
+					if (+($('.mfilter-country select').val()) != 0 && !isNaN(+($('.mfilter-country select').val()))) { /// && +($('.mfilter-country select option:selected').val()) != 0) {
                         var val001 = $('.mfilter-country select option:selected').val() || $('.mfilter-country select').val();
 						scale = +(this.dtcntr[val001]['scale']);
 						crd = this.dtcntr[val001]['cord'].split(',');
 						coord = { lat: +(crd[0]), lng: +(crd[1]) };
 						//alert(crd[0]);
+                        this.countryList();
 					}
 					else
 					{
