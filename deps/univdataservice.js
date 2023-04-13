@@ -581,6 +581,11 @@ class UnivDataController {
 								//alert(key + '\n' + this.dtcntr[key]);
                                 
 							}.bind(this));
+                            $('.mfilter-country select').val(cntr);
+                            if (!(+$('.mfilter-country select').val()) || 0 == (+$('.mfilter-country select').val())) {
+                                cntr = 0;
+                                $('.mfilter-country select').val(cntr);
+                            }
 						}.bind(this),
 		});
 	}	
