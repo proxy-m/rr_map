@@ -38,7 +38,7 @@ class UnivDataService {
         this.forceFull = false;
         this.url = null;
         this.requestAjax = null;
-        this.yearWorld = -1;
+        this.year = -1;
         this.dtWorld = []; // dtWorld (wider) and dt are different
         this.dt = null;
         
@@ -66,10 +66,10 @@ class UnivDataService {
             this.url += '&pos=' + (forceFrom - 1) + '_' + (forceTo - forceFrom + 1);
         }
         this.stateParamsNew = urlToParams(this.url);
-        if ((!!this.stateParamsNew.yr && this.yearWorld != +this.stateParamsNew.yr) || this.yearWorld != +this.stateParamsNew.year) {
+        if ((!!this.stateParamsNew.yr && this.year != +this.stateParamsNew.yr) || this.year != +this.stateParamsNew.year) {
             ///this.dtWorld = []; // better to change after request finished
             ///this.tphWorld = '';
-            this.yearWorld = +this.stateParamsNew.yr || +this.stateParamsNew.year;
+            this.year = +this.stateParamsNew.yr || +this.stateParamsNew.year;
         }
         this.stateParamsNew.forceFull = this.forceFull;
         
@@ -110,8 +110,7 @@ class UnivDataService {
             var dt = [];
             if (forceFull && !stateParamsNew.pos) {
                 this.dtWorld = dt;
-            }
-            var tph;
+            }            
             this.dt = dt;
             console.log('stateParamsNew: ', stateParamsNew);
                 
@@ -267,7 +266,7 @@ class UnivDataController {
             this.udtService = null;
             throw new Error('[ERR] No udtService!');
         }
-        //this._udtService = '' + udtService + '_' + (udtService.yearWorld);
+        //this._udtService = '' + udtService + '_' + (udtService.year);
         if (!!UnivDataController._instance) {
             return UnivDataController._instance;
         }
@@ -405,6 +404,7 @@ class UnivDataController {
                 this.dtWorld = dt;
                 this.firstLoad = false;
             }
+            var tph;
                tph = '';
                     
                     if (forceFull && !stateParamsNew.pos) {
@@ -457,14 +457,14 @@ class UnivDataController {
                     }
                     //console.log('mrks[0][0]: ', mrks[0][0]);
                 }
-                this.mrks = mrks;					
+                this.mrks = mrks;
+					this.countryList();
 					if (+($('.mfilter-country select').val()) != 0 && !isNaN(+($('.mfilter-country select').val()))) { /// && +($('.mfilter-country select option:selected').val()) != 0) {
                         var val001 = $('.mfilter-country select option:selected').val() || $('.mfilter-country select').val();
-						scale = +(this.dtcntr[val001]['scale']);
-						crd = this.dtcntr[val001]['cord'].split(',');
-						coord = { lat: +(crd[0]), lng: +(crd[1]) };
-						//alert(crd[0]);
-                        this.countryList();
+                        scale = +(this.dtcntr[val001]['scale']);
+                        crd = this.dtcntr[val001]['cord'].split(',');
+                        coord = { lat: +(crd[0]), lng: +(crd[1]) };
+                        //alert(crd[0]);
 					}
 					else
 					{
@@ -533,33 +533,24 @@ class UnivDataController {
 					subj=$('.mfilter-subject select option:selected').val();
 					yr=$('.mfilter-year select option:selected').val();
 					reg=$('.mfilter-region select option:selected').val();
-					if(Number($('.mfilter-country select option:selected').val())) {
-                        cntr = $('.mfilter-country select option:selected').val();
-                    } else{ 
-                        cntr = 0;
-                    }
+					if(Number($('.mfilter-country select option:selected').val()))
+					{cntr=$('.mfilter-country select option:selected').val();}
+					else{cntr=0;}
 					//alert(subj+'\n'+yr+'\n'+reg+'\n'+cntr);
-					this.dtcntr=[];
+					this.dtcntr=[];  this.dtcntr.length=0;
 					//var urlc='final/getunivdata_ymap.php?year='+yr+'&subj='+subj+'&reg='+reg+'&cntr='+cntr;
 					var urlc='./final/getcntrdata_gmap22.php?year='+yr+'&subj='+subj+'&reg='+reg+'&cntr='+cntr;
-                    if (this.oldUrlc === urlc && !!this.dtcntr && this.dtcntr.length > 1) {
-                        ///return this.dtcntr; ///
-                    } else {
-                        this.oldUrlc = urlc;
-                    }
 					//alert(urlc);
 					$('.mfilter-country select').html('<option value="0">World</option>');
 					$.ajax(
 					{
 						url: urlc,
-                        async: true, ///false, // you can ignore warning
-						success: function(data) {
+                        async: false,
+						success: function(data)
+					 	{   console.log(this.toString());
 					 		var j=0;
 					 		var m=Number(data[2]);
 					 		//alert(j+'\n'+m);
-                            if (!this.dtcntr || !this.dtcntr.length) {
-                                this.dtcntr = [];
-                            }
 					 		$.each(data[1], function(key, val)
 					 		{
 								this.dtcntr[key]=[];
@@ -577,17 +568,11 @@ class UnivDataController {
 								this.dtcntr[key]['code_reg']=val['code_reg'];
 								//alert(key + '\n' + this.dtcntr[key]);
                                 
-							}.bind(this),);
-                            
-                            //this.dtcntr = this.dtcntr;
+							}.bind(this));
 						}.bind(this),
-                        error: function (err) {
-                            this.dtcntr = null;
-                            this.oldUrlc = null;
-                        }.bind(this),
 		});
-        return null; ///this.dtcntr;
-	}
+	}	
+
     
 };
 
