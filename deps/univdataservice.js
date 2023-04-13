@@ -70,6 +70,7 @@ class UnivDataService {
             ///this.dtWorld = []; // better to change after request finished
             ///this.tphWorld = '';
             this.year = +this.stateParamsNew.yr || +this.stateParamsNew.year;
+            this.stateParamsNew.year = this.year;
         }
         this.stateParamsNew.forceFull = this.forceFull;
         
@@ -102,9 +103,10 @@ class UnivDataService {
             'use strict';
             
             subj = stateParamsNew.subj; // subject
-            yr = stateParamsNew.yr || stateParamsNew.year || yr; // year
+            yr = stateParamsNew.yr || stateParamsNew.year || yr || this.year; // year
             cntr = stateParamsNew.cntr; // country
             reg = stateParamsNew.reg; // region
+            this.year = yr;
             
             var forceFull = stateParamsNew.forceFull;
             var dt = [];
@@ -334,21 +336,21 @@ class UnivDataController {
         $.extend(this, state); //this = $.extend(this, state);
         
         if (!this.forceFull && window.location.hash && window.location.hash.length > 2) {
-            this.subject = 1;
-            this.country = 0;
-            this.region = 0;
+            subj = 1; //this.subject = 1;
+            cntr = 0; //this.country = 0;
+            reg = 0; //this.region = 0;
             
-            $('.mfilter-subject select option:selected').val(this.subject);
-            $('.mfilter-country select option:selected').val(this.country);
-            $('.mfilter-region select option:selected').val(this.region);
+            $('.mfilter-subject select option:selected').val(subj);
+            $('.mfilter-country select option:selected').val(cntr);
+            $('.mfilter-region select option:selected').val(reg);
         }
-        subj = this.subject;
-        cntr = this.country;
-        reg = this.region;
-        yr = this.year || yr;
-        this.year = yr;
+        //subj = this.subject;
+        //cntr = this.country;
+        //reg = this.region;
+        yr = yr || this.udtService.year;
+        this.udtService.year = yr;
         
-        if (this.forceFull && !(this.subject == 1 && this.country == 0 && this.region == 0)) {
+        if (this.forceFull && !(subj == 1 && cntr == 0 && reg == 0)) {
             this.forceFull = false;
             this.code = 0;
             //return;
@@ -356,7 +358,7 @@ class UnivDataController {
         
         code = this.code;
         console.log('code0: ', this.code);
-        if (this.udtService.getStateURL() == this.udtService.setStateURL('/final/getunivdata_gmap23.php?year='+this.year+'&subj='+this.subject+'&cntr='+this.country+'&reg='+this.region, this.forceFull) && 0 !== this.code) {
+        if (this.udtService.getStateURL() == this.udtService.setStateURL('/final/getunivdata_gmap23.php?year='+this.udtService.year/*yr*/+'&subj='+subj+'&cntr='+cntr+'&reg='+reg, this.forceFull) && 0 !== this.code) {
             this.code = 0;
             //return;
             code = this.code;
@@ -368,10 +370,10 @@ class UnivDataController {
         
         return {
             code: this.code,
-            year: this.year,
-            subject: this.subject,
-            country: this.country,
-            region: this.region,
+            year: yr,
+            subject: subj,
+            country: cntr,
+            region: reg,
         };
     }
     
@@ -392,12 +394,18 @@ class UnivDataController {
         this.promise = this.promise.then(function onSuccess (data) {
             let stateParamsNew = $.extend(true, {}, this.udtService.stateParamsNew);
             
-            subj = stateParamsNew.subj; // subject
-            yr = stateParamsNew.yr || stateParamsNew.year; // year
-            cntr = stateParamsNew.cntr; // country
-            reg = stateParamsNew.reg; // region
+            subj = subj || stateParamsNew.subj; // subject
+            yr = yr || stateParamsNew.yr || stateParamsNew.year; // year
+            cntr = cntr || stateParamsNew.cntr; // country
+            reg = reg || stateParamsNew.reg; // region
+            stateParamsNew.year = yr;
             var forceFull = stateParamsNew.forceFull;
             var dt = this.getDt();
+            
+            stateParamsNew.subj = subj;
+            stateParamsNew.year = yr;
+            stateParamsNew.reg = reg;
+            stateParamsNew.cntr = cntr;
             
             /////////////////////////////////////
             if (forceFull && !stateParamsNew.pos) {
@@ -458,13 +466,17 @@ class UnivDataController {
                     //console.log('mrks[0][0]: ', mrks[0][0]);
                 }
                 this.mrks = mrks;
-					this.countryList();
-					if (+($('.mfilter-country select').val()) != 0 && !isNaN(+($('.mfilter-country select').val()))) { /// && +($('.mfilter-country select option:selected').val()) != 0) {
-                        var val001 = $('.mfilter-country select option:selected').val() || $('.mfilter-country select').val();
-                        scale = +(this.dtcntr[val001]['scale']);
+                    let oldCountrySelect = -1;
+					if ((oldCountrySelect = +($('.mfilter-country select').val())) != 0 && !isNaN(+($('.mfilter-country select').val()))) { /// && +($('.mfilter-country select option:selected').val()) != 0) {
+                        let dtcntrOld = this.dtcntr;
+                        ///this.countryList(); // why here ???
+                        var val001 = +$('.mfilter-country select option:selected').val() || +$('.mfilter-country select').val();
+                        scale = (!!val001 && !!this.dtcntr[val001]['scale'] && !!+(this.dtcntr[val001]['scale'])) ? +(this.dtcntr[val001]['scale']) : +(dtcntrOld[oldCountrySelect]['scale']);
+                        console.log('scale: ', scale);
                         crd = this.dtcntr[val001]['cord'].split(',');
                         coord = { lat: +(crd[0]), lng: +(crd[1]) };
                         //alert(crd[0]);
+                        this.countryList(); // why here 2 ???
 					}
 					else
 					{
