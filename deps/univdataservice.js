@@ -292,12 +292,12 @@ class UnivDataController {
     }
     
     setForceFull (forceFull) {
-        this.forceFull = forceFull;
-        return this.forceFull;
+        this.udtService.forceFull = forceFull;
+        return this.udtService.forceFull;
     }
     
     getForceFull () {
-        return this.forceFull;
+        return this.udtService.forceFull;
     }
     
     getTphWorld () {
@@ -328,6 +328,40 @@ class UnivDataController {
         $('#'+tphselId).append('<option value="'+i+'">' + dt[i]['univ_name'] + ' _' + dt[i]['id_univ'] +'</option>');
     }
     
+    requestSecond () {
+        console.log('requestSecond will start without queue!');
+        this.udtService.requestAjax = Promise.resolve(!0); ///
+        if (this.udtService.getStateURL().indexOf('&pos=') >= 0 || this.udtService.getStateURL().indexOf('?pos=') >= 0) {
+            if (!!this.getDt() && !!this.getDtWorld() && this.getDt().length != this.getDtWorld().length) {
+                this.udtService.request();
+                this.setForceFull(false);
+            } else {
+                this.udtService.request();
+                console.warn('[WARN] Usually dt is less dtWorld here');
+            }
+        }
+        return this.udtService.requestAjax;
+    }
+    
+    setStateURL (url = null, forceFull = true, forceFrom, forceTo) { // second set for single marker
+        if (!(!!url && url.trim().length > 0)) {
+            url = this.udtService.getStateURL();
+            let stateParamsNew = urlToParams(url);
+            delete stateParamsNew.forceFull;
+            delete stateParamsNew.mode;
+            delete stateParamsNew.pos;
+            
+            subj = stateParamsNew.subj; // subject
+            yr = stateParamsNew.yr || stateParamsNew.year || yr || this.udtService.year; // year
+            cntr = stateParamsNew.cntr; // country
+            reg = stateParamsNew.reg; // region
+            this.udtService.year = yr;
+            
+            url = '/final/getunivdata_gmap23.php?year='+this.udtService.year/*yr*/+'&subj='+subj+'&cntr='+cntr+'&reg='+reg;
+        }
+        return this.udtService.setStateURL(url, forceFull, forceFrom, forceTo);
+    }
+    
     setState (state) {
         if (!(state instanceof Object)) {
             return null;
@@ -335,7 +369,7 @@ class UnivDataController {
         this.code = 1; // 1 - good, 0 - stop, 2 - warn, 3 - later promise, 4 - later repeat, 5 - method required, 9 - log, -900 .. -2 - error, -1 - unknown error
         $.extend(this, state); //this = $.extend(this, state);
         
-        if (!this.forceFull && window.location.hash && window.location.hash.length > 2) {
+        if (!this.udtService.forceFull && window.location.hash && window.location.hash.length > 2) {
             subj = 1; //this.subject = 1;
             cntr = 0; //this.country = 0;
             reg = 0; //this.region = 0;
@@ -350,15 +384,15 @@ class UnivDataController {
         yr = yr || this.udtService.year;
         this.udtService.year = yr;
         
-        if (this.forceFull && !(subj == 1 && cntr == 0 && reg == 0)) {
-            this.forceFull = false;
+        if (this.udtService.forceFull && !(subj == 1 && cntr == 0 && reg == 0)) {
+            this.udtService.forceFull = false;
             this.code = 0;
             //return;
         }
         
         code = this.code;
         console.log('code0: ', this.code);
-        if (this.udtService.getStateURL() == this.udtService.setStateURL('/final/getunivdata_gmap23.php?year='+this.udtService.year/*yr*/+'&subj='+subj+'&cntr='+cntr+'&reg='+reg, this.forceFull) && 0 !== this.code) {
+        if (this.udtService.getStateURL() == this.udtService.setStateURL('/final/getunivdata_gmap23.php?year='+this.udtService.year/*yr*/+'&subj='+subj+'&cntr='+cntr+'&reg='+reg, this.udtService.forceFull) && 0 !== this.code) {
             this.code = 0;
             //return;
             code = this.code;

@@ -403,6 +403,14 @@ $(document).ready(function ()
                 missedCount = 1;
                 lastMissed = wasClickedTrigger;
                 
+                if (!udtController.getDtWorld() || !udtController.getDtWorld().length || udtController.getDtWorld().length < 3) {
+                    var p1 = udtController.getMarkerPositionInDtWorld(mrks[wasClickedTrigger-1]);
+                    udtController.setStateURL(null, true, p1, p1); ///// construct urlto force overload dt for one marker
+                    requestSecond().then(function onGood (dataFullOne) {
+                        console.log('dataFullOne: ', dataFullOne);
+                        /// TODO: open additional window for one overloaded marker
+                    });
+                }
                 setTimeout(function () {
                     console.log('Inch Diag: ', getInchDiag());
                     if (!window.isMobile()) { // infowindow only for desktop
@@ -430,7 +438,6 @@ $(document).ready(function ()
                         }, 1);
                     }
                 }, 10);
-                
 
                 let city;
                 var lt;
