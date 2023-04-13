@@ -458,12 +458,13 @@ class UnivDataController {
                     //console.log('mrks[0][0]: ', mrks[0][0]);
                 }
                 this.mrks = mrks;					
-					if (+($('.mfilter-country select').val()) != 0 && +($('.mfilter-country select option:selected').val()) != 0) {
-						scale = +(this.dtcntr[$('.mfilter-country select option:selected').val()]['scale']);
-						crd = this.dtcntr[$('.mfilter-country select option:selected').val()]['cord'].split(',');
+					if (+($('.mfilter-country select').val()) != 0) { /// && +($('.mfilter-country select option:selected').val()) != 0) {
+                        this.countryList();
+                        var val001 = $('.mfilter-country select option:selected').val() || $('.mfilter-country select').val();
+						scale = +(this.dtcntr[val001]['scale']);
+						crd = this.dtcntr[val001]['cord'].split(',');
 						coord = { lat: +(crd[0]), lng: +(crd[1]) };
 						//alert(crd[0]);
-                        this.countryList();
 					}
 					else
 					{

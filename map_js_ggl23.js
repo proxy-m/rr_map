@@ -57,9 +57,10 @@ $(document).ready(function ()
     const udtService = new UnivDataService().getInstance();
         
     var udtController = new UnivDataController(udtService);
-    
+
+	udtController.countryList();    
 	subjectview();
-    udtController.countryList();
+	
   	//$('.mapinfo').html('<div id="map_div" style="display:none"></div><div id="nwmap"><h2>The map is loading.</h2></div>');
 	//setTimeout(function(){setmap();},100);
     
