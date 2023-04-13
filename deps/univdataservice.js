@@ -553,16 +553,25 @@ class UnivDataController {
 					//var urlc='final/getunivdata_ymap.php?year='+yr+'&subj='+subj+'&reg='+reg+'&cntr='+cntr;
 					var urlc='./final/getcntrdata_gmap22.php?year='+yr+'&subj='+subj+'&reg='+reg+'&cntr='+cntr;
 					//alert(urlc);
+                    if (this.oldUrlc === urlc && !!this.dtcntr && this.dtcntr.length > 0) {
+                        return this.dtcntr; ///
+                    } else {
+                        this.oldUrlc = urlc;
+                    }
 					$('.mfilter-country select').html('<option value="0">World</option>');
 					$.ajax(
 					{
 						url: urlc,
-                        async: false,
+                        async: false, // you can ignore warning
 						success: function(data)
 					 	{   console.log(this.toString());
 					 		var j=0;
 					 		var m=Number(data[2]);
 					 		//alert(j+'\n'+m);
+                            if (!this.dtcntr || !this.dtcntr.length) {
+                                this.dtcntr = [];
+                            }
+
 					 		$.each(data[1], function(key, val)
 					 		{
 								this.dtcntr[key]=[];
@@ -581,14 +590,20 @@ class UnivDataController {
 								//alert(key + '\n' + this.dtcntr[key]);
                                 
 							}.bind(this));
+                            //this.dtcntr; // new value
                             $('.mfilter-country select').val(cntr);
                             if (!(+$('.mfilter-country select').val()) || 0 == (+$('.mfilter-country select').val())) {
                                 cntr = 0;
                                 $('.mfilter-country select').val(cntr);
                             }
 						}.bind(this),
+                         error: function (err) {
+                            this.dtcntr = [];
+                            this.oldUrlc = null;
+                        }.bind(this),
 		});
-	}	
+        return this.dtcntr; // valid only for async false
+	}
 
     
 };
