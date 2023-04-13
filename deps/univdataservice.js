@@ -467,16 +467,22 @@ class UnivDataController {
                 }
                 this.mrks = mrks;
                     let oldCountrySelect = -1;
+                    ///this.countryList(); // why not here 2 ???
 					if ((oldCountrySelect = +($('.mfilter-country select').val())) != 0 && !isNaN(+($('.mfilter-country select').val()))) { /// && +($('.mfilter-country select option:selected').val()) != 0) {
                         let dtcntrOld = this.dtcntr;
-                        ///this.countryList(); // why here ???
-                        var val001 = +$('.mfilter-country select option:selected').val() || +$('.mfilter-country select').val();
-                        scale = (!!val001 && !!this.dtcntr[val001]['scale'] && !!+(this.dtcntr[val001]['scale'])) ? +(this.dtcntr[val001]['scale']) : +(dtcntrOld[oldCountrySelect]['scale']);
+                        this.countryList(); // why it is better here ???
+                        var val001 = +$('.mfilter-country select option:selected').val() || +$('.mfilter-country select').val();                        
+                        if (+val001 != +oldCountrySelect || +val001 == 0) {
+                            val001 = oldCountrySelect;
+                            this.dtcntr = dtcntrOld;
+                            console.warn('[WARN] Old value will be: ', val001);
+                        }
+                        scale = +(this.dtcntr[val001]['scale']);
                         console.log('scale: ', scale);
                         crd = this.dtcntr[val001]['cord'].split(',');
                         coord = { lat: +(crd[0]), lng: +(crd[1]) };
                         //alert(crd[0]);
-                        this.countryList(); // why here 2 ???
+                        ///this.countryList(); // on fatal here 3 ???
 					}
 					else
 					{
