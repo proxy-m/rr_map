@@ -320,6 +320,10 @@ class UnivDataController {
         return this.udtService.getDt();
     }
     
+    getDtWorldPart () {
+        return (!!this.udtService.getDtWorld() && !!this.udtService.getDtWorld().length) ? this.udtService.getDtWorld() : this.udtService.getDt();
+    }
+    
     clearSearchIngredients (tphselId) {
         $('#'+tphselId).html('');
     }
@@ -411,6 +415,34 @@ class UnivDataController {
         };
     }
     
+    dataToMarkerCustom (dt, i1, title, coord, icnsrc) {
+        return $.extend(true, [], this.dataToMarker(dt, i1, title, true), {
+            0: coord, // position coord
+            2: icnsrc, // icon
+        });
+    }
+    
+    dataToMarker (dt, i1, title, ignoreMissing = false) {
+        let coord = {};
+        try {
+            coord = {lat: +((''+dt[i1]['lat']).trim()), lng: +((''+dt[i1]['lng']).trim())};
+            if (!coord.lat || !coord.lng) {
+                console.warn('[WARN] Wrong coordinates within dt[' + i1 + ']: ', dt[i1], coord);
+            }
+        } catch (e53345764532346) {
+            if (!ignoreMissing) {
+                throw e53345764532346;
+            }
+        }
+        return [
+            coord, // position coord
+            (!ignoreMissing) ? `#${getWorldRating(dt, title, i1).label} - ${title}` : ( !!title ? `#${getWorldRating(dt, title, null).label} - ${title}` : `#${getWorldRating(dt, null, i1).label} - ${getWorldRating(dt, null, i1).title}` ), // title
+            dt[i1]['iconurl'], // icon
+            dt[i1], // data
+            dt[i1]['info'], // info content
+        ];
+    }
+    
     getPromise (stateParams = undefined) {
         ({year: yr, subject: subj, country: cntr, region: reg, code} = this.setState(stateParams || {
             code: this.code,
@@ -489,13 +521,7 @@ class UnivDataController {
                     for (var i=0;i<n;i++) {
                         //konf[i]=dt[i+1]['iconurl'];
                         let title = dt[i+1]['univ_name'];
-                        mrks.push([
-                            {lat: +((''+dt[i+1]['lat']).trim()), lng: +((''+dt[i+1]['lng']).trim())},
-                            `#${getWorldRating(dt, title, i + 1).label} - ${title}`,
-                            dt[i+1]['iconurl'],
-                            dt[i+1],
-                            dt[i+1]['info'],
-                        ]);                        
+                        mrks.push(this.dataToMarker(dt, i+1, title, false));
                     }
                     //console.log('mrks[0][0]: ', mrks[0][0]);
                 }
@@ -581,6 +607,84 @@ class UnivDataController {
         //return res;
     }
     
+    /**
+     * Search @marker position in dtWorld.
+     *  @searchType 0: only by university title
+     *  @searchType 1: by university title or coordinates (default)
+     *  @searchType 2: by university title and coordinates
+     *  @searchType 3: only coordinates
+     * If instead marker we get string, then searchType forced to 1 and coordinates ignored.
+     * @Returns integer for searchType 0, 1, 2 or array for searchType 3
+     *  0 or positive integer - normal result;
+     *  -1 - not found;
+     *  -2 - wrong dtWorld state, can not search.
+     */
+    getMarkerPositionInDtWorld (marker, searchType = 1) {
+        if (!this.getDtWorldPart() || !this.getDtWorldPart().length) {
+            return -2; // search array is empty
+        }
+        
+        if (!marker || !marker.length || searchType < 0 || searchType > 3) {
+            return null;
+        }
+        var res = [];
+        var curP;
+        var curM = this.getDtWorldPart()[0] || this.getDtWorldPart()[1] || this.getDtWorldPart()[2];
+        if (marker.length && !Array.isArray(marker)) { // string (special) instead of marker object array
+            if (!marker.trim().length) {
+                return null;
+            }
+            marker = [
+                {lat: 0, lng: 0},
+                '' + marker.trim(),
+                curM[2],
+                curM[3],
+                curM[4],
+            ];
+            if (searchType == 3) {
+                return -1;
+            }
+        }
+        
+        curP = this.getDtWorldPart().length;
+        while ((--curP) >= 0) {
+            var curD = this.getDtWorldPart()[curP];
+            if (!curD) {
+                continue;
+            }
+            curM = this.dataToMarker($.extend(true, [], {1: curD}), 1, null, true);
+            if (!curM || !Array.isArray(curM) || (Array.isArray(curM) && !curM.length)) {
+                continue;
+            }
+            var was = false;
+            if (searchType < 3) { // firstly search by title
+                if (curM[1] !== marker[1]) {
+                    if (searchType % 2 == 0) {
+                        continue;
+                    }
+                } else {
+                    was = true;
+                }
+            }
+            if (searchType >= 1) {
+                if (curM[0].lat != marker[0].lat || curM[0].lng != marker[0].lng) {
+                    if (!was || 2 == searchType) {
+                        continue;
+                    }
+                }
+                res.push(curP);
+            }
+            if (searchType < 3) {
+                return curP;
+            }
+        }
+        if (3 == searchType) {
+            return res;
+        } else {
+            return -1;
+        }
+    }
+    
     countryList () {
 					subj=$('.mfilter-subject select option:selected').val();
 					yr=$('.mfilter-year select option:selected').val();
@@ -650,7 +754,7 @@ class UnivDataController {
 
 if (!window.getWorldRating) {
     window.getWorldRating = function getWorldRating (dt, title, i) {
-        if (!dt) {
+        if (!dt || !dt.length || (dt.length <= 2 && !dt[0] && !dt[1]) || !Array.isArray(dt)) {
             return undefined;
         }
         if (!title && (!i || i == 0 || i < 0)) {
