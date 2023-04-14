@@ -835,7 +835,8 @@ window.dataToMarker = function dataToMarker (dt0 = null, i1, title, ignoreMissin
     if (isFunction(dt0)) { // already function
         dt = dt0;
     } else if (!dt0 || dt0 == [] || dt0 === true || dt0 === +dt0 || !dt0.length || dt0.length <= 0 || !!dt0.trim) { // empty
-        dt = () => new UnivDataService().getDtWorldPart;
+        var t = new UnivDataService();
+        dt = () => (!!t.getDtWorld() && !!t.getDtWorld().length) ? t.getDtWorld() : t.getDt(); ///() => new UnivDataService().getDtWorldPart;
     } else { // data array
         dt = () => dt0;
     }

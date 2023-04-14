@@ -288,7 +288,7 @@ $(document).ready(function ()
                 //z: (!!m[0].z) ? m[0].z : undefined,
                 n: i+1,
                 type: 'Point',
-                info: (!!m[3]['info'] ? m[3]['info'] : '<div><h3>Missing info</h3></div>'),
+                info: (!!m[4] ? m[4] : () => '<div><h3>Missing info</h3></div>'),
                 desc: '' // + '<pre>'
                         + '<b>' + (!!m[1] ? m[1] : 'Unnamed') + '</b>' + '<br/>'
                         + ' ' + '[Lat, Lng: ' + m[0].lat + ', ' + m[0].lng + ']', //+ ' </pre>', 
@@ -396,10 +396,11 @@ $(document).ready(function ()
                 
                 window.needClickOnFirst = false;
                 
-                content = document.getElementById('popup-content'); ///
-                content.innerHTML = feature.get('info');
                 popup.title = feature.get('name');
                 wasClickedTrigger = feature.get('n');
+                mrks[+feature.get('n') - 1] = dataToMarker(null, new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(mrks[+feature.get('n') - 1]), null, false); // update marker properties!!!
+                content = document.getElementById('popup-content'); ///
+                content.innerHTML = mrks[+feature.get('n') - 1][4](); // instead old: content.innerHTML = feature.get('info')();
                 missedCount = 1;
                 lastMissed = wasClickedTrigger;
                 
@@ -414,12 +415,12 @@ $(document).ready(function ()
                 }
                 setTimeout(function () {
                     console.log('Inch Diag: ', getInchDiag());
-                    if (!window.isMobile()) { // infowindow only for desktop
+                    if (!window.isMobile()) { // infowindow only for desktop                        
                         // Info: new Ext.window.Window({}) is actually same as Ext.create('Ext.window.Window', {});
                         window.windowDock = window.windowDock || new DockInfoWindow('info_windows', Ext.window.Window); ///
                         window.windowDock.add({
                             layout: 'fit',
-                            html: $('#popup').html(),
+                            html: $('#popup').html(), ///$(content).html(),
                             renderTo: 'perfectmap_div', ///'wrapper-parent',
 //                            listeners: {
 //                                afterrender: closeTooltip
@@ -433,9 +434,9 @@ $(document).ready(function ()
                             $('.x-window-header, .x-window-tc, .x-window-tr, .x-window-tl, .x-window-ml, .x-window-mr, .x-window-bc, .x-window-br, .x-window-bl').css('background-color', 'white');
                         }, 20);
                     } else {
-                        ///console.log(feature.get('info')); ///console.log($('#dt_i' + wasClickedTrigger + ' > table span > a')[1]);
+                        ///console.log(feature.get('info')()); ///console.log($('#dt_i' + wasClickedTrigger + ' > table span > a')[1]);
                         setTimeout(function () {
-                            window.open('' + $('' + feature.get('info')).find(/*'#dt_i' + wasClickedTrigger + ' ' + */' table span > a')[1].href);
+                            window.open('' + $('' + feature.get('info')()).find(/*'#dt_i' + wasClickedTrigger + ' ' + */' table span > a')[1].href);
                         }, 1);
                     }
                 }, 10);
@@ -529,8 +530,8 @@ $(document).ready(function ()
                                         var title = mrks3[1].substring(mrks3[1].indexOf(' ') + 1);
                                         var wrData = getWorldRating(dt, title, null);
                                         if (mrks3[1] === `#${wrData.label} ${title}`) {
-                                            mrks3[3] = dt[wrData.i] || mrks3[3];
-                                            mrks3[4] = dt[wrData.i]['info'] || mrks3[4];
+                                            mrks3[3] = () => (dt[wrData.i] || mrks3[3]);
+                                            mrks3[4] = () => (dt[wrData.i]['info'] || mrks3[4]);
                                             mrks3[2] = dt[wrData.i]['iconurl'] || mrks3[2];
                                             pos = [mrks3[0].lng, mrks3[0].lat]; //
                                             city = ol.proj.fromLonLat(pos); //
