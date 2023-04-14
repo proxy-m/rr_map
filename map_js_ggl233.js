@@ -407,7 +407,7 @@ $(document).ready(function ()
                     var p1 = udtController.getMarkerPositionInDtWorld(mrks[wasClickedTrigger-1]);
                     console.log('getMarkerPositionInDtWorld result:', p1, (p1 >= 0) ? udtController.getDtWorldPart()[p1] : null);
                     udtController.setStateURL(null, true, p1, p1); ///// construct urlto force overload dt for one marker
-                    requestSecond().then(function onGood (dataFullOne) {
+                    udtController.requestSecond().then(function onGood (dataFullOne) {
                         console.log('dataFullOne: ', dataFullOne);
                         /// TODO: open additional window for one overloaded marker
                     });
@@ -551,7 +551,7 @@ $(document).ready(function ()
                         if (!udtController.getDtWorld() || !udtController.getMrksWorld() || udtController.getDtWorld().length < dt.length || !udtController.getMrksWorld().length || forceFull) {
                             if (!forceFull) {
                                 setTimeout(function () {
-                                    /////initMap(true);
+                                    initMap(true); /////
                                 }, 500);
                             }
                         }

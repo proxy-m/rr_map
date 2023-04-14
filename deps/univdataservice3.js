@@ -143,14 +143,40 @@ class UnivDataService {
                 console.log('yr: ', yr);
                 //console.log('tmp.length: ', dtFullTmp.length);                
                 
-                for(var i=1;i<=n;i++)
-                {
-                    //alert(data[4][i]);
-                    dt[i] = []; //dtmap = [];
-                    dt[i] = this.genBasicData(i, data[1], dt)[i];
-                    dt[i] = this.genLeagueStyles(i, data[1], dt)[i];
-                    dt[i] = this.genCardInfo(i, data[1], dt)[i];
+                var posOffset = 0;
+                if (!!forceFull && !!stateParamsNew.pos) {
+                    posOffset = stateParamsNew.pos.split('_')[0] || 0; // TODO: recheck
                 }
+                for (var i=1; i<=n; ++i) {
+                    //alert(data[4][i]);
+                    dt[i+posOffset] = []; //dtmap = [];
+                    dt[i+posOffset] = $.extend(true, dt[i+posOffset], this.genBasicData(i, data[1], null));
+                    dt[i+posOffset] = $.extend(true, dt[i+posOffset], this.genLeagueStyles(i, data[1], null));
+                    dt[i+posOffset] = $.extend(true, dt[i+posOffset], this.genCardInfo(i, data[1], null));
+                }
+                
+                if (!this.dtWorld || !this.dtWorld.length || (this.dtWorld.length <= 2 && !this.dtWorld[0] && !this.dtWorld[1]) || !Array.isArray(this.dtWorld)) {
+                    this.dtWorld = [];
+                }
+                if (!!forceFull && !!stateParamsNew.pos) {
+                    this.dtWorld = $.extend(true, [], this.dtWorld, this.dt);
+                }
+                
+                if (!this.dt) {
+                    this.dt = [];
+                }
+                if (!!forceFull || !stateParamsNew.pos || this.dt != this.dtWorld) {
+                    this.dt = this.dt.map(function (e, i) {
+                        return (!!e) ? e : null;
+                    });
+                }
+                if (!this.dtWorld || !this.dtWorld.length) {
+                    this.dtWorld = [];
+                    this.dtWorld = $.extend(true, [], this.dtWorld, this.dt);
+                }
+                console.log('dt length compare (world, local): ', this.dtWorld.length, this.dt.length);
+                console.log('dt 0 compare (world, local): ', this.dtWorld[0], this.dt[0]);
+                console.log('dt 1 compare (world, local): ', this.dtWorld[1], this.dt[1]);
                 
                 return data;
             }
@@ -188,10 +214,16 @@ class UnivDataService {
 						//if(Number(cntr)==45)
 						//{alert(dt[i]['lat']);}
 						//alert(data_1[i]['cord']+'\n'+dt[i]['lat']+'\n'+dt[i]['lng']);
-                        return dt;
+                        return dt[i];
     }
     
     genLeagueStyles (i, data_1, dt) {
+						if (!dt) {
+							dt = [];
+						}
+						if (!dt[i]) {
+							dt[i] = [];
+						}
 						dt[i]['nm_page']=data_1[i]['nm_page'];
 						dt[i]['O_CR']=data_1[i]['O_CR'];dt[i]['League']=data_1[i]['League'];
 						dt[i]['O_WR']=data_1[i]['O_WR'];dt[i]['O_WS']=data_1[i]['O_WS'];
@@ -226,10 +258,16 @@ class UnivDataService {
 				 			case 'World League':dt[i]['icon']='world';dt[i]['iconurl']='./images_rur/Konf/worldw.png';break;
 						  	default:dt[i]['icon']='world';dt[i]['iconurl']='./images_rur/Konf/worldw.png';
 						}
-                        return dt;
+                        return dt[i];
     }
     
     genCardInfo (i, data_1, dt) {
+						if (!dt) {
+							dt = [];
+						}
+						if (!dt[i]) {
+							dt[i] = [];
+						}
 						var leftur = 'https://roundranking.com/universities/';hs='';
 						
 						dt[i]['info']='<div id="dt_i' + i + '" style="overflow:auto;font-family:arial; border:2px '+ dt[i]['O_Color1']+ 'solid; border: 2px '+ dt[i]['O_Color1']+ ' solid;padding:10px;padding-right:32px;padding-bottom:16px"><table style="font-family:arial;width:560px;height:300px;border-collapse:collapse" class="style5" border="0"><tbody><tr>';
@@ -257,7 +295,7 @@ class UnivDataService {
 						
 						//dt[i]['info']=data[4][i];
 						//alert(dt[i]['info']);
-                        return dt;      
+                        return dt[i];      
     }
 
 };
