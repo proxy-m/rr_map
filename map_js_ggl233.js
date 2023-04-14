@@ -398,22 +398,13 @@ $(document).ready(function ()
                 
                 popup.title = feature.get('name');
                 wasClickedTrigger = feature.get('n');
-                mrks[+feature.get('n') - 1] = dataToMarker(null, new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(mrks[+feature.get('n') - 1]), null, false); // update marker properties!!!
-                content = document.getElementById('popup-content'); ///
-                content.innerHTML = mrks[+feature.get('n') - 1][4](); // instead old: content.innerHTML = feature.get('info')();
                 missedCount = 1;
                 lastMissed = wasClickedTrigger;
                 
-                if (true /*!udtController.getDtWorld() || !udtController.getDtWorld().length || udtController.getDtWorld().length < 3*/) {
-                    var p1 = udtController.getMarkerPositionInDtWorld(mrks[wasClickedTrigger-1]);
-                    console.log('getMarkerPositionInDtWorld result:', p1, (p1 >= 0) ? udtController.getDtWorldPart[p1] : null);
-                    udtController.setStateURL(null, true, p1, p1); ///// construct urlto force overload dt for one marker
-                    udtController.requestSecond().then(function onGood (dataFullOne) {
-                        console.log('dataFullOne: ', dataFullOne);
-                        /// TODO: open additional window for one overloaded marker
-                    });
-                }
-                setTimeout(function () {
+                let displayDockInfoWindow = function displayDockInfoWindow () {
+                    mrks[+feature.get('n') - 1] = dataToMarker(null, new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(mrks[+feature.get('n') - 1]), null, false); // update marker properties!!!
+                    content = document.getElementById('popup-content'); ///
+                    content.innerHTML = mrks[+feature.get('n') - 1][4](); // instead old: content.innerHTML = feature.get('info')();
                     console.log('Inch Diag: ', getInchDiag());
                     if (!window.isMobile()) { // infowindow only for desktop                        
                         // Info: new Ext.window.Window({}) is actually same as Ext.create('Ext.window.Window', {});
@@ -439,7 +430,21 @@ $(document).ready(function ()
                             window.open('' + $('' + feature.get('info')()).find(/*'#dt_i' + wasClickedTrigger + ' ' + */' table span > a')[1].href);
                         }, 1);
                     }
-                }, 10);
+                };
+                let t10 = null;
+                if (true /*!udtController.getDtWorld() || !udtController.getDtWorld().length || udtController.getDtWorld().length < 3*/) {
+                    var p1 = udtController.getMarkerPositionInDtWorld(mrks[wasClickedTrigger-1]);
+                    console.log('getMarkerPositionInDtWorld result:', p1, (p1 >= 0) ? udtController.getDtWorldPart[p1] : null);
+                    udtController.setStateURL(null, true, p1, p1); ///// construct urlto force overload dt for one marker
+                    udtController.requestSecond().then(function onGood (dataFullOne) {
+                        console.log('dataFullOne: ', dataFullOne);
+                        /// TODO: open additional window for one overloaded marker
+                        t10 = setTimeout(displayDockInfoWindow, 10);
+                    });
+                } else {
+                    t10 = setTimeout(displayDockInfoWindow, 10);
+                }               
+                
 
                 let city;
                 var lt;

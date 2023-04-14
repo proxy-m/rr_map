@@ -101,7 +101,6 @@ class UnivDataService {
             "async": true,
         });
         this.dt = []; // reset local state of dt
-        
         let stateParamsNew = $.extend(true, {}, this.stateParamsNew);
         
         this.requestAjax = this.requestAjax.then(function onSuccess (data) {
@@ -391,19 +390,22 @@ class UnivDataController {
         $('#'+tphselId).append('<option value="'+i+'">' + dt[i]['univ_name'] + ' _' + dt[i]['id_univ'] +'</option>');
     }
     
-    requestSecond () {
+    requestSecond (isRequestSecondParallel = false) {
         console.log('requestSecond will start without queue!');
-        this.udtService.requestAjax = Promise.resolve(!0); ///
+        var res = null;
         if (this.udtService.getStateURL().indexOf('&pos=') >= 0 || this.udtService.getStateURL().indexOf('?pos=') >= 0) {
             if (!!this.getDt() && !!this.getDtWorld() && this.getDt().length != this.getDtWorld().length) {
-                this.udtService.request();
+                res = this.udtService.request();
                 this.setForceFull(false);
             } else {
-                this.udtService.request();
+                res = this.udtService.request();
                 console.warn('[WARN] Usually dt is less dtWorld here');
             }
+        } else {
+            isRequestSecondParallel = true;
         }
-        return this.udtService.requestAjax;
+        res = (!isRequestSecondParallel) ? res : Promise.resolve(!0);        
+        return res;
     }
     
     setStateURL (url = null, forceFull = true, forceFrom, forceTo) { // second set for single marker
