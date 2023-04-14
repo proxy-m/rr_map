@@ -1,12 +1,12 @@
 'use strict';
-var dt=new Array;
+var dt=new Array; // ? unrequired here
 var tph = '';				//текст массива вузов для typehead
 var tphcord=new Array;	//массив координат поиска
 var tphunnm=new Array;	//массив имен вузов поиска
 var cordtph=new Array;	//массив координат вузов по поиску
 var map=new Object;
 var zummap;
-var data;
+var data; // ? unrequired here
 //this.dtcntr //var dtcntr=new Array;	//массив данных стран для карт
 var n,sv,lftur,hs;
 
@@ -40,8 +40,13 @@ class UnivDataService {
         this.requestAjax = null;
         this.year = -1;
         this.dtWorld = []; // dtWorld (wider) and dt are different
-        this.dt = null;
+        this.dt = null;        
         
+        Object.defineProperty(this, 'getDtWorldPart', {
+            get: () => (!!this.getDtWorld() && !!this.getDtWorld().length) ? this.getDtWorld() : this.getDt(),
+            enumerable: true,
+            configurable: false,
+        });
         
         UnivDataService._instance = this;
     }
@@ -330,6 +335,18 @@ class UnivDataController {
         this.mrksWorld = [];
         this.mrks = [];
         
+        Object.defineProperty(this, 'getDtWorldPart', {
+            get: () => (!!this.udtService.getDtWorld() && !!this.udtService.getDtWorld().length) ? this.udtService.getDtWorld() : this.udtService.getDt(),
+            enumerable: true,
+            configurable: false,
+        });
+        
+        Object.defineProperty(this, 'getMrksWorldPart', {
+            get: () => (!!this.getMrksWorld() && !!this.getMrksWorld().length) ? this.getMrksWorld() : this.getMrks(),
+            enumerable: true,
+            configurable: false,
+        });
+        
         UnivDataController._instance = this;
     }
     
@@ -364,10 +381,6 @@ class UnivDataController {
     
     getDt () {
         return this.udtService.getDt();
-    }
-    
-    getDtWorldPart () {
-        return (!!this.udtService.getDtWorld() && !!this.udtService.getDtWorld().length) ? this.udtService.getDtWorld() : this.udtService.getDt();
     }
     
     clearSearchIngredients (tphselId) {
@@ -484,7 +497,7 @@ class UnivDataController {
             reg = reg || stateParamsNew.reg; // region
             stateParamsNew.year = yr;
             var forceFull = stateParamsNew.forceFull;
-            var dt = this.getDt();
+            var dt = this.getDtWorldPart;
             
             stateParamsNew.subj = subj;
             stateParamsNew.year = yr;
@@ -517,7 +530,7 @@ class UnivDataController {
                     
                 var mrks=[];
                 
-                var mrksWorldPart = $.extend(true, [], this.getMrksWorld() || this.getMrks());
+                var mrksWorldPart = this.getMrksWorldPart; ///$.extend(true, [], this.getMrksWorld() || this.getMrks());
                 if (!forceFull && !!mrksWorldPart && !!mrksWorldPart.length) {
                     //dt = this.getDtWorld(); ///
                     mrksWorldPart = mrksWorldPart.map(function (e1, i1) {
@@ -539,7 +552,7 @@ class UnivDataController {
                     for (var i=0;i<n;i++) {
                         //konf[i]=dt[i+1]['iconurl'];
                         let title = dt[i+1]['univ_name'];
-                        mrks.push(dataToMarker(dt, i+1, title, false));
+                        mrks.push(dataToMarker(null, i+1, title, false));
                     }
                     //console.log('mrks[0][0]: ', mrks[0][0]);
                 }
@@ -640,7 +653,7 @@ class UnivDataController {
      *  -2 - wrong dtWorld state, can not search.
      */
     getMarkerPositionInDtWorld (marker, searchType = 1) {
-        if (!this.getDtWorldPart() || !this.getDtWorldPart().length) {
+        if (!this.getDtWorldPart || !this.getDtWorldPart.length) {
             return -2; // search array is empty
         }
         
@@ -649,7 +662,7 @@ class UnivDataController {
         }
         var res = [];
         var curP;
-        var curM = this.getDtWorldPart()[0] || this.getDtWorldPart()[1] || this.getDtWorldPart()[2];
+        var curM = this.getDtWorldPart[0] || this.getDtWorldPart[1] || this.getDtWorldPart[2];
         if (marker.length && !Array.isArray(marker)) { // string (special) instead of marker object array
             if (!marker.trim().length) {
                 return null;
@@ -666,9 +679,9 @@ class UnivDataController {
             }
         }
         
-        curP = this.getDtWorldPart().length;
+        curP = this.getDtWorldPart.length;
         while ((--curP) >= 0) {
-            var curD = this.getDtWorldPart()[curP];
+            var curD = this.getDtWorldPart[curP];
             if (!curD) {
                 continue;
             }
@@ -809,19 +822,28 @@ if (!window.getWorldRating) {
     };
 }
 
-window.dataToMarkerCustom = function dataToMarkerCustom (dt, i1, title, coord, icnsrc) {
+window.dataToMarkerCustom = function dataToMarkerCustom (dt = null, i1, title, coord, icnsrc) {
     return $.extend(true, [], dataToMarker(dt, i1, title, true), {
         0: coord, // position coord
         2: icnsrc, // icon
     });
 };
 
-window.dataToMarker = function dataToMarker (dt, i1, title, ignoreMissing = false) {
+window.dataToMarker = function dataToMarker (dt0 = null, i1, title, ignoreMissing = false) {
+    const isFunction = function (value) {return !!value && !/^\s*class/.test(value.toString()) && (Object.prototype.toString.call(value) === "[object Function]" || "function" === typeof value || value instanceof Function) };
+    let dt;
+    if (isFunction(dt0)) { // already function
+        dt = dt0;
+    } else if (!dt0 || dt0 == [] || dt0 === true || dt0 === +dt0 || !dt0.length || dt0.length <= 0 || !!dt0.trim) { // empty
+        dt = () => new UnivDataService().getDtWorldPart;
+    } else { // data array
+        dt = () => dt0;
+    }
     let coord = {};
     try {
-        coord = {lat: +((''+dt[i1]['lat']).trim()), lng: +((''+dt[i1]['lng']).trim())};
+        coord = {lat: +((''+dt()[i1]['lat']).trim()), lng: +((''+dt()[i1]['lng']).trim())};
         if (!coord.lat || !coord.lng) {
-            console.warn('[WARN] Wrong coordinates within dt[' + i1 + ']: ', dt[i1], coord);
+            console.warn('[WARN] Wrong coordinates within dt()[' + i1 + ']: ', dt()[i1], coord);
         }
     } catch (e53345764532346) {
         if (!ignoreMissing) {
@@ -830,10 +852,10 @@ window.dataToMarker = function dataToMarker (dt, i1, title, ignoreMissing = fals
     }
     return [
         coord, // position coord
-        (!ignoreMissing) ? `#${getWorldRating(dt, title, i1).label} - ${title}` : ( !!title ? `#${getWorldRating(dt, title, null).label} - ${title}` : `#${getWorldRating(dt, null, i1).label} - ${getWorldRating(dt, null, i1).title}` ), // title
-        dt[i1]['iconurl'], // icon
-        dt[i1], // data
-        dt[i1]['info'], // info content
+        (!ignoreMissing) ? `#${getWorldRating(dt(), title, i1).label} - ${title}` : ( !!title ? `#${getWorldRating(dt(), title, null).label} - ${title}` : `#${getWorldRating(dt(), null, i1).label} - ${getWorldRating(dt(), null, i1).title}` ), // title
+        dt()[i1]['iconurl'], // icon
+        () => dt()[i1], // data
+        () => dt()[i1]['info'], // info content
     ];
 };
 
