@@ -147,13 +147,13 @@ class UnivDataService {
                 if (!!forceFull && !!stateParamsNew.pos) {
                     posOffset = stateParamsNew.pos.split('_')[0] || 0; // TODO: recheck
                 }
+                var posOffset1 = posOffset;
                 for (var i=1; i<=n; ++i) {
                     //alert(data[4][i]);
-                    var i1 = i+posOffset;
-                    var posOffset1 = posOffset;
-                    if (!data[1][i+posOffset] || !data[1][i+posOffset]['univ_name'] || n == 1 || (!!this.dtWorld && !!this.dtWorld.length && this.dtWorld.length > n)) { // TODO: recheck please!
+                    var i1 = i-posOffset1;
+                    if (!data[1][i1+posOffset1] || !data[1][i1+posOffset1]['univ_name'] || n == 1 || (!!this.dtWorld && !!this.dtWorld.length && this.dtWorld.length > n)) { // TODO: recheck please!
                         dt[i] = this.genBasicData(1, data[1], []);
-                        i1 = new UnivDataController(this).getMarkerPositionInDtWorld(dataToMarker(dt, i, null, true), 0);
+                        i1 = new UnivDataController(this).getMarkerPositionInDtWorld(dataToMarker(dt, i, null, true), 1); /// warn: this line is too complicated
                         if (i1 < 0) {
                             console.error('[ERR] Can not shift position!', i1, i, posOffset, dt[i]);
                             return null;
