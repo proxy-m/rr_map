@@ -149,10 +149,25 @@ class UnivDataService {
                 }
                 for (var i=1; i<=n; ++i) {
                     //alert(data[4][i]);
+                    var i1 = i+posOffset;
+                    var posOffset1 = posOffset;
+                    if (!data[1][i+posOffset] || !data[1][i+posOffset]['univ_name'] || n == 1 || (!!this.dtWorld && !!this.dtWorld.length && this.dtWorld.length > n)) { // TODO: recheck please!
+                        dt[i] = this.genBasicData(1, data[1], []);
+                        i1 = new UnivDataController(this).getMarkerPositionInDtWorld(dataToMarker(dt, i, null, true), 0);
+                        if (i1 < 0) {
+                            console.error('[ERR] Can not shift position!', i1, i, posOffset, dt[i]);
+                            return null;
+                        }
+                        posOffset1 = i - i1; // i = i1 + posOffset1 !!! new posOffset !!!
+                        dt[i] = undefined;
+                        console.log('Shifted [dt position, data1 position, univ_name]: ', i1, i+posOffset, data[1][i1+posOffset1]['univ_name']);
+                    } else {
+                        i1 = i;
+                    }                        
                     dt[i+posOffset] = []; //dtmap = [];
-                    dt[i+posOffset] = this.genBasicData(i+posOffset, data[1], dt[i+posOffset]);
-                    dt[i+posOffset] = this.genLeagueStyles(i+posOffset, data[1], dt[i+posOffset]);
-                    dt[i+posOffset] = this.genCardInfo(i+posOffset, data[1], dt[i+posOffset]);
+                    dt[i+posOffset] = this.genBasicData(i1+posOffset1, data[1], dt[i+posOffset]);
+                    dt[i+posOffset] = this.genLeagueStyles(i1+posOffset1, data[1], dt[i+posOffset]);
+                    dt[i+posOffset] = this.genCardInfo(i1+posOffset1, data[1], dt[i+posOffset]);
                 }
                 
                 if (!this.dtWorld || !this.dtWorld.length || (this.dtWorld.length <= 2 && !this.dtWorld[0] && !this.dtWorld[1]) || !Array.isArray(this.dtWorld)) {
@@ -208,6 +223,11 @@ class UnivDataService {
                         
 						dtI['lat']=crd[0];
 						dtI['lng']=crd[1];
+                        
+						dtI['nm_page']=data_1[i]['nm_page'];
+						dtI['O_CR']=data_1[i]['O_CR'];dtI['League']=data_1[i]['League'];
+						dtI['O_WR']=data_1[i]['O_WR'];dtI['O_WS']=data_1[i]['O_WS'];
+
 						//if(Number(cntr)==45)
 						//{alert(dtI['lat']);}
 						//alert(data_1[i]['cord']+'\n'+dtI['lat']+'\n'+dtI['lng']);
@@ -218,9 +238,6 @@ class UnivDataService {
 						if (!dtI) {
 							dtI = [];
 						}
-						dtI['nm_page']=data_1[i]['nm_page'];
-						dtI['O_CR']=data_1[i]['O_CR'];dtI['League']=data_1[i]['League'];
-						dtI['O_WR']=data_1[i]['O_WR'];dtI['O_WS']=data_1[i]['O_WS'];
 						dtI['O_TR']=data_1[i]['O_TR'];dtI['O_TS']=data_1[i]['O_TS'];
 						dtI['O_RR']=data_1[i]['O_RR'];dtI['O_RS']=data_1[i]['O_RS'];
 						dtI['O_IR']=data_1[i]['O_IR'];dtI['O_IS']=data_1[i]['O_IS'];
@@ -444,34 +461,6 @@ class UnivDataController {
         };
     }
     
-    dataToMarkerCustom (dt, i1, title, coord, icnsrc) {
-        return $.extend(true, [], this.dataToMarker(dt, i1, title, true), {
-            0: coord, // position coord
-            2: icnsrc, // icon
-        });
-    }
-    
-    dataToMarker (dt, i1, title, ignoreMissing = false) {
-        let coord = {};
-        try {
-            coord = {lat: +((''+dt[i1]['lat']).trim()), lng: +((''+dt[i1]['lng']).trim())};
-            if (!coord.lat || !coord.lng) {
-                console.warn('[WARN] Wrong coordinates within dt[' + i1 + ']: ', dt[i1], coord);
-            }
-        } catch (e53345764532346) {
-            if (!ignoreMissing) {
-                throw e53345764532346;
-            }
-        }
-        return [
-            coord, // position coord
-            (!ignoreMissing) ? `#${getWorldRating(dt, title, i1).label} - ${title}` : ( !!title ? `#${getWorldRating(dt, title, null).label} - ${title}` : `#${getWorldRating(dt, null, i1).label} - ${getWorldRating(dt, null, i1).title}` ), // title
-            dt[i1]['iconurl'], // icon
-            dt[i1], // data
-            dt[i1]['info'], // info content
-        ];
-    }
-    
     getPromise (stateParams = undefined) {
         ({year: yr, subject: subj, country: cntr, region: reg, code} = this.setState(stateParams || {
             code: this.code,
@@ -550,7 +539,7 @@ class UnivDataController {
                     for (var i=0;i<n;i++) {
                         //konf[i]=dt[i+1]['iconurl'];
                         let title = dt[i+1]['univ_name'];
-                        mrks.push(this.dataToMarker(dt, i+1, title, false));
+                        mrks.push(dataToMarker(dt, i+1, title, false));
                     }
                     //console.log('mrks[0][0]: ', mrks[0][0]);
                 }
@@ -683,7 +672,7 @@ class UnivDataController {
             if (!curD) {
                 continue;
             }
-            curM = this.dataToMarker($.extend(true, [], {1: curD}), 1, null, true);
+            curM = dataToMarker($.extend(true, [], {1: curD}), 1, null, true);
             if (!curM || !Array.isArray(curM) || (Array.isArray(curM) && !curM.length)) {
                 continue;
             }
@@ -819,6 +808,34 @@ if (!window.getWorldRating) {
         };
     };
 }
+
+window.dataToMarkerCustom = function dataToMarkerCustom (dt, i1, title, coord, icnsrc) {
+    return $.extend(true, [], dataToMarker(dt, i1, title, true), {
+        0: coord, // position coord
+        2: icnsrc, // icon
+    });
+};
+
+window.dataToMarker = function dataToMarker (dt, i1, title, ignoreMissing = false) {
+    let coord = {};
+    try {
+        coord = {lat: +((''+dt[i1]['lat']).trim()), lng: +((''+dt[i1]['lng']).trim())};
+        if (!coord.lat || !coord.lng) {
+            console.warn('[WARN] Wrong coordinates within dt[' + i1 + ']: ', dt[i1], coord);
+        }
+    } catch (e53345764532346) {
+        if (!ignoreMissing) {
+            throw e53345764532346;
+        }
+    }
+    return [
+        coord, // position coord
+        (!ignoreMissing) ? `#${getWorldRating(dt, title, i1).label} - ${title}` : ( !!title ? `#${getWorldRating(dt, title, null).label} - ${title}` : `#${getWorldRating(dt, null, i1).label} - ${getWorldRating(dt, null, i1).title}` ), // title
+        dt[i1]['iconurl'], // icon
+        dt[i1], // data
+        dt[i1]['info'], // info content
+    ];
+};
 
 window.urlToParams = function urlToParams (url) {
     let urlParams = [];

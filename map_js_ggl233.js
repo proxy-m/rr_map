@@ -403,7 +403,7 @@ $(document).ready(function ()
                 missedCount = 1;
                 lastMissed = wasClickedTrigger;
                 
-                if (!udtController.getDtWorld() || !udtController.getDtWorld().length || udtController.getDtWorld().length < 3) {
+                if (true /*!udtController.getDtWorld() || !udtController.getDtWorld().length || udtController.getDtWorld().length < 3*/) {
                     var p1 = udtController.getMarkerPositionInDtWorld(mrks[wasClickedTrigger-1]);
                     console.log('getMarkerPositionInDtWorld result:', p1, (p1 >= 0) ? udtController.getDtWorldPart()[p1] : null);
                     udtController.setStateURL(null, true, p1, p1); ///// construct urlto force overload dt for one marker
@@ -551,7 +551,7 @@ $(document).ready(function ()
                         if (!udtController.getDtWorld() || !udtController.getMrksWorld() || udtController.getDtWorld().length < dt.length || !udtController.getMrksWorld().length || forceFull) {
                             if (!forceFull) {
                                 setTimeout(function () {
-                                    initMap(true); /////
+                                    ///initMap(true); /////
                                 }, 500);
                             }
                         }
@@ -679,7 +679,7 @@ $(document).ready(function ()
                     }));
                     
                     let title = unnm;
-                    var mrks = [udtController.dataToMarkerCustom(dt, $('#tphsel').val(), title, coord, icnsrc)]; // only one marker
+                    var mrks = [dataToMarkerCustom(dt, $('#tphsel').val(), title, coord, icnsrc)]; // only one marker
                     addMarkers(mrks, true); // TODO: click on marker if it is only one
                     
                     return; /// !!!
