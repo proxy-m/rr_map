@@ -432,16 +432,17 @@ $(document).ready(function ()
                     }
                 };
                 let t10 = null;
-                if (true /*!udtController.getDtWorld() || !udtController.getDtWorld().length || udtController.getDtWorld().length < 3*/) {
+                if (!mrks[+feature.get('n') - 1][4]() /*!udtController.getDtWorld() || !udtController.getDtWorld().length || udtController.getDtWorld().length < 3*/) {
                     var p1 = udtController.getMarkerPositionInDtWorld(mrks[wasClickedTrigger-1]);
                     console.log('getMarkerPositionInDtWorld result:', p1, (p1 >= 0) ? udtController.getDtWorldPart[p1] : null);
                     udtController.setStateURL(null, true, p1, p1); ///// construct urlto force overload dt for one marker
                     udtController.requestSecond().then(function onGood (dataFullOne) {
                         console.log('dataFullOne: ', dataFullOne);
-                        /// TODO: open additional window for one overloaded marker
+                        t10 = (!t10) ? null : clearTimeout(t10);
                         t10 = setTimeout(displayDockInfoWindow, 10);
                     });
                 } else {
+                    t10 = (!t10) ? null : clearTimeout(t10);
                     t10 = setTimeout(displayDockInfoWindow, 10);
                 }               
                 

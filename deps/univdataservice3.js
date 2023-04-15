@@ -172,6 +172,12 @@ class UnivDataService {
                     dt[i+posOffset] = this.genBasicData(i1+posOffset1, data[1], dt[i+posOffset]);
                     dt[i+posOffset] = this.genLeagueStyles(i1+posOffset1, data[1], dt[i+posOffset]);
                     dt[i+posOffset] = this.genCardInfo(i1+posOffset1, data[1], dt[i+posOffset]);
+                    
+                    if (forceFull && dt[i+posOffset]['info'] && dt[i+posOffset]['univ_name'] && dt[i+posOffset]['O_WR'] && dt[i+posOffset]['O_Color1'] && 'head' != stateParamsNew.mode) {
+                        dt[i+posOffset]._mode = 'full';
+                    } else {
+                        delete dt[i+posOffset]._mode;
+                    }
                 }
                 
                 if (!this.dtWorld || !this.dtWorld.length || (this.dtWorld.length <= 2 && !this.dtWorld[0] && !this.dtWorld[1]) || !Array.isArray(this.dtWorld)) {
@@ -280,7 +286,7 @@ class UnivDataService {
 						if (!dtI) {
 							dtI = [];
 						}
-						var leftur = 'https://roundranking.com/universities/';hs='';
+						var leftur = 'https://roundranking.com/universities/';hs=''; // NOTE !!! html id dt_i may be broken, do not use it
 						
 						dtI['info']='<div id="dt_i' + i + '" style="overflow:auto;font-family:arial; border:2px '+ dtI['O_Color1']+ 'solid; border: 2px '+ dtI['O_Color1']+ ' solid;padding:10px;padding-right:32px;padding-bottom:16px"><table style="font-family:arial;width:560px;height:300px;border-collapse:collapse" class="style5" border="0"><tbody><tr>';
 						dtI['info']+='<td style="font-family:arial;text-align:center" rowspan="10" colspan="2"><img src="'+ dtI['logo']+ '" style="vertical-align:top;width: 8em;height: 8em;" ></td><td colspan="4" style="font-family:arial;text-align:left"><span style="font-family:arial;color:'+ dtI['O_Color1']+ ';font-size:17px"><strong>'+ dtI['univ_name']+ '</strong></span></td></tr>';
@@ -854,11 +860,11 @@ window.dataToMarker = function dataToMarker (dt0 = null, i1, title, ignoreMissin
         }
     }
     return [
-        coord, // position coord
-        (!ignoreMissing) ? `#${getWorldRating(dt(), title, i1).label} - ${title}` : ( !!title ? `#${getWorldRating(dt(), title, null).label} - ${title}` : `#${getWorldRating(dt(), null, i1).label} - ${getWorldRating(dt(), null, i1).title}` ), // title
-        dt()[i1]['iconurl'], // icon
-        () => dt()[i1], // data
-        () => dt()[i1]['info'], // info content
+        coord, // 0: position coord
+        (!ignoreMissing) ? `#${getWorldRating(dt(), title, i1).label} - ${title}` : ( !!title ? `#${getWorldRating(dt(), title, null).label} - ${title}` : `#${getWorldRating(dt(), null, i1).label} - ${getWorldRating(dt(), null, i1).title}` ), // 1: title
+        dt()[i1]['iconurl'], // 2: icon
+        () => dt()[i1], // 3: data
+        () => ('full' === dt()[i1]._mode) ? dt()[i1]['info'] : '', // 4: info content (optional)
     ];
 };
 
