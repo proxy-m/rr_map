@@ -241,6 +241,7 @@ ul.typeahead.dropdown-menu > * {
             function initZero () { return $(document).ready(function () { window.initMap(); }); };
             window.initZero = initZero; // please, use such way
             
+            requireJS2H("/deps/jcaption.js"); //requireJS2H("/deps/jcaption-full.js"); // Do not rely on 1!
             
             jQuery(window).on('load',  function() {
                 jQuery(document).ready(function () {
@@ -248,8 +249,8 @@ ul.typeahead.dropdown-menu > * {
                         jQuery('select').bind('change', function (t) { window.initZero(); }); // TODO: recheck
                         jQuery('select').on('change', function (t) { window.initZero(); }); // TODO: recheck
                     }, 200);
-                    
-                    new JCaption('img.caption');
+                    if (!window.JCaption) { window.JCaption = function () {} }; // Do not rely on 2!
+                    new JCaption('img.caption'); // Joomla old bug: https://issues.joomla.org/tracker/joomla-cms/20148
                 });
             });
             jQuery(function($){ initTooltips(); $("body").on("subform-row-add", initTooltips); function initTooltips (event, container) { container = container || document;$(container).find(".hasTooltip").tooltip({"html": true,"container": "body"});} });
