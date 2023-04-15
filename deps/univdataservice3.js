@@ -41,6 +41,7 @@ class UnivDataService {
         this.year = -1;
         this.dtWorld = []; // dtWorld (wider) and dt are different
         this.dt = null;        
+        this.fastSearch = {};
         
         Object.defineProperty(this, 'getDtWorldPart', {
             get: () => (!!this.getDtWorld() && !!this.getDtWorld().length) ? this.getDtWorld() : this.getDt(),
@@ -76,6 +77,7 @@ class UnivDataService {
             ///this.tphWorld = '';
             this.year = +this.stateParamsNew.yr || +this.stateParamsNew.year;
             this.stateParamsNew.year = this.year;
+            ///////this.fastSearch = {};
         }
         this.stateParamsNew.forceFull = this.forceFull;
         
@@ -151,30 +153,43 @@ class UnivDataService {
                 if (!!forceFull && !!stateParamsNew.pos) {
                     posOffset = stateParamsNew.pos.split('_')[0] || 0; // TODO: recheck
                 }
+                var dtTmp = [];
                 var posOffset1 = posOffset;
+                var alreadyShifted = false;  var j = 0;
                 for (var i=1; i<=n; ++i) {
                     //alert(data[4][i]);
-                    var i1 = i-posOffset1;
-                    if (!data[1][i1+posOffset1] || !data[1][i1+posOffset1]['univ_name'] || n == 1 || (!!this.dtWorld && !!this.dtWorld.length && this.dtWorld.length > n)) { // TODO: recheck please!
-                        dt[i] = this.genBasicData(1, data[1], []);
-                        i1 = new UnivDataController(this).getMarkerPositionInDtWorld(dataToMarker(dt, i, null, true), 1); /// warn: this line is too complicated
-                        if (i1 < 0) {
+                    var i1 = i-posOffset1; // OLD i1: 0
+                    if (alreadyShifted) {
+                        if ((!data[1][i1+posOffset1]['univ_name']) && (i1 = (alreadyShifted && !!this.fastSearch[dt[0]['univ_name']]) ? this.fastSearch[dt[0]['univ_name']] - posOffset1 : -1) > 0) { // NEW i1: 1
+                            posOffset = i1 - i; // i + posOffset == i1
+                        }
+                        i1 = i-posOffset1; // i = i1 + posOffset1 !!! new posOffset !!!  // NEW i1: 2
+                        ++j;
+                    } else if (!alreadyShifted && (!data[1][i1+posOffset1] || !data[1][i1+posOffset1]['univ_name'] || n == 1 || (!!this.dtWorld && !!this.dtWorld.length && this.dtWorld.length > n))) { // TODO: recheck please!
+                        var dt1 = dt[++j];
+                        dt[j] = this.genBasicData(j, data[1], []);
+                        i1 = new UnivDataController(this).getMarkerPositionInDtWorld(dataToMarker(dt, j, null, true), 1); // NOTE: this line is too complicated
+                        if (i1 < 0) { // NEW i1: 3
                             console.error('[ERR] Can not shift position!', i1, i, posOffset, dt[i]);
                             return null;
                         }
                         posOffset1 = i - i1; // i = i1 + posOffset1 !!! new posOffset !!!
-                        dt[i] = undefined;
-                        console.log('Shifted [dt position, data1 position, univ_name]: ', i1, i+posOffset, data[1][i1+posOffset1]['univ_name']);
+                        dt[j] = dt1 || undefined;
+                        alreadyShifted = true;
+                        console.log('Shifted [dt position, data1/data_1 position, univ_name]: ', i1, i+posOffset, data[1][i1+posOffset1]['univ_name']); // !!! maybe BUG
                     } else {
-                        i1 = i;
+                        i1 = i;  // NEW i1: 4
+                        ++j;
                     }                        
                     dt[i+posOffset] = []; //dtmap = [];
                     dt[i+posOffset] = this.genBasicData(i1+posOffset1, data[1], dt[i+posOffset]);
                     dt[i+posOffset] = this.genLeagueStyles(i1+posOffset1, data[1], dt[i+posOffset]);
                     dt[i+posOffset] = this.genCardInfo(i1+posOffset1, data[1], dt[i+posOffset]);
+                    dtTmp.push(dt[i+posOffset]);
                     
                     if (forceFull && dt[i+posOffset]['info'] && dt[i+posOffset]['univ_name'] && dt[i+posOffset]['O_WR'] && dt[i+posOffset]['O_Color1'] && 'head' != stateParamsNew.mode) {
                         dt[i+posOffset]._mode = 'full';
+                        this.fastSearch[dt[i+posOffset]['univ_name']] = i+posOffset;
                     } else {
                         delete dt[i+posOffset]._mode;
                     }
@@ -199,6 +214,17 @@ class UnivDataService {
                     this.dtWorld = [];
                     this.dtWorld = $.extend(true, [], this.dtWorld, this.dt);
                 }
+                
+                if (!forceFull && !stateParamsNew.pos && alreadyShifted) {
+                    ///this.dt = $.extend(true, [], dt);
+                    ///this.dt = this.dt.slice(posOffset1+i1-n+1);
+                    dtTmp.unshift(undefined);
+                    this.dt = [];
+                    this.dt = dtTmp
+                    console.log('dtTmp: ', dtTmp);
+                }
+                dtTmp = [];
+                
                 console.log('dt length compare (world, local): ', this.dtWorld.length, this.dt.length);
                 console.log('dt 0 compare (world, local): ', this.dtWorld[0], this.dt[0]);
                 console.log('dt 1 compare (world, local): ', this.dtWorld[1], this.dt[1]);
@@ -852,7 +878,7 @@ window.dataToMarker = function dataToMarker (dt0 = null, i1, title, ignoreMissin
     try {
         coord = {lat: +((''+dt()[i1]['lat']).trim()), lng: +((''+dt()[i1]['lng']).trim())};
         if (!coord.lat || !coord.lng) {
-            console.warn('[WARN] Wrong coordinates within dt()[' + i1 + ']: ', dt()[i1], coord);
+            console.warn('[WARN] Wrong coordinates within dt()[' + i1 + ']: ', dt()[i1], coord); /// !!! TODO
         }
     } catch (e53345764532346) {
         if (!ignoreMissing) {

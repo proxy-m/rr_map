@@ -555,10 +555,11 @@ $(document).ready(function ()
                     
                     /// yr+'&subj='+subj+'&cntr='+cntr+'&reg='+reg
                     if (subj == 1 && cntr == 0 && reg == 0) { // default full world
-                        if (!udtController.getDtWorld() || !udtController.getMrksWorld() || udtController.getDtWorld().length < dt.length || !udtController.getMrksWorld().length || forceFull) {
+                        if (!udtController.getDtWorld() || !udtController.getMrksWorld() || udtController.getDtWorld().length < dt.length || !udtController.getMrksWorld().length) {
                             if (!forceFull) {
                                 setTimeout(function () {
-                                    ///initMap(true); /////
+                                    initMap(true); /////
+                                    alert('was full reload');
                                 }, 500);
                             }
                         }
