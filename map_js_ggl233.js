@@ -402,7 +402,7 @@ $(document).ready(function ()
                 lastMissed = wasClickedTrigger;
                 
                 let displayDockInfoWindow = function displayDockInfoWindow () {
-                    mrks[+feature.get('n') - 1] = dataToMarker(null, new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(mrks[+feature.get('n') - 1]), null, false); // update marker properties!!!
+                    mrks[+feature.get('n') - 1] = dataToMarker(null, new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(mrks[+feature.get('n') - 1]), null, true); // update marker properties!!!
                     content = document.getElementById('popup-content'); ///
                     content.innerHTML = mrks[+feature.get('n') - 1][4](); // instead old: content.innerHTML = feature.get('info')();
                     console.log('Inch Diag: ', getInchDiag());
