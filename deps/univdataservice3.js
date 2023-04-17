@@ -40,16 +40,10 @@ class UnivDataService {
         this.requestAjax = null;
         this.year = -1;
         this.dtWorld = []; // dtWorld (wider) and dt are different
-        this.dt = null;      
-        this.dtWorldLegacy = [];  
+        this.dt = null;    // dt conains only current visible data
+        this.dtWorldLegacy = []; // previous state of dtWorld
         this.fastSearch = {};
-        
-//        Object.defineProperty(this, 'getDtWorldPart', {
-//            get: () => (!!this.getDtWorld() && !!this.getDtWorld().length) ? this.getDtWorld() : this.getDt(),
-//            enumerable: true,
-//            configurable: false,
-//        });
-        
+                
         UnivDataService._instance = this;
     }
     
@@ -78,7 +72,7 @@ class UnivDataService {
             ///this.tphWorld = '';
             this.year = +this.stateParamsNew.yr || +this.stateParamsNew.year;
             this.stateParamsNew.year = this.year;
-            ///////this.fastSearch = {};
+            this.fastSearch = {}; ///////
         }
         this.stateParamsNew.forceFull = this.forceFull;
         
@@ -170,12 +164,18 @@ class UnivDataService {
                         }
                         i1 = i-posOffset1; // i = i1 + posOffset1 !!! new posOffset !!!  // NEW i1: 2
                         ++j;
-                    } else if (!false && (i-posOffset1 < 1 || !!this.getDtWorld()[i-posOffset1]) && (n == 1 || (this.getDtWorld().length > n) || !data[1][i1+posOffset1] || !data[1][i1+posOffset1]['univ_name'] || data[1][i1+posOffset1]['univ_name'] != this.getDtWorld()[i-posOffset1]['univ_name'])) { // TODO: recheck please!
+                    } else if ((!data[1][this.getDtWorld().length - 1] || data[1].length < this.getDtWorld().length - 1) && (i-posOffset1 < 1 || !!this.getDtWorld()[i-posOffset1]) && (n == 1 || (this.getDtWorld().length > n) || !data[1][i1+posOffset1] || !data[1][i1+posOffset1]['univ_name'] || data[1][i1+posOffset1]['univ_name'] != this.getDtWorld()[i-posOffset1]['univ_name'])) { // TODO: recheck please!
                         var dt1 = dt[++j];
                         dt[j] = this.genBasicData(j, data[1], []); // tmp
                         var newM = dataToMarker(dt, j, null, true); // tmp
+                        if (alreadyShifted) {
+                            i1 = this.fastSearch[data[1][j]['univ_name']];
+                        }
                         dt[j] = dt1 || undefined;
-                        i1 = new UnivDataController(this).getMarkerPositionInDtWorld(newM, 0); // NOTE: this line is too complicated
+                        
+                        if (!(i1 >= 0 && !!this.getDtWorld()[i1] && data[1][j]['univ_name'] == this.getDtWorld()[i1]['univ_name'])) {
+                            i1 = new UnivDataController(this).getMarkerPositionInDtWorld(newM, 0); // NOTE: this line is too complicated
+                        }
                         if (i1 < 0) { // NEW i1: 3
                             console.error('[ERR] Can not shift position!', i1, i, posOffset, dt[i]);
                             return null;
@@ -215,7 +215,7 @@ class UnivDataService {
                 }
                 
                 //if (!!dtTmp[0]) {
-                //    dtTmp.unshift(undefined);  delete dtTmp[0]; // BUG 1.2 !!! this.dt is broken, when it starts from 0 instead 1
+                //    dtTmp.unshift(undefined);  delete dtTmp[0]; // BUG 1.1 !!! this.dt is broken, when it starts from 0 instead 1
                 //}
                                 
                 if (!!stateParamsNew.pos) {
@@ -234,7 +234,7 @@ class UnivDataService {
                     //this.dt = this.dt.filter(function (e, i) {
                     //    return (!!e) ? e : null;
                     //})
-                    if (!!this.dt[0]) { // BUG 1.1 !!! this.dt is broken, when it starts from 0 instead 1
+                    if (!!this.dt[0]) { // BUG 1.2 !!! this.dt is broken, when it starts from 0 instead 1
                         this.dt.unshift(undefined);  delete this.dt[0];
                     }
                 }
@@ -260,6 +260,16 @@ class UnivDataService {
                         this.dtWorldLegacy = $.extend(true, [], this.dtWorld);
                     }
                 }
+                
+                //if (this.dt && this.dt.length > 0) {
+                //    this.dt = this.dt.filter(function (e, i) {
+                //        return (!!e) ? e : null;
+                //    })
+                //    if (!!this.dt[0]) { // BUG 1.3 !!! this.dt is broken, when it starts from 0 instead 1
+                //        this.dt.unshift(undefined);  delete this.dt[0];
+                //    }
+                //}
+                
                 //dtTmp = [];
                 console.log('this.dt: ', this.dt);
                 

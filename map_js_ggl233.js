@@ -403,19 +403,24 @@ $(document).ready(function ()
                 lastMissed = wasClickedTrigger;
                 
                 let displayDockInfoWindow = function displayDockInfoWindow () {
-                    var mNew = dataToMarker(null, new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(mrks[+feature.get('n') - 1]), null, true); // update marker properties!!!
+                    var mNew = null;
+                    
+                    if (feature.get('markerfill')) {
+                        mNew = dataToMarker(new UnivDataService().getDt(), new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(feature.get('markerfill')), null, true); // update marker properties!!!                        
+                    }
+                    if (feature.get('markerfill') && (!mNew || !mNew[4] || !mNew[4]())) {
+                        mNew = dataToMarker(new UnivDataService().getDtWorld(), new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(feature.get('markerfill')), null, true); // update marker properties!!!
+                    }
+                    if (!mNew || !mNew[4] || !mNew[4]()) {
+                        mNew = dataToMarker(null, new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(mrks[+feature.get('n') - 1]), null, true); // update marker properties!!!
+                    }
                     if (!mNew || !mNew[4] || !mNew[4]()) {
                         mNew = dataToMarker(new UnivDataService().getDt(), new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(mrks[+feature.get('n') - 1]), null, true);
                     }
                     if (!mNew || !mNew[4] || !mNew[4]()) {
                         mNew = dataToMarker(null, new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(feature.get('markerfill')), null, true); // update marker properties!!!
-                    }
-                    if (!mNew || !mNew[4] || !mNew[4]()) {
-                        mNew = dataToMarker(new UnivDataService().getDt(), new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(feature.get('markerfill')), null, true); // update marker properties!!!
-                    }
-                    if (!mNew || !mNew[4] || !mNew[4]()) {
-                        mNew = dataToMarker(new UnivDataService().getDtWorld(), new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(feature.get('markerfill')), null, true); // update marker properties!!!
-                    }
+                    }                
+                    
                     //mrks[+feature.get('n') - 1] = mNew; 
                     content = document.getElementById('popup-content'); ///
                     content.innerHTML = mNew[4](); // instead old: content.innerHTML = feature.get('info')(); // TODO: fix it
@@ -446,7 +451,7 @@ $(document).ready(function ()
                     }
                 };
                 let t10 = null;
-                if (!mrks[+feature.get('n') - 1][4]() /*!udtController.getDtWorld() || !udtController.getDtWorld().length || udtController.getDtWorld().length < 3*/) {
+                if (true || !mrks[+feature.get('n') - 1][4]() /*!udtController.getDtWorld() || !udtController.getDtWorld().length || udtController.getDtWorld().length < 3*/) {
                     var p1 = udtController.getMarkerPositionInDtWorld(mrks[wasClickedTrigger-1]);
                     console.log('getMarkerPositionInDtWorld result:', p1, (p1 >= 0) ? udtController.getDtWorld()[p1] : null);
                     udtController.setStateURL(null, true, p1, p1); ///// construct urlto force overload dt for one marker
@@ -572,8 +577,8 @@ $(document).ready(function ()
                         if (!udtController.getDtWorld() || !udtController.getMrksWorld() || udtController.getDtWorld().length < dt.length || !udtController.getMrksWorld().length) {
                             if (!forceFull) {
                                 setTimeout(function () {
-                                    //initMap(true); /////
-                                    //alert('was full reload');
+                                    ///initMap(true); /////
+                                    ///console.warn('[OK] was full reload');
                                 }, 500);
                             }
                         }
