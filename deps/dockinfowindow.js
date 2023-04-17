@@ -113,6 +113,9 @@ class DockInfoWindow {
         let posBegin = w.getPosition() || [0, 0];
         animateByJS (document.getElementById(w.id), function (e, k, rest) {
             var w = this.getInfoWindow(e);
+            if (!w) {
+                return;
+            }
             var processMovementOld = w.processMovement;
             if (w.processMovement) {
                 w.processMovement = false;
@@ -135,7 +138,7 @@ class DockInfoWindow {
         if (idOrElOrW.length > 0) {
             idOrElOrW = document.getElementById(idOrElOrW);
         }
-        if (!idOrElOrW.id) {
+        if (!idOrElOrW || !idOrElOrW.id) {
             return NaN;
         }
         for (var i=0; i<this.windows.length; ++i) {
@@ -160,6 +163,16 @@ class DockInfoWindow {
         } else {
             return null;
         }
+    }
+    
+    closeAll () {
+        var allWindows = [].concat(this.windows, this.windowsOut);
+        for (let w of allWindows) {
+            w.close();
+        }
+        this.windowsOut = [];
+        this.windows = [];
+        this.refresh(false);
     }
 
     /**

@@ -1,4 +1,12 @@
-'use strict';
+var yr,sb,cntr,reg,n,sv,lftur,hs;
+var dt=new Array;var dtmap=new Array;
+var tph = '';				//текст массива вузов для typehead
+var tphcord=new Array;	//массив координат поиска
+var tphunnm=new Array;	//массив имен вузов поиска
+var cordtph=new Array;	//массив координат вузов по поиску
+var map=new Object;
+var data;
+var dtcntr=new Array;	//массив данных стран для карт
 
 let wasClickedTrigger = 0;
 let ti = null;
@@ -46,28 +54,22 @@ $(document).ready(function ()
 	$('.item-110').addClass('active');
   	//$.gmap3({key: 'AIzaSyD7fU9MnAARspyROArfcaxENAgguWvDQHg'});
 	
-	subj=$('.mfilter-subject select option:selected').val();
+	sb=$('.mfilter-subject select option:selected').val();
 	yr=$('.mfilter-year select option:selected').val();
 	reg=$('.mfilter-region select option:selected').val();
     yr = Number(yr);
 	if(Number($('.mfilter-country select option:selected').val()))
 	{cntr=$('.mfilter-country select option:selected').val();}
 	else{cntr=0;}
-	
-    const udtService = new UnivDataService().getInstance();
-        
-    var udtController = new UnivDataController(udtService);
-
-	udtController.countryList();    
+	country_list();
 	subjectview();
-	
   	//$('.mapinfo').html('<div id="map_div" style="display:none"></div><div id="nwmap"><h2>The map is loading.</h2></div>');
 	//setTimeout(function(){setmap();},100);
     
 	///setTimeout(function(){initMap();},100);
 
     window.commandVisualize = function commandVisualize () {
-        subj=$('.mfilter-subject select option:selected').val();
+        sb=$('.mfilter-subject select option:selected').val();
 		yr=$('.mfilter-year select option:selected').val();
 		reg=$('.mfilter-region select option:selected').val();
 		if(Number($('.mfilter-country select option:selected').val()))
@@ -92,7 +94,7 @@ $(document).ready(function ()
 	{
 		yr=$('.mfilter-year select option:selected').val();
 		subjectview();
-		udtController.countryList();
+		country_list();
 		$('.mapinfo').html('<div id="map_div"></div>');
 		$('#mapsrchvl').attr('placeholder','Enter the name of the university');
       	$('#mapsrchvl').val('');
@@ -113,7 +115,7 @@ $(document).ready(function ()
 		{
 			//$('.az-sort-by-s').attr('disabled',true);
 			//$('.az-sort-by-r').attr('disabled',true);
-			subj=$('.mfilter-subject select option:selected').val();
+			sb=$('.mfilter-subject select option:selected').val();
 			yr=$('.mfilter-year select option:selected').val();
 			reg=$('.mfilter-region select option:selected').val();
 			if(Number($('.mfilter-country select option:selected').val()))
@@ -124,7 +126,7 @@ $(document).ready(function ()
 		{
 			$('.mfilter-region select').removeAttr('disabled');
 			$('.mfilter-subject select').removeAttr('disabled');
-			subj=$('.mfilter-subject select option:selected').val();
+			sb=$('.mfilter-subject select option:selected').val();
 			yr=$('.mfilter-year select option:selected').val();
 			reg=$('.mfilter-region select option:selected').val();
 			if(Number($('.mfilter-country select option:selected').val()))
@@ -139,7 +141,7 @@ $(document).ready(function ()
 	{
 		$('.mapinfo').html('<div id="map_div"></div><div id="nwmap"></div>');
 		//$('.az-sort-by-cntr').html('<option value="0">World</option>');
-		udtController.countryList();
+		country_list();
 		$('#mapsrchvl').attr('placeholder','Enter the name of the university');
       	$('#mapsrchvl').val('');
         
@@ -150,13 +152,13 @@ $(document).ready(function ()
 	$(document).on('change', '.maz-sort-by-s', function ()
 	{
 		yr=$('.mfilter-year select option:selected').val();
-		subj=$('.mfilter-subject select option:selected').val();
+		sb=$('.mfilter-subject select option:selected').val();
 		yr=$('.mfilter-year select option:selected').val();
 		reg=$('.mfilter-region select option:selected').val();
 		if(Number($('.mfilter-country select option:selected').val()))
 		{cntr=$('.mfilter-country select option:selected').val();}
 		else{cntr=0;}
-		udtController.countryList();
+		country_list();
 		$('.mapinfo').html('<div id="map_div"></div><div id="nwmap"></div>');
 		$('#mapsrchvl').attr('placeholder','Enter the name of the university');
       	$('#mapsrchvl').val('');
@@ -287,9 +289,8 @@ $(document).ready(function ()
                 geometry: new ol.geom.Point(ol.proj.fromLonLat([m[0].lng, m[0].lat])), /// [106.8478695, -6.1568562]))),
                 //z: (!!m[0].z) ? m[0].z : undefined,
                 n: i+1,
-                markerfill: m,
                 type: 'Point',
-                info: (!!m[4] ? m[4] : () => '<div><h3>Missing info</h3></div>'),
+                info: (!!m[3]['info'] ? m[3]['info'] : '<div><h3>Missing info</h3></div>'),
                 desc: '' // + '<pre>'
                         + '<b>' + (!!m[1] ? m[1] : 'Unnamed') + '</b>' + '<br/>'
                         + ' ' + '[Lat, Lng: ' + m[0].lat + ', ' + m[0].lng + ']', //+ ' </pre>', 
@@ -397,40 +398,21 @@ $(document).ready(function ()
                 
                 window.needClickOnFirst = false;
                 
+                content = document.getElementById('popup-content'); ///
+                content.innerHTML = feature.get('info');
                 popup.title = feature.get('name');
                 wasClickedTrigger = feature.get('n');
                 missedCount = 1;
                 lastMissed = wasClickedTrigger;
                 
-                let displayDockInfoWindow = function displayDockInfoWindow () {
-                    var mNew = null;
-                    
-                    if (feature.get('markerfill')) {
-                        mNew = dataToMarker(new UnivDataService().getDt(), new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(feature.get('markerfill')), null, true); // update marker properties!!!                        
-                    }
-                    if (feature.get('markerfill') && (!mNew || !mNew[4] || !mNew[4]())) {
-                        mNew = dataToMarker(new UnivDataService().getDtWorld(), new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(feature.get('markerfill')), null, true); // update marker properties!!!
-                    }
-                    if (!mNew || !mNew[4] || !mNew[4]()) {
-                        mNew = dataToMarker(null, new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(mrks[+feature.get('n') - 1]), null, true); // update marker properties!!!
-                    }
-                    if (!mNew || !mNew[4] || !mNew[4]()) {
-                        mNew = dataToMarker(new UnivDataService().getDt(), new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(mrks[+feature.get('n') - 1]), null, true);
-                    }
-                    if (!mNew || !mNew[4] || !mNew[4]()) {
-                        mNew = dataToMarker(null, new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(feature.get('markerfill')), null, true); // update marker properties!!!
-                    }                
-                    
-                    //mrks[+feature.get('n') - 1] = mNew; 
-                    content = document.getElementById('popup-content'); ///
-                    content.innerHTML = mNew[4](); // instead old: content.innerHTML = feature.get('info')(); // TODO: fix it
+                setTimeout(function () {
                     console.log('Inch Diag: ', getInchDiag());
-                    if (!window.isMobile()) { // infowindow only for desktop                        
+                    if (!window.isMobile()) { // infowindow only for desktop
                         // Info: new Ext.window.Window({}) is actually same as Ext.create('Ext.window.Window', {});
                         window.windowDock = window.windowDock || new DockInfoWindow('info_windows', Ext.window.Window); ///
                         window.windowDock.add({
                             layout: 'fit',
-                            html: $('#popup').html(), ///$(content).html(),
+                            html: $('#popup').html(),
                             renderTo: 'perfectmap_div', ///'wrapper-parent',
 //                            listeners: {
 //                                afterrender: closeTooltip
@@ -444,30 +426,12 @@ $(document).ready(function ()
                             $('.x-window-header, .x-window-tc, .x-window-tr, .x-window-tl, .x-window-ml, .x-window-mr, .x-window-bc, .x-window-br, .x-window-bl').css('background-color', 'white');
                         }, 20);
                     } else {
-                        ///console.log(feature.get('info')()); ///console.log($('#dt_i' + wasClickedTrigger + ' > table span > a')[1]);
+                        ///console.log(feature.get('info')); ///console.log($('#dt_i' + wasClickedTrigger + ' > table span > a')[1]);
                         setTimeout(function () {
-                            if (!!mNew && !!mNew[4] && !!mNew[4]()) {
-                                window.open('' + $(mNew[4]()).find(' table span > a')[1].href);
-                            } else {
-                                window.open('' + $('' + feature.get('info')()).find(/*'#dt_i' + wasClickedTrigger + ' ' + */' table span > a')[1].href);
-                            }
+                            window.open('' + $('' + feature.get('info')).find(/*'#dt_i' + wasClickedTrigger + ' ' + */' table span > a')[1].href);
                         }, 1);
                     }
-                };
-                let t10 = null;
-                if (true || !mrks[+feature.get('n') - 1][4]() /*!udtController.getDtWorld() || !udtController.getDtWorld().length || udtController.getDtWorld().length < 3*/) {
-                    var p1 = udtController.getMarkerPositionInDtWorld(mrks[wasClickedTrigger-1]);
-                    console.log('getMarkerPositionInDtWorld result:', p1, (p1 >= 0) ? udtController.getDtWorld()[p1] : null);
-                    udtController.setStateURL(null, true, p1, p1); ///// construct urlto force overload dt for one marker
-                    udtController.requestSecond().then(function onGood (dataFullOne) {
-                        console.log('dataFullOne: ', dataFullOne);
-                        t10 = (!t10) ? null : clearTimeout(t10);
-                        t10 = setTimeout(displayDockInfoWindow, 10);
-                    });
-                } else {
-                    t10 = (!t10) ? null : clearTimeout(t10);
-                    t10 = setTimeout(displayDockInfoWindow, 10);
-                }               
+                }, 10);
                 
 
                 let city;
@@ -515,6 +479,11 @@ $(document).ready(function ()
 	function initMap (forceFull)
 	{
         if (!window.google) { window.google = {} }; if (!google.maps) { google.maps = {} }; if (!google.maps.InfoWindow) { google.maps.InfoWindow = function () {} }; if (!google.maps.Map) { google.maps.Map = function () {} };  if (!google.maps.Marker) { google.maps.Marker = function () {} };  if (!google.maps.MapTypeId) { google.maps.MapTypeId = {} };
+		
+        const udtService = new UnivDataService().getInstance();
+        
+        var udtController = new UnivDataController(udtService);
+        var code = null;
         
 		if(Number($('#mapsrchvl').val().length)==0)
 		{
@@ -527,15 +496,24 @@ $(document).ready(function ()
             }
             
             forceFull = udtController.setForceFull(forceFull);
+            ({year: yr, subject: sb, country: cntr, region: reg, code} = udtController.setState({
+                code: code,
+                year: yr, // warn: strange year number (not like 20xx)
+                subject: sb,
+                country: cntr,
+                region: reg,
+            })); // See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
+            if (code === 0) {
+                return;
+            }
 			
 			//alert(ur);
+			leftur='https://roundranking.com/universities/';hs='';
           	
 			udtController.getPromise().then(function success (data) {
 		  	 	dt = udtController.getDt();
                 tph = udtController.getTphWorld();
                 mrks = udtController.getMrks();
-                
-                /// state of four variables may be missed if they are not defined global (big refactoring to this context)
                 
                 if (dt.length > 0) { ///Number(data[0])>0) {
                 //////////////////////////
@@ -559,8 +537,8 @@ $(document).ready(function ()
                                         var title = mrks3[1].substring(mrks3[1].indexOf(' ') + 1);
                                         var wrData = getWorldRating(dt, title, null);
                                         if (mrks3[1] === `#${wrData.label} ${title}`) {
-                                            mrks3[3] = () => (dt[wrData.i] || mrks3[3]);
-                                            mrks3[4] = () => (dt[wrData.i]['info'] || mrks3[4]);
+                                            mrks3[3] = dt[wrData.i] || mrks3[3];
+                                            mrks3[4] = dt[wrData.i]['info'] || mrks3[4];
                                             mrks3[2] = dt[wrData.i]['iconurl'] || mrks3[2];
                                             pos = [mrks3[0].lng, mrks3[0].lat]; //
                                             city = ol.proj.fromLonLat(pos); //
@@ -576,13 +554,12 @@ $(document).ready(function ()
                         }
                     }
                     
-                    /// yr+'&subj='+subj+'&cntr='+cntr+'&reg='+reg
-                    if (subj == 1 && cntr == 0 && reg == 0) { // default full world
-                        if (!udtController.getDtWorld() || !udtController.getMrksWorld() || udtController.getDtWorld().length < dt.length || !udtController.getMrksWorld().length) {
+                    /// yr+'&subj='+sb+'&cntr='+cntr+'&reg='+reg
+                    if (sb == 1 && cntr == 0 && reg == 0) { // default full world
+                        if (!udtController.getDtWorld() || !udtController.udtService.getMrksWorld() || udtController.getDtWorld().length < dt.length || !udtController.udtService.getMrksWorld().length || forceFull) {
                             if (!forceFull) {
                                 setTimeout(function () {
-                                    ///initMap(true); /////
-                                    ///console.warn('[OK] was full reload');
+                                    initMap(true);
                                 }, 500);
                             }
                         }
@@ -613,6 +590,7 @@ $(document).ready(function ()
 			 	});
 			  
 				//var konf=['diamondw.png','goldw.png','silverw.png','bronzew.png','cooperw.png','worldw.png'];
+				//alert(konf[2]);
 			  // Create the markers.
 			  mrks.forEach(([position, title], i) => {
 			  	//alert(position.lat);
@@ -621,7 +599,7 @@ $(document).ready(function ()
 			      map,
 			      title: title,
 			      //label: `${i + 1} - ${title}`,
-			      icon: dt[i+1]['iconurl'], //konf[i],
+			      icon:konf[i],
 			      optimized: false,
 			      cont:dt[i+1]['info']
 			    });
@@ -666,7 +644,7 @@ $(document).ready(function ()
 		}
 		else
 		{
-			dt = $.extend([], udtController.getDtWorld() || []); /////
+			dt = $.extend([], udtController.getDtWorld() || []);
 			var lt=Number(cordtph[$('#tphsel').val()][0]);
 			var lg=Number(cordtph[$('#tphsel').val()][1]);
 			zummap=Number(8);
@@ -710,7 +688,13 @@ $(document).ready(function ()
                     }));
                     
                     let title = unnm;
-                    var mrks = [dataToMarkerCustom(null, $('#tphsel').val(), title, coord, icnsrc)]; // only one marker
+                    var mrks = [{
+                        0: coord, // position coord
+                        1: `#${getWorldRating(dt, title, null).label} - ${title}`, // title
+                        2: icnsrc, // icon
+                        3: dt[$('#tphsel').val()],
+                        4: uninfo, // info content
+                    }]; // only one marker
                     addMarkers(mrks, true); // TODO: click on marker if it is only one
                     
                     return; /// !!!
@@ -757,4 +741,47 @@ $(document).ready(function ()
 		}  		
 	}
     window.initMap = initMap;
+	function country_list()
+	{
+					sb=$('.mfilter-subject select option:selected').val();
+					yr=$('.mfilter-year select option:selected').val();
+					reg=$('.mfilter-region select option:selected').val();
+					if(Number($('.mfilter-country select option:selected').val()))
+					{cntr=$('.mfilter-country select option:selected').val();}
+					else{cntr=0;}
+					//alert(sb+'\n'+yr+'\n'+reg+'\n'+cntr);
+					dtcntr=[];dtcntr.length=0;
+					//var urlc='final/getunivdata_ymap.php?year='+yr+'&subj='+sb+'&reg='+reg+'&cntr='+cntr;
+					var urlc='./final/getcntrdata_gmap22.php?year='+yr+'&subj='+sb+'&reg='+reg+'&cntr='+cntr;
+					//alert(urlc);
+					$('.mfilter-country select').html('<option value="0">World</option>');
+					$.ajax(
+					{
+						url: urlc,
+						success: function(data)
+					 	{
+					 		var j=0;
+					 		var m=Number(data[2]);
+					 		//alert(j+'\n'+m);
+					 		$.each(data[1], function(key, val)
+					 		{
+								dtcntr[key]=[];
+								//alert(key + '\n' + dtcntr[key]);
+								$('.mfilter-country select').append('<option value="'+key+'">'+val['Country']+'</option>');
+								
+								dtcntr[key]['id_country']=val['id_country'];
+								dtcntr[key]['Country']=val['Country'];
+								dtcntr[key]['cord']=val['cord'];
+								
+								dtcntr[key]['scale']=val['scale'];
+								dtcntr[key]['cntr_code']=val['cntr_code'];
+								dtcntr[key]['cntr_iso']=val['cntr_iso'];
+								dtcntr[key]['code_cntr']=val['code_cntr'];
+								dtcntr[key]['code_reg']=val['code_reg'];
+								//alert(key + '\n' + dtcntr[key]);
+                                
+							});
+						}
+		});
+	}	
 });
