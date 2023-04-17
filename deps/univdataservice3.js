@@ -158,19 +158,19 @@ class UnivDataService {
                 if (!!forceFull && !!stateParamsNew.pos) {
                     posOffset = +stateParamsNew.pos.split('_')[0] || 0; // TODO: recheck
                 }
-                var dtTmp = [];  dtTmp.unshift(undefined);  delete dtTmp[0];
+                //var dtTmp = [];  dtTmp.unshift(undefined);  delete dtTmp[0];
                 var posOffset1 = posOffset;
                 var alreadyShifted = false;  var j = 0;
                 for (var i=1; i<=n; ++i) {
                     //alert(data[4][i]);
-                    var i1 = i-posOffset1; // OLD i1: 0
+                    var i1 = (i-posOffset1 < 0) ? 0 : i-posOffset1; // OLD i1: 0
                     if (!!forceFull && alreadyShifted) {
                         if ((!data[1][i1+posOffset1]['univ_name']) && (i1 = (alreadyShifted && !!this.fastSearch[dt[0]['univ_name']]) ? this.fastSearch[dt[0]['univ_name']] - posOffset1 : -1) > 0) { // NEW i1: 1
                             posOffset = i1 - i; // i + posOffset == i1
                         }
                         i1 = i-posOffset1; // i = i1 + posOffset1 !!! new posOffset !!!  // NEW i1: 2
                         ++j;
-                    } else if (!false && !!this.getDtWorld()[i+posOffset] && (!data[1][i1+posOffset1] || !data[1][i1+posOffset1]['univ_name'] || data[1][i1+posOffset1]['univ_name'] != this.getDtWorld()[i+posOffset]['univ_name'] || n == 1 || (!!this.getDtWorld().length > n))) { // TODO: recheck please!
+                    } else if (!false && (i-posOffset1 < 1 || !!this.getDtWorld()[i-posOffset1]) && (n == 1 || (this.getDtWorld().length > n) || !data[1][i1+posOffset1] || !data[1][i1+posOffset1]['univ_name'] || data[1][i1+posOffset1]['univ_name'] != this.getDtWorld()[i-posOffset1]['univ_name'])) { // TODO: recheck please!
                         var dt1 = dt[++j];
                         dt[j] = this.genBasicData(j, data[1], []); // tmp
                         var newM = dataToMarker(dt, j, null, true); // tmp
@@ -183,39 +183,40 @@ class UnivDataService {
                         posOffset1 = i - i1; // i = i1 + posOffset1 !!! new posOffset !!!
                         
                         alreadyShifted = true;
-                        console.log('Shifted [dt position, data1/data_1 position, univ_name]: ', i1, i+posOffset, data[1][i1+posOffset1]['univ_name']); // !!! maybe BUG
+                        console.log('Shifted [dt position, data1/data_1 position, univ_name]: ', i1, i-posOffset1, data[1][i1+posOffset1]['univ_name']); // !!! maybe BUG
                     } else {
                         i1 = i;  // NEW i1: 4
+                        posOffset1 = 0;
                         ++j;
                     }                        
-                    dt[i+posOffset] = []; //dtmap = [];
-                    dt[i+posOffset] = this.genBasicData(i1+posOffset1, data[1], dt[i+posOffset]);
-                    dt[i+posOffset] = this.genLeagueStyles(i1+posOffset1, data[1], dt[i+posOffset]);
-                    dt[i+posOffset] = this.genCardInfo(i1+posOffset1, data[1], dt[i+posOffset]);
+                    dt[i-posOffset1] = []; //dtmap = [];
+                    dt[i-posOffset1] = this.genBasicData(i1+posOffset1, data[1], dt[i-posOffset1]);
+                    dt[i-posOffset1] = this.genLeagueStyles(i1+posOffset1, data[1], dt[i-posOffset1]);
+                    dt[i-posOffset1] = this.genCardInfo(i1+posOffset1, data[1], dt[i-posOffset1]);
                     
-                    dtTmp.push(dt[i+posOffset]);
+                    //dtTmp.push(dt[i-posOffset1]);
                     
-                    if (!!this.getDtWorld()[i-posOffset1] && this.getDtWorld()[i-posOffset1]['univ_name'] == dt[i+posOffset]['univ_name']) {
-                        if (!!dt[i+posOffset]['info'] || !!forceFull) {
-                            this.getDtWorld()[i-posOffset1]['info'] = dt[i+posOffset]['info'];
+                    if (!!this.getDtWorld()[i-posOffset1] && this.getDtWorld()[i-posOffset1]['univ_name'] == dt[i-posOffset1]['univ_name']) {
+                        if (!!dt[i-posOffset1]['info'] || !!forceFull) {
+                            this.getDtWorld()[i-posOffset1]['info'] = dt[i-posOffset1]['info'];
                         }
                     } else {
                         if (!!this.getDtWorld()[i-posOffset1]) {
-                            console.error('Fatal error: ', dt[i+posOffset]['univ_name']);
+                            console.error('Fatal error: ', dt[i-posOffset1]['univ_name']);
                         }
                     }
                     
-                    if (forceFull && dt[i+posOffset]['info'] && dt[i+posOffset]['univ_name'] && dt[i+posOffset]['O_WR'] && dt[i+posOffset]['O_Color1'] && 'head' != stateParamsNew.mode) {
-                        dt[i+posOffset]._mode = 'full';
-                        this.fastSearch[dt[i+posOffset]['univ_name']] = i+posOffset;
+                    if (forceFull && dt[i-posOffset1]['info'] && dt[i-posOffset1]['univ_name'] && dt[i-posOffset1]['O_WR'] && dt[i-posOffset1]['O_Color1'] && 'head' != stateParamsNew.mode) {
+                        dt[i-posOffset1]._mode = 'full';
+                        this.fastSearch[dt[i-posOffset1]['univ_name']] = i-posOffset1;
                     } else {
-                        delete dt[i+posOffset]._mode;
+                        delete dt[i-posOffset1]._mode;
                     }
                 }
                 
-                if (!!dtTmp[0]) {
-                    dtTmp.unshift(undefined);  delete dtTmp[0]; // BUG 1.2 !!! this.dt is broken, when it starts from 0 instead 1
-                }
+                //if (!!dtTmp[0]) {
+                //    dtTmp.unshift(undefined);  delete dtTmp[0]; // BUG 1.2 !!! this.dt is broken, when it starts from 0 instead 1
+                //}
                                 
                 if (!!stateParamsNew.pos) {
                     this.dtWorldLegacy = this.dtWorld || this.dtWorldLegacy;
@@ -230,9 +231,9 @@ class UnivDataService {
                     this.dt = [];
                 }
                 if ((!!forceFull || !stateParamsNew.pos || this.dt != this.dtWorld)) {
-                    this.dt = this.dt.filter(function (e, i) {
-                        return (!!e) ? e : null;
-                    })
+                    //this.dt = this.dt.filter(function (e, i) {
+                    //    return (!!e) ? e : null;
+                    //})
                     if (!!this.dt[0]) { // BUG 1.1 !!! this.dt is broken, when it starts from 0 instead 1
                         this.dt.unshift(undefined);  delete this.dt[0];
                     }
@@ -253,13 +254,13 @@ class UnivDataService {
                         ///this.dt = this.dt.slice(posOffset1+i1-n+1);
                         this.dtWorldLegacy = this.getDtWorld(); ///(!!this.dtWorld && !!this.dtWorld.length) ? this.dtWorld : [];
                         this.dtWorld = []; ////////////
-                        this.dt = [];
-                        this.dt = dtTmp
+                        //this.dt = [];
+                        //this.dt = dtTmp
                     } else if (!this.dtWorldLegacy || this.dtWorldLegacy.length || this.dtWorld.length == this.dt.length || this.dtWorldLegacy.length <= this.dtWorld.length || this.dtWorldLegacy.length <= this.dt.length) {
                         this.dtWorldLegacy = $.extend(true, [], this.dtWorld);
                     }
                 }
-                dtTmp = [];
+                //dtTmp = [];
                 console.log('this.dt: ', this.dt);
                 
                 console.log('dt length compare (world, legacy, local): ', this.dtWorld.length, this.dtWorldLegacy.length, this.dt.length);
@@ -582,6 +583,9 @@ class UnivDataController {
                     }
                     
                     for (var i=1; i<=dt.length-1; i++) {
+                        if (!dt[i]) {
+                            continue;
+                        }
 						tph = tph + '{ID:'+i+', Name: "' + dt[i]['univ_name'] + ' _' + dt[i]['id_univ'] + '"},';
 						
                         if ((forceFull && !stateParamsNew.pos) || this.firstLoad) {
@@ -600,6 +604,9 @@ class UnivDataController {
                     //dt = this.getDtWorld(); ///
                     mrksWorldPart = mrksWorldPart.map(function (e1, i1) {
                         for (var t=0; t<dt.length-1; ++t) {
+                            if (!dt[t+1] || !e1) {
+                                continue;
+                            }
                             if (dt[t+1]['univ_name'] === e1[3]['univ_name']) {
                                 return e1;
                             }
@@ -614,8 +621,11 @@ class UnivDataController {
                     mrksWorldPart = [];
                     mrks = [];
                     
-                    for (var i=0;i<n;i++) {
-                        //konf[i]=dt[i+1]['iconurl'];
+                    for (var i=0; i<=dt.length-1; ++i) {
+                        if (!dt[i+1]) {
+                            continue;
+                        }
+                        //konf[i+1]=dt[i+1]['iconurl'];
                         let title = dt[i+1]['univ_name'];
                         mrks.push(dataToMarker(null, i+1, title, false));
                     }

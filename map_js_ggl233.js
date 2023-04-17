@@ -287,6 +287,7 @@ $(document).ready(function ()
                 geometry: new ol.geom.Point(ol.proj.fromLonLat([m[0].lng, m[0].lat])), /// [106.8478695, -6.1568562]))),
                 //z: (!!m[0].z) ? m[0].z : undefined,
                 n: i+1,
+                markerfill: m,
                 type: 'Point',
                 info: (!!m[4] ? m[4] : () => '<div><h3>Missing info</h3></div>'),
                 desc: '' // + '<pre>'
@@ -404,11 +405,20 @@ $(document).ready(function ()
                 let displayDockInfoWindow = function displayDockInfoWindow () {
                     var mNew = dataToMarker(null, new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(mrks[+feature.get('n') - 1]), null, true); // update marker properties!!!
                     if (!mNew || !mNew[4] || !mNew[4]()) {
-                        mNew = dataToMarker(new UnivDataService().getDt(), 1, null, true);
+                        mNew = dataToMarker(new UnivDataService().getDt(), new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(mrks[+feature.get('n') - 1]), null, true);
                     }
-                    mrks[+feature.get('n') - 1] = mNew;
+                    if (!mNew || !mNew[4] || !mNew[4]()) {
+                        mNew = dataToMarker(null, new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(feature.get('markerfill')), null, true); // update marker properties!!!
+                    }
+                    if (!mNew || !mNew[4] || !mNew[4]()) {
+                        mNew = dataToMarker(new UnivDataService().getDt(), new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(feature.get('markerfill')), null, true); // update marker properties!!!
+                    }
+                    if (!mNew || !mNew[4] || !mNew[4]()) {
+                        mNew = dataToMarker(new UnivDataService().getDtWorld(), new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(feature.get('markerfill')), null, true); // update marker properties!!!
+                    }
+                    //mrks[+feature.get('n') - 1] = mNew; 
                     content = document.getElementById('popup-content'); ///
-                    content.innerHTML = mrks[+feature.get('n') - 1][4](); // instead old: content.innerHTML = feature.get('info')();
+                    content.innerHTML = mNew[4](); // instead old: content.innerHTML = feature.get('info')(); // TODO: fix it
                     console.log('Inch Diag: ', getInchDiag());
                     if (!window.isMobile()) { // infowindow only for desktop                        
                         // Info: new Ext.window.Window({}) is actually same as Ext.create('Ext.window.Window', {});
