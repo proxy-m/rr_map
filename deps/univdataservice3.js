@@ -40,14 +40,15 @@ class UnivDataService {
         this.requestAjax = null;
         this.year = -1;
         this.dtWorld = []; // dtWorld (wider) and dt are different
-        this.dt = null;        
+        this.dt = null;      
+        this.dtWorldLegacy = [];  
         this.fastSearch = {};
         
-        Object.defineProperty(this, 'getDtWorldPart', {
-            get: () => (!!this.getDtWorld() && !!this.getDtWorld().length) ? this.getDtWorld() : this.getDt(),
-            enumerable: true,
-            configurable: false,
-        });
+//        Object.defineProperty(this, 'getDtWorldPart', {
+//            get: () => (!!this.getDtWorld() && !!this.getDtWorld().length) ? this.getDtWorld() : this.getDt(),
+//            enumerable: true,
+//            configurable: false,
+//        });
         
         UnivDataService._instance = this;
     }
@@ -89,7 +90,7 @@ class UnivDataService {
     }
     
     getDtWorld () {
-        return this.dtWorld;
+        return (this.dtWorldLegacy.length <= this.dtWorld.length)? this.dtWorld : this.dtWorldLegacy;
     }
     
     getDt () {
@@ -384,13 +385,7 @@ class UnivDataController {
         this.tphWorld = ''; // tph and tphtxt can be only about world
         this.mrksWorld = [];
         this.mrks = [];
-        
-        Object.defineProperty(this, 'getDtWorldPart', {
-            get: () => (!!this.udtService.getDtWorld() && !!this.udtService.getDtWorld().length) ? this.udtService.getDtWorld() : this.udtService.getDt(),
-            enumerable: true,
-            configurable: false,
-        });
-        
+                
 //        Object.defineProperty(this, 'getMrksWorldPart', {
 //            get: () => (!!this.getMrksWorld() && !!this.getMrksWorld().length) ? this.getMrksWorld() : this.getMrks(),
 //            enumerable: true,
@@ -581,10 +576,10 @@ class UnivDataController {
                     
                     tph = tph.replace('undefined', '');
                     
-                var mrks=[];
+                var mrks = [];
                 
                 var mrksWorldPart = $.extend(true, [], (dt.length == this.udtService.getDtWorld().length) ? this.getMrksWorld() : this.getMrks()); /// NOTE: Do not use this.getMrksWorldPart property
-                if (!forceFull && !!mrksWorldPart && !!mrksWorldPart.length) {
+                if (false && !forceFull && !!mrksWorldPart && !!mrksWorldPart.length) {
                     //dt = this.getDtWorld(); ///
                     mrksWorldPart = mrksWorldPart.map(function (e1, i1) {
                         for (var t=0; t<dt.length-1; ++t) {
@@ -706,7 +701,7 @@ class UnivDataController {
      *  -2 - wrong dtWorld state, can not search.
      */
     getMarkerPositionInDtWorld (marker, searchType = 1) {
-        if (!this.getDtWorldPart || !this.getDtWorldPart.length) {
+        if (!this.getDtWorld() || !this.getDtWorld().length) {
             return -2; // search array is empty
         }
         
@@ -715,7 +710,7 @@ class UnivDataController {
         }
         var res = [];
         var curP;
-        var curM = this.getDtWorldPart[0] || this.getDtWorldPart[1] || this.getDtWorldPart[2];
+        var curM = this.getDtWorld()[0] || this.getDtWorld()[1] || this.getDtWorld()[2];
         if (marker.length && !Array.isArray(marker)) { // string (special) instead of marker object array
             if (!marker.trim().length) {
                 return null;
@@ -732,9 +727,9 @@ class UnivDataController {
             }
         }
         
-        curP = this.getDtWorldPart.length;
+        curP = this.getDtWorld().length;
         while ((--curP) >= 0) {
-            var curD = this.getDtWorldPart[curP];
+            var curD = this.getDtWorld()[curP];
             if (!curD) {
                 continue;
             }
