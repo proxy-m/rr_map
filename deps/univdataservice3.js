@@ -203,11 +203,13 @@ class UnivDataService {
                     dtTmp.unshift(undefined);  delete dtTmp[0]; // BUG 1.2 !!! this.dt is broken, when it starts from 0 instead 1
                 }
                 
-                if (!this.dtWorld || !this.dtWorld.length || (this.dtWorld.length <= 2 && !this.dtWorld[0] && !this.dtWorld[1]) || !Array.isArray(this.dtWorld)) {
+                if (!!stateParamsNew.pos) {
+                    this.dtWorldLegacy = this.dtWorld || this.dtWorldLegacy;
                     this.dtWorld = [];
                 }
-                if (!!forceFull && !!stateParamsNew.pos) {
-                    this.dtWorld = $.extend(true, [], this.dtWorld, this.dt);
+                
+                if (!this.dtWorld || !this.dtWorld.length || (this.dtWorld.length <= 2 && !this.dtWorld[0] && !this.dtWorld[1]) || !Array.isArray(this.dtWorld)) {
+                    this.dtWorld = [];
                 }
                 
                 if (!this.dt) {
@@ -221,19 +223,24 @@ class UnivDataService {
                         this.dt.unshift(undefined);  delete this.dt[0];
                     }
                 }
-                if (!this.dtWorld || !this.dtWorld.length) {
-                    this.dtWorld = [];
-                    this.dtWorld = $.extend(true, [], this.dtWorld, this.dt);
-                }
-
-                if (!forceFull && !stateParamsNew.pos && alreadyShifted) {
-                    ///this.dt = $.extend(true, [], dt);
-                    ///this.dt = this.dt.slice(posOffset1+i1-n+1);
-                    this.dt = [];
-                    this.dt = dtTmp
-                    this.dtWorldLegacy = (!!this.dtWorld && !!this.dtWorld.length) ? this.dtWorld : [];
-                    /////////////////////////////////////////////this.dtWorld = []; ////
-                    console.log('dtTmp: ', dtTmp);
+                
+                if (!stateParamsNew.pos) {
+                    if (!this.dtWorld || !this.dtWorld.length) {
+                        this.dtWorld = [];
+                        this.dtWorld = $.extend(true, [], this.dtWorld, this.dt);
+                    }
+                    
+                    if (!forceFull && alreadyShifted) {
+                        ///this.dt = $.extend(true, [], dt);
+                        ///this.dt = this.dt.slice(posOffset1+i1-n+1);
+                        this.dt = [];
+                        this.dt = dtTmp
+                        this.dtWorldLegacy = (!!this.dtWorld && !!this.dtWorld.length) ? this.dtWorld : [];
+                        /////////////////////////////////////////////this.dtWorld = []; ////
+                        console.log('dtTmp: ', dtTmp);
+                    } else if (!this.dtWorldLegacy || this.dtWorldLegacy.length || this.dtWorld.length == this.dt.length || this.dtWorldLegacy.length <= this.dtWorld.length || this.dtWorldLegacy.length <= this.dt.length) {
+                        this.dtWorldLegacy = $.extend(true, [], this.dtWorld, this.dt);
+                    }
                 }
                 dtTmp = [];
                 
