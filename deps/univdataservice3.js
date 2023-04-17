@@ -164,13 +164,13 @@ class UnivDataService {
                 for (var i=1; i<=n; ++i) {
                     //alert(data[4][i]);
                     var i1 = i-posOffset1; // OLD i1: 0
-                    if (alreadyShifted) {
+                    if (!!forceFull && alreadyShifted) {
                         if ((!data[1][i1+posOffset1]['univ_name']) && (i1 = (alreadyShifted && !!this.fastSearch[dt[0]['univ_name']]) ? this.fastSearch[dt[0]['univ_name']] - posOffset1 : -1) > 0) { // NEW i1: 1
                             posOffset = i1 - i; // i + posOffset == i1
                         }
                         i1 = i-posOffset1; // i = i1 + posOffset1 !!! new posOffset !!!  // NEW i1: 2
                         ++j;
-                    } else if (!alreadyShifted && (!data[1][i1+posOffset1] || !data[1][i1+posOffset1]['univ_name'] || n == 1 || (!!this.getDtWorld().length > n))) { // TODO: recheck please!
+                    } else if (!false && !!this.getDtWorld()[i+posOffset] && (!data[1][i1+posOffset1] || !data[1][i1+posOffset1]['univ_name'] || data[1][i1+posOffset1]['univ_name'] != this.getDtWorld()[i+posOffset]['univ_name'] || n == 1 || (!!this.getDtWorld().length > n))) { // TODO: recheck please!
                         var dt1 = dt[++j];
                         dt[j] = this.genBasicData(j, data[1], []); // tmp
                         var newM = dataToMarker(dt, j, null, true); // tmp
@@ -192,7 +192,18 @@ class UnivDataService {
                     dt[i+posOffset] = this.genBasicData(i1+posOffset1, data[1], dt[i+posOffset]);
                     dt[i+posOffset] = this.genLeagueStyles(i1+posOffset1, data[1], dt[i+posOffset]);
                     dt[i+posOffset] = this.genCardInfo(i1+posOffset1, data[1], dt[i+posOffset]);
+                    
                     dtTmp.push(dt[i+posOffset]);
+                    
+                    if (!!this.getDtWorld()[i-posOffset1] && this.getDtWorld()[i-posOffset1]['univ_name'] == dt[i+posOffset]['univ_name']) {
+                        if (!!dt[i+posOffset]['info'] || !!forceFull) {
+                            this.getDtWorld()[i-posOffset1]['info'] = dt[i+posOffset]['info'];
+                        }
+                    } else {
+                        if (!!this.getDtWorld()[i-posOffset1]) {
+                            console.error('Fatal error: ', dt[i+posOffset]['univ_name']);
+                        }
+                    }
                     
                     if (forceFull && dt[i+posOffset]['info'] && dt[i+posOffset]['univ_name'] && dt[i+posOffset]['O_WR'] && dt[i+posOffset]['O_Color1'] && 'head' != stateParamsNew.mode) {
                         dt[i+posOffset]._mode = 'full';
@@ -205,11 +216,7 @@ class UnivDataService {
                 if (!!dtTmp[0]) {
                     dtTmp.unshift(undefined);  delete dtTmp[0]; // BUG 1.2 !!! this.dt is broken, when it starts from 0 instead 1
                 }
-                
-                if (alreadyShifted && n <= 10) {
-                    console.log('Shifted native: ', JSON.stringify(dt));
-                }
-                
+                                
                 if (!!stateParamsNew.pos) {
                     this.dtWorldLegacy = this.dtWorld || this.dtWorldLegacy;
                     this.dtWorld = [];
