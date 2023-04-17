@@ -228,7 +228,11 @@ class UnivDataService {
                 if (!stateParamsNew.pos) {
                     if (!this.dtWorld || !this.dtWorld.length) {
                         this.dtWorld = [];
+                    }
+                    if (this.dtWorld.length == this.dt.length) {
                         this.dtWorld = $.extend(true, [], this.dtWorld, this.dt);
+                    } else if (this.dt.length > this.dtWorld.length) {
+                        this.dtWorld = $.extend(true, [], this.dt);
                     }
                     
                     if (!forceFull && alreadyShifted) {
@@ -240,7 +244,7 @@ class UnivDataService {
                         /////////////////////////////////////////////this.dtWorld = []; ////
                         console.log('dtTmp: ', dtTmp);
                     } else if (!this.dtWorldLegacy || this.dtWorldLegacy.length || this.dtWorld.length == this.dt.length || this.dtWorldLegacy.length <= this.dtWorld.length || this.dtWorldLegacy.length <= this.dt.length) {
-                        this.dtWorldLegacy = $.extend(true, [], this.dtWorld, this.dt);
+                        this.dtWorldLegacy = $.extend(true, [], this.dtWorld);
                     }
                 }
                 dtTmp = [];
@@ -579,7 +583,7 @@ class UnivDataController {
                 var mrks = [];
                 
                 var mrksWorldPart = $.extend(true, [], (dt.length == this.udtService.getDtWorld().length) ? this.getMrksWorld() : this.getMrks()); /// NOTE: Do not use this.getMrksWorldPart property
-                if (false && !forceFull && !!mrksWorldPart && !!mrksWorldPart.length) {
+                if (!forceFull && !!mrksWorldPart && !!mrksWorldPart.length) {
                     //dt = this.getDtWorld(); ///
                     mrksWorldPart = mrksWorldPart.map(function (e1, i1) {
                         for (var t=0; t<dt.length-1; ++t) {
