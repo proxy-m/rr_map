@@ -558,8 +558,8 @@ $(document).ready(function ()
                         if (!udtController.getDtWorld() || !udtController.getMrksWorld() || udtController.getDtWorld().length < dt.length || !udtController.getMrksWorld().length) {
                             if (!forceFull) {
                                 setTimeout(function () {
-                                    initMap(true); /////
-                                    alert('was full reload');
+                                    //initMap(true); /////
+                                    //alert('was full reload');
                                 }, 500);
                             }
                         }

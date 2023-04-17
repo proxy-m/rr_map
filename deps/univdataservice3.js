@@ -157,7 +157,7 @@ class UnivDataService {
                 if (!!forceFull && !!stateParamsNew.pos) {
                     posOffset = stateParamsNew.pos.split('_')[0] || 0; // TODO: recheck
                 }
-                var dtTmp = [];
+                var dtTmp = [];  dtTmp.unshift(undefined);  delete dtTmp[0];
                 var posOffset1 = posOffset;
                 var alreadyShifted = false;  var j = 0;
                 for (var i=1; i<=n; ++i) {
@@ -199,6 +199,10 @@ class UnivDataService {
                     }
                 }
                 
+                if (!!dtTmp[0]) {
+                    dtTmp.unshift(undefined);  delete dtTmp[0]; // BUG 1.2 !!! this.dt is broken, when it starts from 0 instead 1
+                }
+                
                 if (!this.dtWorld || !this.dtWorld.length || (this.dtWorld.length <= 2 && !this.dtWorld[0] && !this.dtWorld[1]) || !Array.isArray(this.dtWorld)) {
                     this.dtWorld = [];
                 }
@@ -210,10 +214,12 @@ class UnivDataService {
                     this.dt = [];
                 }
                 if ((!!forceFull || !stateParamsNew.pos || this.dt != this.dtWorld)) {
-                    this.dt = this.dt.map(function (e, i) {
+                    this.dt = this.dt.filter(function (e, i) {
                         return (!!e) ? e : null;
-                    });
-                    //this.dt.unshift(undefined); // BUG 1.1 !!! this.dt is broken, because it starts from 0 instead 1
+                    })
+                    if (!!this.dt[0]) { // BUG 1.1 !!! this.dt is broken, when it starts from 0 instead 1
+                        this.dt.unshift(undefined);  delete this.dt[0];
+                    }
                 }
                 if (!this.dtWorld || !this.dtWorld.length) {
                     this.dtWorld = [];
@@ -223,7 +229,6 @@ class UnivDataService {
                 if (!forceFull && !stateParamsNew.pos && alreadyShifted) {
                     ///this.dt = $.extend(true, [], dt);
                     ///this.dt = this.dt.slice(posOffset1+i1-n+1);
-                    //dtTmp.unshift(undefined); // BUG 1.2 !!! this.dt is broken, because it starts from 0 instead 1
                     this.dt = [];
                     this.dt = dtTmp
                     this.dtWorldLegacy = (!!this.dtWorld && !!this.dtWorld.length) ? this.dtWorld : [];
