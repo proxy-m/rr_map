@@ -156,7 +156,7 @@ class UnivDataService {
                 
                 var posOffset = 0;
                 if (!!forceFull && !!stateParamsNew.pos) {
-                    posOffset = stateParamsNew.pos.split('_')[0] || 0; // TODO: recheck
+                    posOffset = +stateParamsNew.pos.split('_')[0] || 0; // TODO: recheck
                 }
                 var dtTmp = [];  dtTmp.unshift(undefined);  delete dtTmp[0];
                 var posOffset1 = posOffset;
@@ -170,16 +170,18 @@ class UnivDataService {
                         }
                         i1 = i-posOffset1; // i = i1 + posOffset1 !!! new posOffset !!!  // NEW i1: 2
                         ++j;
-                    } else if (!alreadyShifted && (!data[1][i1+posOffset1] || !data[1][i1+posOffset1]['univ_name'] || n == 1 || (!!this.dtWorld && !!this.dtWorld.length && this.dtWorld.length > n))) { // TODO: recheck please!
+                    } else if (!alreadyShifted && (!data[1][i1+posOffset1] || !data[1][i1+posOffset1]['univ_name'] || n == 1 || (!!this.getDtWorld().length > n))) { // TODO: recheck please!
                         var dt1 = dt[++j];
-                        dt[j] = this.genBasicData(j, data[1], []);
-                        i1 = new UnivDataController(this).getMarkerPositionInDtWorld(dataToMarker(dt, j, null, true), 1); // NOTE: this line is too complicated
+                        dt[j] = this.genBasicData(j, data[1], []); // tmp
+                        var newM = dataToMarker(dt, j, null, true); // tmp
+                        dt[j] = dt1 || undefined;
+                        i1 = new UnivDataController(this).getMarkerPositionInDtWorld(newM, 0); // NOTE: this line is too complicated
                         if (i1 < 0) { // NEW i1: 3
                             console.error('[ERR] Can not shift position!', i1, i, posOffset, dt[i]);
                             return null;
                         }
                         posOffset1 = i - i1; // i = i1 + posOffset1 !!! new posOffset !!!
-                        dt[j] = dt1 || undefined;
+                        
                         alreadyShifted = true;
                         console.log('Shifted [dt position, data1/data_1 position, univ_name]: ', i1, i+posOffset, data[1][i1+posOffset1]['univ_name']); // !!! maybe BUG
                     } else {
@@ -202,6 +204,10 @@ class UnivDataService {
                 
                 if (!!dtTmp[0]) {
                     dtTmp.unshift(undefined);  delete dtTmp[0]; // BUG 1.2 !!! this.dt is broken, when it starts from 0 instead 1
+                }
+                
+                if (alreadyShifted && n <= 10) {
+                    console.log('Shifted native: ', JSON.stringify(dt));
                 }
                 
                 if (!!stateParamsNew.pos) {
@@ -238,20 +244,20 @@ class UnivDataService {
                     if (!forceFull && alreadyShifted) {
                         ///this.dt = $.extend(true, [], dt);
                         ///this.dt = this.dt.slice(posOffset1+i1-n+1);
+                        this.dtWorldLegacy = this.getDtWorld(); ///(!!this.dtWorld && !!this.dtWorld.length) ? this.dtWorld : [];
+                        this.dtWorld = []; ////////////
                         this.dt = [];
                         this.dt = dtTmp
-                        this.dtWorldLegacy = (!!this.dtWorld && !!this.dtWorld.length) ? this.dtWorld : [];
-                        /////////////////////////////////////////////this.dtWorld = []; ////
-                        console.log('dtTmp: ', dtTmp);
                     } else if (!this.dtWorldLegacy || this.dtWorldLegacy.length || this.dtWorld.length == this.dt.length || this.dtWorldLegacy.length <= this.dtWorld.length || this.dtWorldLegacy.length <= this.dt.length) {
                         this.dtWorldLegacy = $.extend(true, [], this.dtWorld);
                     }
                 }
                 dtTmp = [];
+                console.log('this.dt: ', this.dt);
                 
-                console.log('dt length compare (world, local): ', this.dtWorld.length, this.dt.length);
-                console.log('dt 0 compare (world, local): ', this.dtWorld[0], this.dt[0]);
-                console.log('dt 1 compare (world, local): ', this.dtWorld[1], this.dt[1]);
+                console.log('dt length compare (world, legacy, local): ', this.dtWorld.length, this.dtWorldLegacy.length, this.dt.length);
+                console.log('dt 0 compare (world, legacy, local): ', this.dtWorld[0], this.dtWorldLegacy[0], this.dt[0]);
+                console.log('dt 1 compare (world, legacy, local): ', this.dtWorld[1], this.dtWorldLegacy[1], this.dt[1]);
                 
                 return data;
             }
