@@ -39,10 +39,7 @@ class UnivDataService {
         this.url = null;
         this.requestAjax = null;
         this.year = -1;
-        this.dtWorld = []; // dtWorld (wider) and dt are different
-        this.dt = null;    // dt conains only current visible data
-        this.dtWorldLegacy = []; // previous state of dtWorld
-        this.fastSearch = {};
+        this.clearCache();
                 
         UnivDataService._instance = this;
     }
@@ -53,6 +50,13 @@ class UnivDataService {
     
     getInstance () {
         return (!!UnivDataService._instance) ? UnivDataService._instance : new UnivDataService();
+    }
+    
+    clearCache () {
+        this.dtWorld = []; // dtWorld (wider) and dt are different
+        this.dt = null;    // dt conains only current visible data
+        this.dtWorldLegacy = []; // previous state of dtWorld
+        this.fastSearch = {};
     }
     
     setStateURL (url, forceFull, forceFrom, forceTo) { // forceFrom and forceTo indexes always starts from 1 (not from 0)
@@ -91,13 +95,37 @@ class UnivDataService {
         return this.dt;
     }
     
+    updateFastSearch () {
+        var dtWorld = this.getDtWorld();
+        for (var pos in dtWorld) {
+            if (pos >= 1) {
+                this.fastSearch[dtWorld[pos]['univ_name']] = +pos;
+            }
+        }
+        
+        var allPositions = [];
+        for (var name in this.fastSearch) {
+            if (!this.fastSearch[name]) {
+                continue;
+            }
+            var pos2 = this.fastSearch[name];
+            if (!pos2 || pos2 < 1) {
+                this.fastSearch[name] = null;
+                continue;
+            }
+            if ((!!dtWorld[pos2] && dtWorld[pos2]['univ_name'] != name) || allPositions.indexOf(pos2) >= 0) {
+                delete this.fastSearch[name];
+            }
+            allPositions.push(pos2);
+        }
+    }
+    
     request () {
         this.requestAjax = $.ajax({
             "url": this.url, 
             "method": 'GET', 
             "async": true,
         });
-        this.dt = []; // reset local state of dt
         let stateParamsNew = $.extend(true, {}, this.stateParamsNew);
         
         this.requestAjax = this.requestAjax.then(function onSuccess (data) {
@@ -109,16 +137,20 @@ class UnivDataService {
             reg = stateParamsNew.reg; // region
             this.year = yr;
             
-            var forceFull = stateParamsNew.forceFull;
-            var dt = [];
+            if (this.year != this.yearLegacy) {
+                this.clearCache();
+                this.yearLegacy = this.year;
+            }
+            
             if (forceFull && !stateParamsNew.pos) {
                 this.dtWorld = dt;
             } else {
                 this.dtWorld = this.dtWorldLegacy || this.dtWorld || [];
                 this.dtWorldLegacy = [];
             }
-            //var dtLegacy = this.dt;
-            this.dt = dt;
+            var forceFull = stateParamsNew.forceFull;
+            var dt = [];
+            this.dt = dt; // reset local state of dt
             console.log('stateParamsNew: ', stateParamsNew);
                 
             switch (Number(subj)) {
@@ -155,11 +187,12 @@ class UnivDataService {
                 //var dtTmp = [];  dtTmp.unshift(undefined);  delete dtTmp[0];
                 var posOffset1 = posOffset;
                 var alreadyShifted = false;  var j = 0;
+                this.updateFastSearch();
                 for (var i=1; i<=n; ++i) {
                     //alert(data[4][i]);
                     var i1 = (i-posOffset1 < 0) ? 0 : i-posOffset1; // OLD i1: 0
-                    if (!!forceFull && alreadyShifted) {
-                        if ((!data[1][i1+posOffset1]['univ_name']) && (i1 = (alreadyShifted && !!this.fastSearch[dt[0]['univ_name']]) ? this.fastSearch[dt[0]['univ_name']] - posOffset1 : -1) > 0) { // NEW i1: 1
+                    if (false && !!forceFull && alreadyShifted) {
+                        if ((!data[1][i1+posOffset1]['univ_name']) && (i1 = (alreadyShifted && !!this.fastSearch[dt[1]['univ_name']]) ? this.fastSearch[dt[1]['univ_name']] - posOffset1 : -1) > 0) { // NEW i1: 1
                             posOffset = i1 - i; // i + posOffset == i1
                         }
                         i1 = i-posOffset1; // i = i1 + posOffset1 !!! new posOffset !!!  // NEW i1: 2
@@ -168,13 +201,17 @@ class UnivDataService {
                         var dt1 = dt[++j];
                         dt[j] = this.genBasicData(j, data[1], []); // tmp
                         var newM = dataToMarker(dt, j, null, true); // tmp
-                        if (alreadyShifted) {
+                        if (alreadyShifted && !!data[1][j] && data[1][j]['univ_name']) {
                             i1 = this.fastSearch[data[1][j]['univ_name']];
+                        } else {
+                            i1 = -1;
                         }
                         dt[j] = dt1 || undefined;
-                        
+                        var i1Old = i1;
                         if (!(i1 >= 0 && !!this.getDtWorld()[i1] && data[1][j]['univ_name'] == this.getDtWorld()[i1]['univ_name'])) {
+                            //console.log('wrong i1: ', i1);
                             i1 = new UnivDataController(this).getMarkerPositionInDtWorld(newM, 0); // NOTE: this line is too complicated
+                            //console.log('correct i1: ', i1);
                         }
                         if (i1 < 0) { // NEW i1: 3
                             console.error('[ERR] Can not shift position!', i1, i, posOffset, dt[i]);
@@ -183,7 +220,15 @@ class UnivDataService {
                         posOffset1 = i - i1; // i = i1 + posOffset1 !!! new posOffset !!!
                         
                         alreadyShifted = true;
-                        console.log('Shifted [dt position, data1/data_1 position, univ_name]: ', i1, i-posOffset1, data[1][i1+posOffset1]['univ_name']); // !!! maybe BUG
+                        if (i1 != i1Old) {
+                            console.trace('[WARN 3]: ' + i1 + ' ' + i1Old);
+                        }
+                        if (j != i1+posOffset1 || !data[1][i1+posOffset1]) {
+                            console.error('bug 4: ' + j + ' ' + i1+posOffset1);
+                            console.error('bug 5: ', data[1][i1+posOffset1]);
+                            continue;
+                        }
+                        console.log('Shifted [dt position, data1/data_1 position, univ_name]: ', i-posOffset1, i1+posOffset1, data[1][i1+posOffset1]['univ_name']); // !!! maybe BUG
                     } else {
                         i1 = i;  // NEW i1: 4
                         posOffset1 = 0;
@@ -208,7 +253,7 @@ class UnivDataService {
                     
                     if (forceFull && dt[i-posOffset1]['info'] && dt[i-posOffset1]['univ_name'] && dt[i-posOffset1]['O_WR'] && dt[i-posOffset1]['O_Color1'] && 'head' != stateParamsNew.mode) {
                         dt[i-posOffset1]._mode = 'full';
-                        this.fastSearch[dt[i-posOffset1]['univ_name']] = i-posOffset1;
+                        this.fastSearch[dt[i-posOffset1]['univ_name']] = +i-posOffset1;
                     } else {
                         delete dt[i-posOffset1]._mode;
                     }
