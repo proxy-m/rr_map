@@ -676,7 +676,7 @@ class UnivDataController {
                 var mrks = [];
                 
                 var mrksWorldPart = $.extend(true, [], (dt.length == this.udtService.getDtWorld().length) ? this.getMrksWorld() : this.getMrks()); /// NOTE: Do not use this.getMrksWorldPart property
-                if (!forceFull && !!mrksWorldPart && !!mrksWorldPart.length) {
+                if (false && !forceFull && !!mrksWorldPart && !!mrksWorldPart.length) {
                     //dt = this.getDtWorld(); ///
                     mrksWorldPart = mrksWorldPart.map(function (e1, i1) {
                         for (var t=0; t<dt.length-1; ++t) {
