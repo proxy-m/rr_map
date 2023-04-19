@@ -242,7 +242,7 @@ $(document).ready(function ()
         if (!needClickOnFirst) {
             console.log(false, mrks.length)
             window.needClickOnFirst = false;
-            mappanel.map.getLayers().getArray().map((e, i) => {if (i>0) mappanel.map.getLayers().getArray().splice(1) }); // rest only first layer
+            udtController.clearMarkerLayers();
         } else {
             console.log(true, mrks.length, [Object.values(mrks[0])]); //
             window.needClickOnFirst = true;

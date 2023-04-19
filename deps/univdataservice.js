@@ -56,6 +56,7 @@ class UnivDataService {
         this.dtWorld = []; // dtWorld (wider) and dt are different
         this.dt = null;    // dt conains only current visible data
         this.dtWorldLegacy = []; // previous state of dtWorld
+        this.loadTimes = 0; // 0, 1, 2 times or 3 (many)
         this.fastSearch = {};
     }
     
@@ -128,19 +129,24 @@ class UnivDataService {
         });
         let stateParamsNew = $.extend(true, {}, this.stateParamsNew);
         
+        subj = stateParamsNew.subj; // subject
+        yr = stateParamsNew.yr || stateParamsNew.year || yr || this.year; // year
+        cntr = stateParamsNew.cntr; // country
+        reg = stateParamsNew.reg; // region
+        this.year = yr;
+        
+        if (this.year != this.yearLegacy) {
+            this.clearCache();
+            this.yearLegacy = this.year;
+        }
+        
+        if ((++this.loadTimes) > 3) {
+            this.loadTimes = 3;
+        }
+        console.log('loadTimes0: ', this.loadTimes);
+        
         this.requestAjax = this.requestAjax.then(function onSuccess (data) {
             'use strict';
-            
-            subj = stateParamsNew.subj; // subject
-            yr = stateParamsNew.yr || stateParamsNew.year || yr || this.year; // year
-            cntr = stateParamsNew.cntr; // country
-            reg = stateParamsNew.reg; // region
-            this.year = yr;
-            
-            if (this.year != this.yearLegacy) {
-                this.clearCache();
-                this.yearLegacy = this.year;
-            }
             
             if (forceFull && !stateParamsNew.pos) {
                 this.dtWorld = dt;
@@ -450,26 +456,37 @@ class UnivDataController {
         this.udtService = udtService;
         this.promise = null;
         
-        this.firstLoad = true;
-        if (!this.dtcntr) {
-            this.dtcntr = [];
-        }
-        
-        this.tphWorld = ''; // tph and tphtxt can be only about world
-        this.mrksWorld = [];
-        this.mrks = [];
-                
-//        Object.defineProperty(this, 'getMrksWorldPart', {
-//            get: () => (!!this.getMrksWorld() && !!this.getMrksWorld().length) ? this.getMrksWorld() : this.getMrks(),
-//            enumerable: true,
-//            configurable: false,
-//        });
+        this.clearCache2();
         
         UnivDataController._instance = this;
     }
     
     toString () {
         return '[object ' + (this.constructor.name || 'Object') + ']';
+    }
+    
+    clearCache2 () {        
+        this.firstLoad = true;
+        //if (!this.dtcntr) {
+            this.dtcntr = [];
+        //}
+        
+        this.tphWorld = ''; // tph and tphtxt can be only about world
+        this.mrksWorld = [];
+        this.mrks = [];
+        
+        this.clearMarkerLayers();
+        console.trace('!clearCache2');
+                
+//        Object.defineProperty(this, 'getMrksWorldPart', {
+//            get: () => (!!this.getMrksWorld() && !!this.getMrksWorld().length) ? this.getMrksWorld() : this.getMrks(),
+//            enumerable: true,
+//            configurable: false,
+//        });
+    }
+    
+    clearMarkerLayers () {
+        mappanel.map.getLayers().getArray().map((e, i) => {if (i>0) mappanel.map.getLayers().getArray().splice(1) }); // rest only first layer
     }
     
     setForceFull (forceFull) {
@@ -596,6 +613,10 @@ class UnivDataController {
     }
     
     getPromise (stateParams = undefined) {
+        console.log(this.udtService.loadTimes);
+        if (this.udtService.loadTimes++ == 1) {
+            this.clearCache2();
+        }
         ({year: yr, subject: subj, country: cntr, region: reg, code} = this.setState(stateParams || {
             code: this.code,
             year: yr, // warn: strange year number (not like 20xx)
