@@ -286,7 +286,7 @@ $(document).ready(function ()
             var iconFeature = new ol.Feature({
                 geometry: new ol.geom.Point(ol.proj.fromLonLat([m[0].lng, m[0].lat])), /// [106.8478695, -6.1568562]))),
                 //z: (!!m[0].z) ? m[0].z : undefined,
-                n: i+1,
+                n: i+1, // n is is wrong when multiple marker addings! Use markerfill instead.
                 markerfill: m,
                 type: 'Point',
                 info: (!!m[4] ? m[4] : () => '<div><h3>Missing info</h3></div>'),
@@ -455,8 +455,8 @@ $(document).ready(function ()
                     }
                 };
                 let t10 = null;
-                if (true || !mrks[+feature.get('n') - 1][4]() /*!udtController.getDtWorld() || !udtController.getDtWorld().length || udtController.getDtWorld().length < 3*/) {
-                    var p1 = udtController.getMarkerPositionInDtWorld(mrks[wasClickedTrigger-1]);
+                if (true || !feature.get('markerfill')[4]() || !mrks[+feature.get('n') - 1][4]() /*!udtController.getDtWorld() || !udtController.getDtWorld().length || udtController.getDtWorld().length < 3*/) {
+                    var p1 = udtController.getMarkerPositionInDtWorld(feature.get('markerfill'));
                     console.log('getMarkerPositionInDtWorld result:', p1, (p1 >= 0) ? udtController.getDtWorld()[p1] : null);
                     udtController.setStateURL(null, true, p1, p1); ///// construct urlto force overload dt for one marker
                     udtController.requestSecond().then(function onGood (dataFullOne) {
@@ -558,6 +558,8 @@ $(document).ready(function ()
                                     if (mrks3.length === 4 && mrks3[0].lat !== undefined && mrks3[0].lng !== undefined) {
                                         var title = mrks3[1].substring(mrks3[1].indexOf(' ') + 1);
                                         var wrData = getWorldRating(dt, title, null);
+                                        console.log('dt.length: ', dt.length);
+                                        console.log('wrData: ', wrData);
                                         if (mrks3[1] === `#${wrData.label} ${title}`) {
                                             mrks3[3] = () => (dt[wrData.i] || mrks3[3]);
                                             mrks3[4] = () => (dt[wrData.i]['info'] || mrks3[4]);
@@ -596,6 +598,7 @@ $(document).ready(function ()
                     }   
                     addMarkers(mrks);
                     if (!!mrks3 && mrks3.length > 0) {
+                        console.log('mrks3: ', mrks3);
                         addMarkers([mrks3], true); // TODO: after add recheck twice: z scale
                     }
                     
