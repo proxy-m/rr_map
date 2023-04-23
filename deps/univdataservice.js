@@ -138,6 +138,11 @@ class UnivDataService {
         if (this.year != this.yearLegacy) {
             this.clearCache();
             this.yearLegacy = this.year;
+            try {
+                window.windowDock.closeAll();
+            } catch (e534234532) {
+                console.error(e534234532);
+            }
         }
         
         if ((++this.loadTimes) > 3) {
