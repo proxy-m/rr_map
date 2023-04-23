@@ -879,7 +879,7 @@ class UnivDataController {
 					//alert(subj+'\n'+yr+'\n'+reg+'\n'+cntr);
 					this.dtcntr=[];  this.dtcntr.length=0;
 					//var urlc='final/getunivdata_ymap.php?year='+yr+'&subj='+subj+'&reg='+reg+'&cntr='+cntr;
-					var urlc='./final/getcntrdata_gmap22.php?year='+yr+'&subj='+subj+'&reg='+reg+'&cntr='+cntr;
+					var urlc='./final/getcntrdata_gmap22.php?year='+yr+'&subj='+subj+'&reg='+reg;
 					//alert(urlc);
                     if (this.oldUrlc === urlc && !!this.dtcntr && this.dtcntr.length > 0) {
                         return this.dtcntr; ///
