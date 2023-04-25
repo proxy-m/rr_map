@@ -139,7 +139,9 @@ class UnivDataService {
             this.clearCache();
             this.yearLegacy = this.year;
             try {
-                window.windowDock.closeAll();
+                if (window.windowDock) { // windowDock appears only after first created infowindow
+                    window.windowDock.closeAll();
+                }
             } catch (e534234532) {
                 console.error(e534234532);
             }
