@@ -779,11 +779,6 @@ class UnivDataController {
                         //console.log('tphsel: ', $('#tphsel').html());
                         console.log('tph: ', tph); //
                         this.tphWorld = tph;
-                        $('#mapsrchvl').typeahead('close');
-                        $('#mapsrchvl').typeahead('destroy');
-                        $('.typeahead:not(#mapsrchvl)').remove(); // fix bug
-                        var tphtxt='$("#mapsrchvl").typeahead({autoSelect:false,source: ['+this.getTphWorld()+'],displayField: "Name",valueField: "ID",limit:"20", afterSelect: function (item) { console.log("after selected: ", item); setTimeout(function () { $(\'input[type="button"]#mapsrchbtn,input[type="submit"]#mapsrchbtn\')[0].focus(); }, 100); return item; }, });';
-                        eval(tphtxt);
                         console.log('true 4');
                     }
                     if (forceFull) {
@@ -791,6 +786,7 @@ class UnivDataController {
                         console.log('true 5');
                     }
                 }
+                this.reinitTypeaheadMapSearch(true);
                 this.firstLoad = false; 
             /////////////////////////////////////
             return data;
@@ -803,6 +799,22 @@ class UnivDataController {
         //var res = this.promise;
         //this.promise = Promise.resolve(!0);
         //return res;
+    }
+    
+    reinitTypeaheadMapSearch (full) {
+        $('#mapsrchvl').attr('placeholder','Enter the name of the university');
+        $('#mapsrchvl').val('');
+        try {
+            $('#mapsrchvl').typeahead('close');
+        } catch (e54634365423122) {
+            full = true;
+        }
+        if (full) {
+            $('#mapsrchvl').typeahead('destroy');                           
+            $('.typeahead:not(#mapsrchvl)').remove(); // fix bug
+            var tphtxt='$("#mapsrchvl").typeahead({autoSelect:false,source: ['+this.getTphWorld()+'],displayField: "Name",valueField: "ID",limit:"20", afterSelect: function (item) { console.log("after selected: ", item); setTimeout(function () { $(\'input[type="button"]#mapsrchbtn,input[type="submit"]#mapsrchbtn\')[0].focus(); }, 100); return item; }, });';
+            eval(tphtxt);
+        }
     }
     
     /**
