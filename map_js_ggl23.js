@@ -401,10 +401,13 @@ $(document).ready(function ()
                     var mNew = null;
                     
                     if (feature.get('markerfill')) {
+                        mNew = dataToMarker(new UnivDataService().getDtWorld(), new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(feature.get('markerfill')), null, true); // update marker properties!!!
+                    }
+                    if (feature.get('markerfill') && (!mNew || !mNew[4] || !mNew[4]())) {
                         mNew = dataToMarker(new UnivDataService().getDt(), new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(feature.get('markerfill')), null, true); // update marker properties!!!                        
                     }
                     if (feature.get('markerfill') && (!mNew || !mNew[4] || !mNew[4]())) {
-                        mNew = dataToMarker(new UnivDataService().getDtWorld(), new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(feature.get('markerfill')), null, true); // update marker properties!!!
+                        mNew = dataToMarker(null, new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(feature.get('markerfill')), null, true); // update marker properties!!!
                     }
                     if (!mNew || !mNew[4] || !mNew[4]()) {
                         mNew = dataToMarker(null, new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(mrks[+feature.get('n') - 1]), null, true); // update marker properties!!!
@@ -450,7 +453,7 @@ $(document).ready(function ()
                     }
                 };
                 let t10 = null;
-                if (true || !feature.get('markerfill')[4]() || !mrks[+feature.get('n') - 1][4]() /*!udtController.getDtWorld() || !udtController.getDtWorld().length || udtController.getDtWorld().length < 3*/) {
+                if (!feature.get('markerfill')[4]() /*|| !mrks[+feature.get('n') - 1][4]()*/ /*!udtController.getDtWorld() || !udtController.getDtWorld().length || udtController.getDtWorld().length < 3*/) {
                     var p1 = udtController.getMarkerPositionInDtWorld(feature.get('markerfill'));
                     console.log('getMarkerPositionInDtWorld result:', p1, (p1 >= 0) ? udtController.getDtWorld()[p1] : null);
                     udtController.setStateURL(null, true, p1, p1); ///// construct urlto force overload dt for one marker

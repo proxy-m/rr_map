@@ -183,7 +183,7 @@ class UnivDataService {
                 case 7:sv='SE';break;
                 default:sv='SO';
             }
-            if(Number(data[0])>0) {
+            if(Number(data[0])>0 || false) { // TODO
                 
                 n=Number(data[0]);
                 //n=540;
@@ -342,6 +342,14 @@ class UnivDataService {
                 console.log('dt 0 compare (world, legacy, local): ', this.dtWorld[0], this.dtWorldLegacy[0], this.dt[0]);
                 console.log('dt 1 compare (world, legacy, local): ', this.dtWorld[1], this.dtWorldLegacy[1], this.dt[1]);
                 
+                return data;
+            } else {
+                if (!forceFull && alreadyShifted) {
+                    this.dtWorldLegacy = this.getDtWorld();
+                    this.dtWorld = []; ////////////
+                } else if (!this.dtWorldLegacy || this.dtWorldLegacy.length || this.dtWorld.length == this.dt.length || this.dtWorldLegacy.length <= this.dtWorld.length || this.dtWorldLegacy.length <= this.dt.length) {
+                    this.dtWorldLegacy = $.extend(true, [], this.dtWorld);
+                }
                 return data;
             }
         }.bind(this));
@@ -688,7 +696,8 @@ class UnivDataController {
             reg = reg || stateParamsNew.reg; // region
             stateParamsNew.year = yr;
             var forceFull = stateParamsNew.forceFull;
-            var dt = (!!this.udtService.getDtWorld() && !!this.udtService.getDtWorld().length && cntr == 0 && reg == 0) ? this.udtService.getDtWorld() : this.udtService.getDt(); /// NOTE: Do not use this.getDtWorldPart property
+            let dtF = function dtF () { return (!!this.udtService.getDtWorld() && !!this.udtService.getDtWorld().length && !!this.udtService.getDtWorld()[1]) ? this.udtService.getDtWorld() : this.udtService.getDt(); }.bind(this);
+            var dt = dtF(); /// NOTE: Do not use this.getDtWorldPart property
             
             stateParamsNew.subj = subj;
             stateParamsNew.year = yr;
@@ -708,33 +717,33 @@ class UnivDataController {
                         console.log('true 2');
                     }
                     
-                    for (var i=1; i<=dt.length-1; i++) {
-                        if (!dt[i]) {
-                            //console.log('absent dt: ', i);
+                    for (var i=1; i<=dtF().length-1; i++) {
+                        if (!dtF()[i]) {
+                            //console.log('absent dtF(): ', i);
                             continue;
                         }
-						tph = tph + '{ID:'+i+', Name: "' + dt[i]['univ_name'] + ' _' + dt[i]['id_univ'] + '"},';
+						tph = tph + '{ID:'+i+', Name: "' + dtF()[i]['univ_name'] + ' _' + dtF()[i]['id_univ'] + '"},';
 						
                         if ((forceFull && !stateParamsNew.pos) || this.firstLoad) {
-                            this.addSearchIngredient('tphsel', dt, i);
+                            this.addSearchIngredient('tphsel', dtF(), i);
                         }
                         
-                        cordtph[i]=[dt[i]['lat'],dt[i]['lng']];
+                        cordtph[i]=[dtF()[i]['lat'],dtF()[i]['lng']];
                     }
                     
                     tph = tph.replace('undefined', '');
                     
                 var mrks = [];
                 
-                var mrksWorldPart = $.extend(true, [], (dt.length == this.udtService.getDtWorld().length) ? this.getMrksWorld() : this.getMrks()); /// NOTE: Do not use this.getMrksWorldPart property
+                var mrksWorldPart = $.extend(true, [], (dtF().length == this.udtService.getDtWorld().length) ? this.getMrksWorld() : this.getMrks()); /// NOTE: Do not use this.getMrksWorldPart property
                 if (false && !forceFull && !!mrksWorldPart && !!mrksWorldPart.length) {
                     //var dt = this.getDtWorld(); ///
                     mrksWorldPart = mrksWorldPart.map(function (e1, i1) {
-                        for (var t=0; t<dt.length-1; ++t) {
-                            if (!dt[t+1] || !e1) {
+                        for (var t=0; t<dtF().length-1; ++t) {
+                            if (!dtF()[t+1] || !e1) {
                                 continue;
                             }
-                            if (dt[t+1]['univ_name'] === e1[3]['univ_name']) {
+                            if (dtF()[t+1]['univ_name'] === e1[3]['univ_name']) {
                                 return e1;
                             }
                         }
@@ -748,13 +757,13 @@ class UnivDataController {
                     mrksWorldPart = [];
                     mrks = [];
                     
-                    for (var i=0; i<=dt.length-1; ++i) {
-                        if (!dt[i+1]) {
+                    for (var i=0; i<=dtF().length-1; ++i) {
+                        if (!dtF()[i+1]) {
                             continue;
                         }
-                        //konf[i+1]=dt[i+1]['iconurl'];
-                        let title = dt[i+1]['univ_name'];
-                        mrks.push(dataToMarker(null, i+1, title, false));
+                        //konf[i+1]=dtF()[i+1]['iconurl'];
+                        let title = dtF()[i+1]['univ_name'];
+                        mrks.push(dataToMarker(dtF, i+1, title, false));
                     }
                     //console.log('mrks[0][0]: ', mrks[0][0]);
                 }
@@ -1069,7 +1078,7 @@ window.dataToMarker = function dataToMarker (dt0 = null, i1, title, ignoreMissin
         dt = dt0;
     } else if (!dt0 || dt0 == [] || dt0 === true || dt0 === +dt0 || !dt0.length || dt0.length <= 0 || !!dt0.trim) { // empty
         var t = new UnivDataService();
-        dt = () => (!!t.getDtWorld() && !!t.getDtWorld().length) ? t.getDtWorld() : t.getDt(); /// NOTE: Do not use wrong: () => new UnivDataService().getDtWorldPart;
+        dt = () => (!!t.getDtWorld() && !!t.getDtWorld().length && !!t.getDtWorld()[1]) ? t.getDtWorld() : t.getDt(); /// NOTE: Do not use wrong: () => new UnivDataService().getDtWorldPart;
     } else { // data array
         dt = () => dt0;
     }
@@ -1103,7 +1112,7 @@ window._dataToMarkerInner = function _dataToMarkerInner (dt, i1, title, ignoreMi
         titleFull, // 1: title
         dt()[i1]['iconurl'], // 2: icon
         () => dt()[i1], // 3: data
-        () => ('full' === dt()[i1]._mode && !!dt()[i1]) ? dt()[i1]['info'] : '', // 4: info content (optional)
+        () => (!!dt()[i1] && 'full' === dt()[i1]._mode) ? dt()[i1]['info'] : '', // 4: info content (optional)
     ];
 };
 
