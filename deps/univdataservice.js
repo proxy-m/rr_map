@@ -183,9 +183,11 @@ class UnivDataService {
                 case 7:sv='SE';break;
                 default:sv='SO';
             }
-            if(Number(data[0])>0 || false) { // TODO
-                
-                n=Number(data[0]);
+            if (Number(data[0])>0 || (!!data[3] && Array.isArray(data[3]) && !!Object.keys(data[3]).length)) { // TODO: recheck                
+                n = Number(data[0]);
+                if (n <= 0) {
+                    n = Object.keys(data[3]).length;
+                }
                 //n=540;
                 //alert(n);
             
@@ -611,12 +613,25 @@ class UnivDataController {
             
             subj = stateParamsNew.subj; // subject
             yr = stateParamsNew.yr || stateParamsNew.year || yr || this.udtService.year; // year
-            cntr = stateParamsNew.cntr; // country
-            reg = stateParamsNew.reg; // region
+            cntr = stateParamsNew.cntr; // country ///
+            reg = stateParamsNew.reg; // region ///
             this.udtService.year = yr;
             
             url = '/final/getunivdata_gmap23.php?year='+this.udtService.year/*yr*/+'&subj='+subj+'&cntr='+cntr+'&reg='+reg;
         }
+        
+        if (forceFull && !!forceFrom && !!forceTo) {
+            url = url.replaceAll('&cntr=', '&empty1=');
+            url = url.replaceAll('&reg=', '&empty0=');
+            if (url.indexOf('&') >= 0 && url.indexOf('?') >= 0) {
+                url += '&cntr='+0;
+                url += '&reg='+0;
+            } else {
+                url += '?cntr='+0;
+                url += '&reg='+0;
+            }
+        }
+        
         return this.udtService.setStateURL(url, forceFull, forceFrom, forceTo);
     }
     
