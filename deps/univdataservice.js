@@ -801,8 +801,20 @@ class UnivDataController {
         //return res;
     }
     
+    /**
+     * Reinit typeahead map search
+     * full:
+     *   undefined/false - do not full reinit
+     *   true or null - full reinit
+     *   (null here is special variant of true (for empty placeholder))
+     */
     reinitTypeaheadMapSearch (full) {
-        $('#mapsrchvl').attr('placeholder','Enter the name of the university');
+        if (full !== null) {
+            $('#mapsrchvl').attr('placeholder', 'Enter the name of the university');
+        } else {
+            $('#mapsrchvl').attr('placeholder', '');
+            full = true;
+        }
         $('#mapsrchvl').val('');
         try {
             $('#mapsrchvl').typeahead('close');

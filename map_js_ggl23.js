@@ -94,8 +94,7 @@ $(document).ready(function ()
 		subjectview();
 		udtController.countryList();
 		$('.mapinfo').html('<div id="map_div"></div>');
-		$('#mapsrchvl').attr('placeholder','Enter the name of the university');
-      	$('#mapsrchvl').val('');
+		udtController.reinitTypeaheadMapSearch(true);
         
         setTimeout(function () {
             commandVisualize();
@@ -132,16 +131,14 @@ $(document).ready(function ()
 			else{cntr=0;}
 		}
 		$('.mapinfo').html('<div id="map_div"></div><div id="nwmap"></div>');
-		$('#mapsrchvl').attr('placeholder','Enter the name of the university');
-    	$('#mapsrchvl').val('');
+		udtController.reinitTypeaheadMapSearch();
 	}); 
 	$(document).on('change', '.mfilter-region  select', function ()
 	{
 		$('.mapinfo').html('<div id="map_div"></div><div id="nwmap"></div>');
 		//$('.az-sort-by-cntr').html('<option value="0">World</option>');
 		udtController.countryList();
-		$('#mapsrchvl').attr('placeholder','Enter the name of the university');
-      	$('#mapsrchvl').val('');
+        udtController.reinitTypeaheadMapSearch(true);
         
         setTimeout(function () {
             commandVisualize();
@@ -158,13 +155,11 @@ $(document).ready(function ()
 		else{cntr=0;}
 		udtController.countryList();
 		$('.mapinfo').html('<div id="map_div"></div><div id="nwmap"></div>');
-		$('#mapsrchvl').attr('placeholder','Enter the name of the university');
-      	$('#mapsrchvl').val('');
+		udtController.reinitTypeaheadMapSearch(true);
 	});
 	$(document).on('click', '#mapsrchvl', function ()
 	{
-		$('#mapsrchvl').val('');
-		$('#mapsrchvl').attr('placeholder','');
+		udtController.reinitTypeaheadMapSearch(null); // fix bug too
 		//$('.mpsrch').css('display','block');
 	});
 	$(document).on('change', '#mapsrchvl', function ()
@@ -748,7 +743,7 @@ $(document).ready(function ()
 			}
 			else
 			{
-				$('#mapsrchvl').val('');
+				udtController.reinitTypeaheadMapSearch();
 				$('div.sweet-alert.showSweetAlert.visible').css({'margin-top':'-60%','z-index':'99999'});
 				swal('Please enter the name of the university in the search field.');	
 				//initMap();
