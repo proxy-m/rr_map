@@ -1,8 +1,7 @@
 'use strict';
-var dt=new Array; // ? unrequired here
-var tph = '';				//текст массива вузов для typehead
-var tphcord=new Array;	//массив координат поиска
-var tphunnm=new Array;	//массив имен вузов поиска
+//var dt = new Array; // ? unrequired here
+//var tph = '';				//текст массива вузов для typehead
+///var tphcord=new Array;	//массив координат поиска
 var cordtph=new Array;	//массив координат вузов по поиску
 var map=new Object;
 var zummap;
@@ -119,6 +118,14 @@ class UnivDataService {
             }
             allPositions.push(pos2);
         }
+    }
+    
+    getTphunnm () {
+        var tphunnm = []; // массив имен вузов поиска
+        tphunnm = this.getDtWorld().map(function (e, pos) {
+            return (pos >= 1 && !!e) ? e['univ_name'] : undefined;
+        });
+        return tphunnm;
     }
     
     request () {
@@ -525,6 +532,41 @@ class UnivDataController {
         return this.udtService.getDt();
     }
     
+    getMrks3 (pos, city, scale) { // stateless
+        var mrks3;
+        try {
+            if (window.location.hash && window.location.hash.length > 2) {
+                var mrks0 = decodeURIComponent(window.location.hash.substring(1)); /// For test use: window.location = 'https://roundranking.com/world-map_ggl23.html#{"lat": 34.137764,"lng": -118.125258,"z": 15},%231%20California%20Institute%20of%20Technology%20(Caltech),.%2Fimages_rur%2FKonf%2Fworldw.png,%23D6F5FF'
+                window.location.hash = '';
+                var p1 = -1;
+                if (!(mrks0[0] !== '{' || (p1 = mrks0.indexOf('}')) < 0)) {
+                    var mrks1 = JSON.parse(mrks0.substring(0, p1 + 1));
+                    var mrks2 = mrks0.substring(p1 + 1).trim().split(',').filter(function (el) { return !!el && !!(el.trim()) });
+                    mrks3 = [].concat(mrks1, mrks2);
+                    console.log(null, [Object.values(mrks3)]); //
+                    if (mrks3.length === 4 && mrks3[0].lat !== undefined && mrks3[0].lng !== undefined) {
+                        var title = mrks3[1].substring(mrks3[1].indexOf(' ') + 1);
+                        var wrData = getWorldRating(this.getDtWorld(), title, null);
+                        console.log('getDtWorld().length: ', this.getDtWorld().length);
+                        console.log('wrData: ', wrData);
+                        if (mrks3[1] === `#${wrData.label} ${title}`) {
+                            mrks3[3] = () => (this.getDtWorld()[wrData.i] || mrks3[3]);
+                            mrks3[4] = () => (this.getDtWorld()[wrData.i]['info'] || mrks3[4]);
+                            mrks3[2] = this.getDtWorld()[wrData.i]['iconurl'] || mrks3[2];
+                            pos = [mrks3[0].lng, mrks3[0].lat]; //
+                            city = ol.proj.fromLonLat(pos); //
+                            scale = +(mrks3[0].z); //
+                        }
+                    }
+                }
+            }
+        } catch (e56345r3442) {
+            window.location.hash = '';
+            console.warn('[WARN] Hash parse error', e56345r3442);
+        }
+        return [[mrks3], pos, city, scale]; // returned other mrks3, already wraped!
+    }
+    
     clearSearchIngredients (tphselId) {
         $('#'+tphselId).html('');
     }
@@ -686,7 +728,7 @@ class UnivDataController {
                 
                 var mrksWorldPart = $.extend(true, [], (dt.length == this.udtService.getDtWorld().length) ? this.getMrksWorld() : this.getMrks()); /// NOTE: Do not use this.getMrksWorldPart property
                 if (false && !forceFull && !!mrksWorldPart && !!mrksWorldPart.length) {
-                    //dt = this.getDtWorld(); ///
+                    //var dt = this.getDtWorld(); ///
                     mrksWorldPart = mrksWorldPart.map(function (e1, i1) {
                         for (var t=0; t<dt.length-1; ++t) {
                             if (!dt[t+1] || !e1) {

@@ -526,8 +526,8 @@ $(document).ready(function ()
 			//alert(ur);
           	
 			udtController.getPromise().then(function success (data) {
-		  	 	dt = udtController.getDt();
-                tph = udtController.getTphWorld();
+		  	 	var dt = udtController.getDt();
+                ///tph = udtController.getTphWorld();
                 mrks = udtController.getMrks();
                 
                 /// state of four variables may be missed if they are not defined global (big refactoring to this context)
@@ -537,39 +537,12 @@ $(document).ready(function ()
                 if (window.mappanel && window.mappanel.map && window.mappanel.map.setView && window.ol && ol.View) {
                     let pos = [coord.lng, coord.lat]; /// JSON.parse('['+record.data['cord']+']');
                     let city = ol.proj.fromLonLat(pos);
-                    var mrks3 = [];
+                    var mrks3 = []; // move []; to [][]
                     
                     if (!forceFull) {
-                        try {
-                            if (window.location.hash && window.location.hash.length > 2) {
-                                var mrks0 = decodeURIComponent(window.location.hash.substring(1)); /// For test use: window.location = 'https://roundranking.com/world-map_ggl23.html#{"lat": 34.137764,"lng": -118.125258,"z": 15},%231%20California%20Institute%20of%20Technology%20(Caltech),.%2Fimages_rur%2FKonf%2Fworldw.png,%23D6F5FF'
-                                window.location.hash = '';
-                                var p1 = -1;
-                                if (!(mrks0[0] !== '{' || (p1 = mrks0.indexOf('}')) < 0)) {
-                                    var mrks1 = JSON.parse(mrks0.substring(0, p1 + 1));
-                                    var mrks2 = mrks0.substring(p1 + 1).trim().split(',').filter(function (el) { return !!el && !!(el.trim()) });
-                                    mrks3 = [].concat(mrks1, mrks2);
-                                    console.log(null, [Object.values(mrks3)]); //
-                                    if (mrks3.length === 4 && mrks3[0].lat !== undefined && mrks3[0].lng !== undefined) {
-                                        var title = mrks3[1].substring(mrks3[1].indexOf(' ') + 1);
-                                        var wrData = getWorldRating(dt, title, null);
-                                        console.log('dt.length: ', dt.length);
-                                        console.log('wrData: ', wrData);
-                                        if (mrks3[1] === `#${wrData.label} ${title}`) {
-                                            mrks3[3] = () => (dt[wrData.i] || mrks3[3]);
-                                            mrks3[4] = () => (dt[wrData.i]['info'] || mrks3[4]);
-                                            mrks3[2] = dt[wrData.i]['iconurl'] || mrks3[2];
-                                            pos = [mrks3[0].lng, mrks3[0].lat]; //
-                                            city = ol.proj.fromLonLat(pos); //
-                                            scale = +(mrks3[0].z); //
-                                            addMarkers([], false);
-                                        }
-                                    }
-                                }
-                            }
-                        } catch (e56345r3442) {
-                            window.location.hash = '';
-                            console.warn('[WARN] Hash parse error', e56345r3442);
+                        [mrks3, pos, city, scale] = udtController.getMrks3(pos, city, scale);
+                        if (!!mrks3 && !!mrks3.length && !!mrks3[0] && !!mrks3[0].length) {
+                            addMarkers([], false);
                         }
                     }
                     
@@ -592,9 +565,9 @@ $(document).ready(function ()
                         }));
                     }   
                     addMarkers(mrks);
-                    if (!!mrks3 && mrks3.length > 0) {
+                    if (!!mrks3 && !!mrks3.length && !!mrks3[0] && !!mrks3[0].length) {
                         console.log('mrks3: ', mrks3);
-                        addMarkers([mrks3], true); // TODO: after add recheck twice: z scale
+                        addMarkers(mrks3, true); // TODO: after add recheck twice: z scale
                     }
                     
                     return; /// !!!   
@@ -664,7 +637,7 @@ $(document).ready(function ()
 		}
 		else
 		{
-			dt = $.extend([], udtController.getDtWorld() || []); /////
+			var dt = $.extend([], udtController.getDtWorld() || []); /////
 			var lt=Number(cordtph[$('#tphsel').val()][0]);
 			var lg=Number(cordtph[$('#tphsel').val()][1]);
 			zummap=Number(8);
