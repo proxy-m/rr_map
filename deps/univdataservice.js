@@ -779,8 +779,10 @@ class UnivDataController {
                         //console.log('tphsel: ', $('#tphsel').html());
                         console.log('tph: ', tph); //
                         this.tphWorld = tph;
+                        $('#mapsrchvl').typeahead('close');
                         $('#mapsrchvl').typeahead('destroy');
-                        var tphtxt='$("#mapsrchvl").typeahead({autoSelect:false,source: ['+tph+'],displayField: "Name",valueField: "ID",limit:"20", afterSelect: function (item) { console.log("after selected: ", item); setTimeout(function () { $(\'input[type="button"]#mapsrchbtn,input[type="submit"]#mapsrchbtn\')[0].focus(); }, 100); return item; }, });';
+                        $('.typeahead:not(#mapsrchvl)').remove(); // fix bug
+                        var tphtxt='$("#mapsrchvl").typeahead({autoSelect:false,source: ['+this.getTphWorld()+'],displayField: "Name",valueField: "ID",limit:"20", afterSelect: function (item) { console.log("after selected: ", item); setTimeout(function () { $(\'input[type="button"]#mapsrchbtn,input[type="submit"]#mapsrchbtn\')[0].focus(); }, 100); return item; }, });';
                         eval(tphtxt);
                         console.log('true 4');
                     }
