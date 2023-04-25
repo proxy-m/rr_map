@@ -327,7 +327,7 @@ class UnivDataService {
                 //}
                 
                 //dtTmp = [];
-                console.log('this.dt: ', this.dt);
+                //console.log('this.dt: ', this.dt);
                 
                 console.log('dt length compare (world, legacy, local): ', this.dtWorld.length, this.dtWorldLegacy.length, this.dt.length);
                 console.log('dt 0 compare (world, legacy, local): ', this.dtWorld[0], this.dtWorldLegacy[0], this.dt[0]);
@@ -652,19 +652,21 @@ class UnivDataController {
             stateParamsNew.cntr = cntr;
             
             /////////////////////////////////////
-            if (forceFull && !stateParamsNew.pos) {
-                this.dtWorld = dt;
-                this.firstLoad = false;
+            if ((forceFull && !stateParamsNew.pos) || this.firstLoad) {
+                cordtph = [];
+                console.log('true 1');
             }
             var tph;
                tph = '';
                     
-                    if (forceFull && !stateParamsNew.pos) {
+                    if ((forceFull && !stateParamsNew.pos) || this.firstLoad) {
                         this.clearSearchIngredients('tphsel');
+                        console.log('true 2');
                     }
                     
                     for (var i=1; i<=dt.length-1; i++) {
                         if (!dt[i]) {
+                            //console.log('absent dt: ', i);
                             continue;
                         }
 						tph = tph + '{ID:'+i+', Name: "' + dt[i]['univ_name'] + ' _' + dt[i]['id_univ'] + '"},';
@@ -770,17 +772,22 @@ class UnivDataController {
 					}
                     
                 
-                if (!stateParamsNew.pos && (forceFull || !this.mrksWorld || !this.mrksWorld.length || !this.tphWorld || tph.length > this.tphWorld.length)) {
-                    this.tphWorld = tph;
+                if (!stateParamsNew.pos && (forceFull || !this.mrksWorld || !this.mrksWorld.length || !this.tphWorld || tph.length >= this.tphWorld.length)) {
+                    console.log('true 3: ', $('#tphsel option').length === tph.split('},').length - 1, !this.mrksWorld || !this.mrksWorld.length);
+                    if (!!tph && $('#tphsel option').length === tph.split('},').length - 1 && (!this.mrksWorld || !this.mrksWorld.length || (this.mrksWorld.length === $('#tphsel option').length)) && (!this.tphWorld || tph.length >= this.tphWorld.length)) {
+                        //alert(tph);
+                        //console.log('tphsel: ', $('#tphsel').html());
+                        console.log('tph: ', tph); //
+                        this.tphWorld = tph;
+                        $('#mapsrchvl').typeahead('destroy');
+                        var tphtxt='$("#mapsrchvl").typeahead({autoSelect:false,source: ['+tph+'],displayField: "Name",valueField: "ID",limit:"20", afterSelect: function (item) { console.log("after selected: ", item); setTimeout(function () { $(\'input[type="button"]#mapsrchbtn,input[type="submit"]#mapsrchbtn\')[0].focus(); }, 100); return item; }, });';
+                        eval(tphtxt);
+                        console.log('true 4');
+                    }
                     if (forceFull) {
                         this.mrksWorld = this.mrks;
+                        console.log('true 5');
                     }
-                    //alert(tph);
-                    //console.log('tphsel: ', $('#tphsel').html());
-                    console.log('tph: ', tph); //
-                    $('#mapsrchvl').typeahead('destroy');
-					var tphtxt='$("#mapsrchvl").typeahead({autoSelect:false,source: ['+tph+'],displayField: "Name",valueField: "ID",limit:"20", afterSelect: function (item) { console.log("after selected: ", item); setTimeout(function () { $(\'input[type="button"]#mapsrchbtn,input[type="submit"]#mapsrchbtn\')[0].focus(); }, 100); return item; }, });';
-					eval(tphtxt);
                 }
                 this.firstLoad = false; 
             /////////////////////////////////////
