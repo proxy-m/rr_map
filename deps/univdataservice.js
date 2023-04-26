@@ -278,7 +278,9 @@ class UnivDataService {
                     if (!!this.getDtWorld()[i-posOffset1] && this.getDtWorld()[i-posOffset1]['univ_name'] == dt[i-posOffset1]['univ_name']) {
                         if (!!dt[i-posOffset1]['info'] || !!forceFull) {
                             this.getDtWorld()[i-posOffset1]['info'] = dt[i-posOffset1]['info'];
-                            this.getDtWorld()[i-posOffset1]._mode = 'full';
+                            if (forceFull && dt[i-posOffset1]['info'] && dt[i-posOffset1]['univ_name'] && dt[i-posOffset1]['O_WR'] && dt[i-posOffset1]['O_Color1'] && 'head' != stateParamsNew.mode) {
+                                this.getDtWorld()[i-posOffset1]._mode = 'full';
+                            }
                         }
                     } else {
                         if (!!this.getDtWorld()[i-posOffset1]) {
