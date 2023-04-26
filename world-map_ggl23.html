@@ -370,7 +370,7 @@ ul.typeahead.dropdown-menu > * {
  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3873449273766352"
      crossorigin="anonymous"></script-->
 	</head>
-	<body style="width: 100%;">
+	<body style="width: 100vw;">
 	<div id="wrapper-parent" class="container-fluid">
 	<div id="wrapper" style="margin-left: 0; overflow: visible; width: 98%; max-width: inherit; margin-left: 0; overflow: visible;"><!-- or position:static instead of overflow:visible -->
 	<header id="header">
@@ -536,30 +536,31 @@ ul.typeahead.dropdown-menu > * {
 	</script-->
 	</header>
 	<section id="main" style="max-width: 1050px;">
-		<div class="item-page" itemscope itemtype="https://schema.org/Article">
+    <div class="item-page mcontainer row" itemscope itemtype="https://schema.org/Article">
 		<meta itemprop="inLanguage" content="en-GB" />
-		<div class="page-header"><h2 itemprop="headline">RUR World Map</h2></div>
-
-	<style>
-	body{
-	font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
-	font-size: 16px;
-	line-height: 1.5625;
-	color: #494343;}
-	/*p{text-align: justify;} NO!!!*/
-	</style>
-	<div itemprop="articleBody">
+		<div class="col-md-12" class="page-header">
+            <h2 itemprop="headline">RUR World Map</h2>
+        </div>
+        <style>
+            body{
+                font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+                font-size: 16px;
+                line-height: 1.5625;
+                color: #494343;}
+                /*p{text-align: justify;} NO!!!*/
+        </style>
+        <div class="col-md-12" itemprop="articleBody">
 	
 <p style="font-family: Open Sans,Helvetica Neue,Helvetica,Arial,sans-serif;
 font-size: 16px;
 line-height: 1.5625;
-color: #494343;">RUR World Map shows the geographical location of universities included in the ranking, their distribution by countries and continents. You can also see world map by different subject areas, countries and geographical regions.<br> To view institutional profile, please click on university symbol on a map. For more detailed data about the university, click "View Full University Profile" in the right corner of the small profile located at the bottom right.</p>
-		<br/>
-	</div>	
-	<div class="mcontainer">
-	<div class="mfilter-item mfilter-year" style="display: block;position: relative;width: 5em;float: left;">
-		<label>Years</label>
-		<select name="myears" id="myears" class="select-item form-control">
+color: #494343;">RUR World Map shows the geographical location of universities included in the ranking, their distribution by countries and continents. You can also see world map by different subject areas, countries and geographical regions.<br> To view institutional profile, please click on university symbol on a map. For more detailed data about the university, click "View Full University Profile" in the right corner of the small profile located at the bottom right.</p><br/>
+        </div>
+        
+        <!--<div class="mcontainer">-->
+        <div class="col-md-4 mfilter-item mfilter-year" style="display: block; position: relative; width-min: 5em; float: left;">
+            <label>Years</label>
+            <select name="myears" id="myears" class="select-item form-control">
 							<option value="1">2010</option>
 							<option value="2">2011</option>
 							<option value="3">2012</option>
@@ -573,48 +574,50 @@ color: #494343;">RUR World Map shows the geographical location of universities i
 							<option value="11">2020</option>
 							<option value="12">2021</option>
 							<option value="13" selected="selected">2022</option>
-						</select>
-		<button type="button" class="mfilter-select-arrow">
-			<img src="images_rur/Konf/down-arrow.svg" alt="filter arrow">
-		</button>
-	</div>
-	<div style="text-align: right">
-		<button class="btn btn-default active az-btn" id="mctrvz">Visualize</button>
-	</div>					
-	<div class="mfilter-wrapper">
-		<div class="mfilter-item mfilter-subject">
-			<label>Subject</label>
-			<select name="Subject" class="maz-select maz-sort-by-s form-control">
-								<option value="1">All Sciences</option>
-								<option value="2">Humanities</option>
-								<option value="3">Life Sciences</option>
-								<option value="4">Medical Sciences</option>
-								<option value="5">Natural Sciencest</option>
-								<option value="6">Social Sciences</option>
-								<option value="7">Technical Sciences</option>
-							</select>
-		</div>			
-		<div class="mfilter-item mfilter-region">
-			<label>Region</label>
-			<select name="Region" class="maz-select maz-sort-by-r form-control">
-				<option value="0">Word</option>
-				<option value="1">Africa</option>
-				<option value="2">Asia</option>
-				<option value="3">Europe</option>
-				<option value="4">Latin America</option>
-				<option value="5">North America</option>
-				<option value="6">Oceania</option>
 			</select>
-		</div>		
-		<div class="mfilter-item mfilter-country">
-			<label>Country</label>
-			<select name="Country" class="maz-select maz-sort-by-r form-control">
-				
-			</select>
-		</div>			
-	</div>			
-
-					<div class="htinfo" style="display: none;">
+            <button type="button" class="mfilter-select-arrow">
+			<!--<img src="images_rur/Konf/down-arrow.svg" alt="filter arrow">-->
+            </button>
+        </div>
+        <div class="col-md-6">&nbsp;</div>
+        <div class="col-md-2" style="text-align: right">
+            <button class="btn btn-default active az-btn" id="mctrvz">Visualize</button>
+        </div>
+        			
+        <div class="col-md-12 mfilter-wrapper" style="padding: 0;">
+            <div class="col-md-4 mfilter-item mfilter-subject">
+                <label>Subject</label>
+                <select name="Subject" class="maz-select maz-sort-by-s form-control">
+                                    <option value="1">All Sciences</option>
+                                    <option value="2">Humanities</option>
+                                    <option value="3">Life Sciences</option>
+                                    <option value="4">Medical Sciences</option>
+                                    <option value="5">Natural Sciencest</option>
+                                    <option value="6">Social Sciences</option>
+                                    <option value="7">Technical Sciences</option>
+                </select>
+            </div>			
+            <div class="col-md-4 mfilter-item mfilter-region">
+                <label>Region</label>
+                <select name="Region" class="maz-select maz-sort-by-r form-control">
+                    <option value="0">Word</option>
+                    <option value="1">Africa</option>
+                    <option value="2">Asia</option>
+                    <option value="3">Europe</option>
+                    <option value="4">Latin America</option>
+                    <option value="5">North America</option>
+                    <option value="6">Oceania</option>
+                </select>
+            </div>		
+            <div class="col-md-4 mfilter-item mfilter-country">
+                <label>Country</label>
+                <select name="Country" class="maz-select maz-sort-by-r form-control">
+                    
+                </select>
+            </div>			
+        </div>
+        
+        <div class="col-md-12 htinfo" style="display: none;">
 						<div id="heatmap" style="position: relative;display: block;border: 1px solid #aae4fd;"></div>
 						<div class="tbl-box" style="height:450px;display: none;">
 							<table class="tbl-heatmap scroll" style="width:104%;">
@@ -630,31 +633,34 @@ color: #494343;">RUR World Map shows the geographical location of universities i
 								</tbody>
 							</table>
 						</div>
-					</div>
-</div>
+		</div>
+<!--</div>-->
 
-<div class="mpsrch row">
-		<div class="tphinp col-md-5">
-			<input type="text" class="typeahead form-control" style="font-family: opensans_nonumbers !important;" id="mapsrchvl"  autocomplete="off" placeholder="Enter the name of the university"/>
-		</div>
-		<div class="col-md-2">
-			<input type="submit" class="form-control" id="mapsrchbtn" value="Search" disabled="true"/>
+        <!--<div class="mpsrch row">-->
+        <div class="col-md-4 tphinp">
+            <input type="text" class="typeahead form-control" style="font-family: opensans_nonumbers !important;" id="mapsrchvl"  autocomplete="off" placeholder="Enter the name of the university"/>
+            <select id="tphsel" class="form-control" style="font-family: opensans_nonumbers !important; display: none;"></select>
+        </div>
+        <div class="col-md-6">
+            <input class="form-control" type="submit" id="mapsrchbtn" value="Search" disabled="true"/>
+        </div>
+        <div class="col-md-2">
             <input type="button" class="form-control" id="closeallinfocards" value="Close all infocards"/ onclick="window.windowDock.closeAll();">
-		</div>
-		<select id="tphsel" class="form-control" style="font-family: opensans_nonumbers !important; display: none;"></select>
+        </div>
 		
-	</div>
+        <!--</div>-->
 
 <!--<div class="mapinfo">
 			<div id="map_div"></div>
 			<div id="nwmap"></div> 
 </div>-->
-<div id="perfectmapinfo" class="perfectmapinfo row">
-			<div id="perfectmap_div" style="display: inline-block; float: left; min-width: 95%;"></div>
-            <div id="info_windows" style="display: inline-block; float: left; min-width: 0;"></div> 
-            <div id="perfectnwmap"></div> 
+    <div class="col-md-12 perfectmapinfo" id="perfectmapinfo" style="padding: 0;">
+			<div class="col-md-10" id="perfectmap_div"></div> <!--style="display: inline-block; float: left; min-width: 95%;"></div>-->
+            <div class="col-md-2" id="info_windows">&nbsp;</div> <!--style="display: inline-block; float: left; min-width: 0;"></div>-->
+            <div class="col-md-12" id="perfectnwmap">
+    </div> 
 <br/>	
-	<div class="map-legendbox row" style="display: block; float: left;">
+	<div class="col-md-12 map-legendbox row" style="display: block; float: left;">
 		<div class="col-md-4 col-sm-6 diamond"><img src="images_rur/Konf/diamondw.png" alt="Diamond League" />Diamond League (Rank 1-100)</div>
 		<div class="col-md-4 col-sm-6 golden"><img src="images_rur/Konf/goldw.png" alt="Golden League" />Golden League (Rank 101-200)</div>
 		<div class="col-md-4 col-sm-6 silver"><img src="images_rur/Konf/silverw.png" alt="Silver League" />Silver League (Rank 201-300)</div>
