@@ -764,7 +764,7 @@ class UnivDataController {
                 var mrks = [];
                 
                 var mrksWorldPart = $.extend(true, [], (dt.length == this.udtService.getDtWorld().length) ? this.getMrksWorld() : this.getMrks()); /// NOTE: Do not use this.getMrksWorldPart property
-                if (false && !forceFull && !!mrksWorldPart && !!mrksWorldPart.length) { ///
+                if (!forceFull && !!mrksWorldPart && !!mrksWorldPart.length) { /// TODO: recheck
                     //var dt = this.getDtWorld(); ///
                     mrksWorldPart = mrksWorldPart.map(function (e1, i1) {
                         for (var t=0; t<dt.length-1; ++t) {
@@ -794,7 +794,11 @@ class UnivDataController {
                         if (false && this.udtService.fastSearch[title] && this.udtService.getDtWorld()[this.udtService.fastSearch[title]] == title) {
                             mrks.push(dataToMarker(this.udtService.getDtWorld(), this.udtService.fastSearch[title], title, false));
                         } else {
-                            mrks.push(dataToMarker(dt, i+1, title, false));
+                            var mOld = dataToMarker(dt, i+1, title, false);
+                            var marker = mOld; ///dataToMarker(this.udtService.getDtWorld(), this.getMarkerPositionInDtWorld(mOld), title, false);
+                            //console.log('marker: ', marker);
+                            mrks.push(marker);
+                            
                             ///console.warn('Created marker may be buggy, because can not access fastSearch on getDtWorld()', mrks[mrks.length-1]);
                         }
                     }
