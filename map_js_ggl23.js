@@ -250,20 +250,24 @@ $(document).ready(function ()
         }
         
         try {
-            document.getElementById('popup').outerHTML = '';
+            document.getElementById('popup0').outerHTML = '';
         } catch (e456343456) {
+        }
+        try {
+            document.getElementById('popup').outerHTML = '';
+        } catch (e456343457) {
         }
         
         container = document.createElement('div');
-        container.setAttribute('id', 'popup');
+        container.setAttribute('id', 'popup0');
         container.title = '';
-        container.innerHTML = `<a href="#" id="popup-closer" class="ol-popup-closer"></a><div id="popup-content" style="background-color: white;"></div>`;
+        container.innerHTML = `<a href="#" id="popup-closer0" class="ol-popup-closer"></a><div id="popup-content0" style="background-color: white;"></div>`;
         container.class='ol-popup';
         document.body.appendChild(container);
         
         // Popup showing the position the user clicked
-        var container = document.getElementById('popup');
-        var popup = new ol.Overlay({
+        var container = document.getElementById('popup0');
+        var popup0 = new ol.Overlay({
             element: container,
             offset: [15, 20],
             positioning: 'top-left', 
@@ -272,7 +276,15 @@ $(document).ready(function ()
             //    duration: 250
             //}
         });
-        window.mappanel.map.addOverlay(popup);
+        window.mappanel.map.addOverlay(popup0);
+        
+        
+        container = document.createElement('div');
+        container.setAttribute('id', 'popup');
+        container.title = '';
+        container.innerHTML = `<div id="popup-content"></div>`;
+        container.class='info-window';
+        document.body.appendChild(container);
         
         console.log(mrks.length);
         
@@ -345,22 +357,22 @@ $(document).ready(function ()
 
             if (feature && feature.get('type') == 'Point' && (!wasClickedTrigger || (feature.get('n') != lastMissed && (lastMissed = feature.get('n')) != wasClickedTrigger && (++missedCount) >= 2))) {
                 var coordinate = evt.coordinate;    //default projection is EPSG:3857 you may want to use ol.proj.transform
-                content = document.getElementById('popup-content'); ///
+                content = document.getElementById('popup-content0'); ///
                 content.innerHTML = feature.get('desc');
-                popup.title = feature.get('name');
+                popup0.title = feature.get('name');
                 wasClickedTrigger = 0;
                 missedCount = 0;
                 lastMissed = 0;
-                popup.setPosition(coordinate);
+                popup0.setPosition(coordinate);
             } else {
                 if (!wasClickedTrigger) {
-                    popup.setPosition(undefined);
+                    popup0.setPosition(undefined);
                 }
             }
         });
         
         window.mappanel.map.on('click', function (evt) {
-            popup.setPosition(undefined);
+            popup0.setPosition(undefined);
             var feature = window.mappanel.map.forEachFeatureAtPixel(evt.pixel, function (feat, layer) {
                 return feat;
             });
@@ -381,7 +393,7 @@ $(document).ready(function ()
                     wasClickedTrigger = 0;
                     window.lastWindowCoord = '[0,0]'; // TODO: reset coords within on close dialog window
                 }, 500); // We assume that user must not search same object or same action faster then 0.5 s.
-                popup.setPosition(coordinate);
+                popup0.setPosition(coordinate);
                 
                 if (windowCoord == window.lastWindowCoord) {
                     return;
@@ -392,7 +404,7 @@ $(document).ready(function ()
                 
                 window.needClickOnFirst = false;
                 
-                popup.title = feature.get('name');
+                popup0.title = feature.get('name'); // why here?
                 wasClickedTrigger = feature.get('n');
                 missedCount = 1;
                 lastMissed = wasClickedTrigger;
@@ -417,18 +429,21 @@ $(document).ready(function ()
                     }
                     if (!mNew || !mNew[4] || !mNew[4]()) {
                         mNew = dataToMarker(null, new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(feature.get('markerfill')), null, true); // update marker properties!!!
-                    }                
+                    }   
+                    
+                    ///$(document.body).append(feature.get('markerfill')[4]());             
                     
                     //mrks[+feature.get('n') - 1] = mNew; 
                     content = document.getElementById('popup-content'); ///
                     content.innerHTML = mNew[4](); // instead old: content.innerHTML = feature.get('info')(); // TODO: fix it
+                    $(content).children().css('background-color', 'white');
                     console.log('Inch Diag: ', getInchDiag());
                     if (!window.isMobile()) { // infowindow only for desktop                        
                         // Info: new Ext.window.Window({}) is actually same as Ext.create('Ext.window.Window', {});
                         window.windowDock = window.windowDock || new DockInfoWindow('info_windows', Ext.window.Window); ///
                         window.windowDock.add({
                             layout: 'fit',
-                            html: $('#popup').html(), ///$(content).html(),
+                            html: $(content).html(), /// $('#popup').html(),
                             renderTo: 'perfectmap_div', ///'wrapper-parent',
 //                            listeners: {
 //                                afterrender: closeTooltip
@@ -437,7 +452,7 @@ $(document).ready(function ()
                             resizable: false, //resizeHandles: 'w e',
                             buttons: [],
                         });
-                        popup.setPosition(undefined);
+                        popup0.setPosition(undefined);
                         setTimeout(function () {
                             $('.x-window-header, .x-window-tc, .x-window-tr, .x-window-tl, .x-window-ml, .x-window-mr, .x-window-bc, .x-window-br, .x-window-bl').css('background-color', 'white');
                         }, 20);
@@ -453,7 +468,7 @@ $(document).ready(function ()
                     }
                 };
                 let t10 = null;
-                if (!feature.get('markerfill')[4]() /*|| !mrks[+feature.get('n') - 1][4]()*/ /*!udtController.getDtWorld() || !udtController.getDtWorld().length || udtController.getDtWorld().length < 3*/) {
+                if (true || !feature.get('markerfill')[4]() /*|| !mrks[+feature.get('n') - 1][4]()*/ /*!udtController.getDtWorld() || !udtController.getDtWorld().length || udtController.getDtWorld().length < 3*/) {
                     var p1 = udtController.getMarkerPositionInDtWorld(feature.get('markerfill'));
                     console.log('getMarkerPositionInDtWorld result:', p1, (p1 >= 0) ? udtController.getDtWorld()[p1] : null);
                     udtController.setStateURL(null, true, p1, p1); ///// construct urlto force overload dt for one marker
@@ -489,7 +504,7 @@ $(document).ready(function ()
             } else {
                 if (!wasClickedTrigger) {
                     wasClickedTrigger = 0;
-                    popup.setPosition(undefined);
+                    popup0.setPosition(undefined);
                 }
             }
         
@@ -535,7 +550,7 @@ $(document).ready(function ()
                 
                 /// state of four variables may be missed if they are not defined global (big refactoring to this context)
                 
-                if (dt.length > 0) { ///Number(data[0])>0) {
+                if (dt.length > 1) { ///Number(data[0])>0) {
                 //////////////////////////
                 if (window.mappanel && window.mappanel.map && window.mappanel.map.setView && window.ol && ol.View) {
                     let pos = [coord.lng, coord.lat]; /// JSON.parse('['+record.data['cord']+']');

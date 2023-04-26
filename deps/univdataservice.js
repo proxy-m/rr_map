@@ -198,11 +198,8 @@ class UnivDataService {
                 case 7:sv='SE';break;
                 default:sv='SO';
             }
-            if (Number(data[0])>0 || (!!data[3] && Array.isArray(data[3]) && !!Object.keys(data[3]).length)) { // TODO: recheck                
+            if (Number(data[0]) > 0) { // TODO: recheck                
                 n = Number(data[0]);
-                if (n <= 0) {
-                    n = Object.keys(data[3]).length;
-                }
                 //n=540;
                 //alert(n);
             
@@ -367,6 +364,7 @@ class UnivDataService {
                 } else if (!this.dtWorldLegacy || this.dtWorldLegacy.length || this.dtWorld.length == this.dt.length || this.dtWorldLegacy.length <= this.dtWorld.length || this.dtWorldLegacy.length <= this.dt.length) {
                     this.dtWorldLegacy = $.extend(true, [], this.dtWorld);
                 }
+                this.dt = [];
                 return data;
             }
         }.bind(this));
