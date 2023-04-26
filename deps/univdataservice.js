@@ -71,6 +71,8 @@ class UnivDataService {
             this.url += '&pos=' + (forceFrom - 1) + '_' + (forceTo - forceFrom + 1);
         }
         this.stateParamsNew = urlToParams(this.url);
+        
+        
         if ((!!this.stateParamsNew.yr && this.year != +this.stateParamsNew.yr) || this.year != +this.stateParamsNew.year) {
             ///this.dtWorld = []; // better to change after request finished
             ///this.tphWorld = '';
@@ -92,7 +94,15 @@ class UnivDataService {
     }
     
     getDt () {
-        return this.dt;
+///        return this.dt;
+        var dt = this.dt; // but do not touch this.dt
+        dt = dt.filter(function (e, i) {
+            return (!!e) ? e : null;
+        });
+        if (!!dt[0]) { // BUG 1.5 !!! this.dt is broken, when it starts from 0 instead 1
+            dt.unshift(undefined);  delete dt[0];
+        }
+        return dt;        
     }
     
     updateFastSearch () {
@@ -138,8 +148,13 @@ class UnivDataService {
         
         subj = stateParamsNew.subj; // subject
         yr = stateParamsNew.yr || stateParamsNew.year || yr || this.year; // year
-        cntr = stateParamsNew.cntr; // country
-        reg = stateParamsNew.reg; // region
+        if (!!stateParamsNew.pos) {
+            stateParamsNew.cntr = cntr || 0;
+            stateParamsNew.reg = reg || 0;
+        } else {
+            cntr = stateParamsNew.cntr; // country
+            reg = stateParamsNew.reg; // region
+        }
         this.year = yr;
         
         if (this.year != this.yearLegacy) {
@@ -711,8 +726,8 @@ class UnivDataController {
             reg = reg || stateParamsNew.reg; // region
             stateParamsNew.year = yr;
             var forceFull = stateParamsNew.forceFull;
-            let dtF = function dtF () { return (!!this.udtService.getDtWorld() && !!this.udtService.getDtWorld().length && !!this.udtService.getDtWorld()[1]) ? this.udtService.getDtWorld() : this.udtService.getDt(); }.bind(this);
-            var dt = dtF(); /// NOTE: Do not use this.getDtWorldPart property
+            var dt = this.udtService.getDtWorld(); /// this.udtService.getDt(); ///   ///((!this.udtService.getDtWorld() || !this.udtService.getDtWorld().length || this.udtService.getDtWorld().length>=2) && (!(cntr == 0 && reg == 0) && !!this.udtService.getDt() && !!this.udtService.getDt().length && this.udtService.getDt().length>=2)) ? this.udtService.getDt() : this.udtService.getDtWorld(); /// NOTE: Do not use this.getDtWorldPart property
+            ///this.udtService.updateFastSearch(); ///
             
             stateParamsNew.subj = subj;
             stateParamsNew.year = yr;
@@ -732,33 +747,33 @@ class UnivDataController {
                         console.log('true 2');
                     }
                     
-                    for (var i=1; i<=dtF().length-1; i++) {
-                        if (!dtF()[i]) {
-                            //console.log('absent dtF(): ', i);
+                    for (var i=1; i<=dt.length-1; i++) {
+                        if (!dt[i]) {
+                            //console.log('absent dt: ', i);
                             continue;
                         }
-						tph = tph + '{ID:'+i+', Name: "' + dtF()[i]['univ_name'] + ' _' + dtF()[i]['id_univ'] + '"},';
+						tph = tph + '{ID:'+i+', Name: "' + dt[i]['univ_name'] + ' _' + dt[i]['id_univ'] + '"},';
 						
                         if ((forceFull && !stateParamsNew.pos) || this.firstLoad) {
-                            this.addSearchIngredient('tphsel', dtF(), i);
+                            this.addSearchIngredient('tphsel', dt, i);
                         }
                         
-                        cordtph[i]=[dtF()[i]['lat'],dtF()[i]['lng']];
+                        cordtph[i]=[dt[i]['lat'],dt[i]['lng']];
                     }
                     
                     tph = tph.replace('undefined', '');
                     
                 var mrks = [];
                 
-                var mrksWorldPart = $.extend(true, [], (dtF().length == this.udtService.getDtWorld().length) ? this.getMrksWorld() : this.getMrks()); /// NOTE: Do not use this.getMrksWorldPart property
+                var mrksWorldPart = $.extend(true, [], (dt.length == this.udtService.getDtWorld().length) ? this.getMrksWorld() : this.getMrks()); /// NOTE: Do not use this.getMrksWorldPart property
                 if (false && !forceFull && !!mrksWorldPart && !!mrksWorldPart.length) {
                     //var dt = this.getDtWorld(); ///
                     mrksWorldPart = mrksWorldPart.map(function (e1, i1) {
-                        for (var t=0; t<dtF().length-1; ++t) {
-                            if (!dtF()[t+1] || !e1) {
+                        for (var t=0; t<dt.length-1; ++t) {
+                            if (!dt[t+1] || !e1) {
                                 continue;
                             }
-                            if (dtF()[t+1]['univ_name'] === e1[3]['univ_name']) {
+                            if (dt[t+1]['univ_name'] === e1[3]['univ_name']) {
                                 return e1;
                             }
                         }
@@ -772,13 +787,18 @@ class UnivDataController {
                     mrksWorldPart = [];
                     mrks = [];
                     
-                    for (var i=0; i<=dtF().length-1; ++i) {
-                        if (!dtF()[i+1]) {
+                    for (var i=0; i<=dt.length-1; ++i) {
+                        if (!dt[i+1]) {
                             continue;
                         }
-                        //konf[i+1]=dtF()[i+1]['iconurl'];
-                        let title = dtF()[i+1]['univ_name'];
-                        mrks.push(dataToMarker(dtF, i+1, title, false));
+                        //konf[i+1]=dt[i+1]['iconurl'];
+                        let title = dt[i+1]['univ_name'];
+                        if (false && this.udtService.fastSearch[title] && this.udtService.getDtWorld()[this.udtService.fastSearch[title]] == title) {
+                            mrks.push(dataToMarker(this.udtService.getDtWorld(), this.udtService.fastSearch[title], title, false));
+                        } else {
+                            mrks.push(dataToMarker(dt, i+1, title, false));
+                            ///console.warn('Created marker may be buggy, because can not access fastSearch on getDtWorld()', mrks[mrks.length-1]);
+                        }
                     }
                     //console.log('mrks[0][0]: ', mrks[0][0]);
                 }
