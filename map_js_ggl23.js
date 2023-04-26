@@ -412,7 +412,7 @@ $(document).ready(function ()
                 let displayDockInfoWindow = function displayDockInfoWindow () {
                     var mNew = null;
                     
-                    if (feature.get('markerfill')) {
+                    if (!!(mNew = feature.get('markerfill')) && (!mNew[4] || !mNew[4])) {
                         mNew = dataToMarker(new UnivDataService().getDtWorld(), new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(feature.get('markerfill')), null, true); // update marker properties!!!
                     }
                     if (feature.get('markerfill') && (!mNew || !mNew[4] || !mNew[4]())) {
@@ -431,18 +431,21 @@ $(document).ready(function ()
                         mNew = dataToMarker(null, new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(feature.get('markerfill')), null, true); // update marker properties!!!
                     }   
                     
-                    ///$(document.body).append(feature.get('markerfill')[4]());             
-                    
-                    //mrks[+feature.get('n') - 1] = mNew; 
                     content = document.getElementById('popup-content'); ///
                     
-                    if (!mNew || !mNew[4] || !mNew[4]()) {
+                    if (false && (!mNew || !mNew[4] || !mNew[4]())) {
                         content.innerHTML = dataToMarker(new UnivDataService().getDtWorld(), new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(feature.get('markerfill')), null, true)[3]().info;
                     } else {
-                        content.innerHTML = mNew[4](); // instead old: content.innerHTML = feature.get('info')(); // TODO: fix it
+                        content.innerHTML = mNew[4]();
+                        if (!!mNew[4]()) {
+                            feature.set('markerfill', mNew, true); // silent update old marker data
+                        } else {
+                            console.error('Wrong markerfill data', mNew);
+                        }
                     }
                     
                     $(content).children().css('background-color', 'white');
+                    $(content).parent().css({"display": 'none'}); // output it for debug only
                     console.log('Inch Diag: ', getInchDiag());
                     if (!window.isMobile()) { // infowindow only for desktop                        
                         // Info: new Ext.window.Window({}) is actually same as Ext.create('Ext.window.Window', {});
@@ -474,7 +477,7 @@ $(document).ready(function ()
                     }
                 };
                 let t10 = null;
-                if (true || !feature.get('markerfill')[4]() /*|| !mrks[+feature.get('n') - 1][4]()*/ /*!udtController.getDtWorld() || !udtController.getDtWorld().length || udtController.getDtWorld().length < 3*/) {
+                if (!feature.get('markerfill')[4]() /*|| !mrks[+feature.get('n') - 1][4]()*/ /*!udtController.getDtWorld() || !udtController.getDtWorld().length || udtController.getDtWorld().length < 3*/) {
                     var p1 = udtController.getMarkerPositionInDtWorld(feature.get('markerfill'));
                     console.log('getMarkerPositionInDtWorld result:', p1, (p1 >= 0) ? udtController.getDtWorld()[p1] : null);
                     udtController.setStateURL(null, true, p1, p1); ///// construct urlto force overload dt for one marker
