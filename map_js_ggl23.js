@@ -435,7 +435,13 @@ $(document).ready(function ()
                     
                     //mrks[+feature.get('n') - 1] = mNew; 
                     content = document.getElementById('popup-content'); ///
-                    content.innerHTML = mNew[4](); // instead old: content.innerHTML = feature.get('info')(); // TODO: fix it
+                    
+                    if (!mNew || !mNew[4] || !mNew[4]()) {
+                        content.innerHTML = dataToMarker(new UnivDataService().getDtWorld(), new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(feature.get('markerfill')), null, true)[3]().info;
+                    } else {
+                        content.innerHTML = mNew[4](); // instead old: content.innerHTML = feature.get('info')(); // TODO: fix it
+                    }
+                    
                     $(content).children().css('background-color', 'white');
                     console.log('Inch Diag: ', getInchDiag());
                     if (!window.isMobile()) { // infowindow only for desktop                        
