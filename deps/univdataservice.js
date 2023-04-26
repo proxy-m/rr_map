@@ -1,5 +1,5 @@
 'use strict';
-//var dt = new Array; // ? unrequired here
+//var dt = new Array; // unrequired here
 //var tph = '';				//текст массива вузов для typehead
 ///var tphcord=new Array;	//массив координат поиска
 var cordtph=new Array;	//массив координат вузов по поиску
@@ -164,6 +164,7 @@ class UnivDataService {
                 if (window.windowDock) { // windowDock appears only after first created infowindow
                     window.windowDock.closeAll();
                 }
+                new UnivDataController(this).resetInputExceptYear();
             } catch (e534234532) {
                 console.error(e534234532);
             }
@@ -525,6 +526,16 @@ class UnivDataController {
 //        });
     }
     
+    resetInputExceptYear () {
+        subj = 1; //this.subject = 1;
+        cntr = 0; //this.country = 0;
+        reg = 0; //this.region = 0;
+        
+        $('.mfilter-subject select option:selected').val(subj);
+        $('.mfilter-country select option:selected').val(cntr);
+        $('.mfilter-region select option:selected').val(reg);
+    }
+    
     clearMarkerLayers () {
         mappanel.map.getLayers().getArray().map((e, i) => {if (i>0) mappanel.map.getLayers().getArray().splice(1) }); // rest only first layer
     }
@@ -659,13 +670,7 @@ class UnivDataController {
         $.extend(this, state); //this = $.extend(this, state);
         
         if (!this.udtService.forceFull && window.location.hash && window.location.hash.length > 2) {
-            subj = 1; //this.subject = 1;
-            cntr = 0; //this.country = 0;
-            reg = 0; //this.region = 0;
-            
-            $('.mfilter-subject select option:selected').val(subj);
-            $('.mfilter-country select option:selected').val(cntr);
-            $('.mfilter-region select option:selected').val(reg);
+            this.resetInputExceptYear();
         }
         //subj = this.subject;
         //cntr = this.country;
