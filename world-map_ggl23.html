@@ -10,6 +10,8 @@
 	<title>WORLD MAP</title>
 	<link href="./templates/rur/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
 	<link href="./templates/rur/css/bootstrap.min.css?v=2019101808" rel="stylesheet" type="text/css" />
+    <!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">-->
+
 	<link href="./templates/rur/css/all.css?v=2019101808" rel="stylesheet" type="text/css" />
 	<!--<link href="templates/rur/css/heatmap.css?v=2019101808" rel="stylesheet" type="text/css" />-->
 	<link href="./templates/rur/css/owl.carousel.css?v=2019101808" rel="stylesheet" type="text/css" />
@@ -365,12 +367,12 @@ ul.typeahead.dropdown-menu > * {
 </style>
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="format-detection" content="telephone=no">
-	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
+	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0">
 	<!--<script>$.gmap3({key: 'AIzaSyD7fU9MnAARspyROArfcaxENAgguWvDQHg'});</script>>
  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3873449273766352"
      crossorigin="anonymous"></script-->
 	</head>
-	<body style="width: 100vw;">
+	<body style="width: 98%; overflow-x: hidden;">
 	<div id="wrapper-parent" class="container-fluid">
 	<div id="wrapper" style="margin-left: 0; overflow: visible; width: 98%; max-width: inherit; margin-left: 0; overflow: visible;"><!-- or position:static instead of overflow:visible -->
 	<header id="header">
@@ -535,8 +537,8 @@ ul.typeahead.dropdown-menu > * {
 	     (adsbygoogle = window.adsbygoogle || []).push({});
 	</script-->
 	</header>
-	<section id="main" style="max-width: 1050px;">
-    <div class="item-page mcontainer row" itemscope itemtype="https://schema.org/Article">
+	<section id="main" style="min-width: 320px; max-width: 1050px; width: calc(100vw - 35%)">
+    <div class="item-page mcontainer row" style="" itemscope itemtype="https://schema.org/Article">
 		<meta itemprop="inLanguage" content="en-GB" />
 		<div class="col-md-12" class="page-header">
             <h2 itemprop="headline">RUR World Map</h2>
@@ -641,10 +643,10 @@ color: #494343;">RUR World Map shows the geographical location of universities i
             <input type="text" class="typeahead form-control" style="font-family: opensans_nonumbers !important;" id="mapsrchvl"  autocomplete="off" placeholder="Enter the name of the university"/>
             <select id="tphsel" class="form-control" style="font-family: opensans_nonumbers !important; display: none;"></select>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
             <input class="form-control" type="submit" id="mapsrchbtn" value="Search" disabled="true"/>
         </div>
-        <div class="col-md-2">
+        <div class="col-md-4">
             <input type="button" class="form-control" id="closeallinfocards" value="Close all infocards"/ onclick="window.windowDock.closeAll();">
         </div>
 		
@@ -654,9 +656,9 @@ color: #494343;">RUR World Map shows the geographical location of universities i
 			<div id="map_div"></div>
 			<div id="nwmap"></div> 
 </div>-->
-    <div class="col-md-12 perfectmapinfo" id="perfectmapinfo" style="padding: 0;">
-			<div class="col-md-10" id="perfectmap_div"></div> <!--style="display: inline-block; float: left; min-width: 95%;"></div>-->
-            <div class="col-md-2" id="info_windows">&nbsp;</div> <!--style="display: inline-block; float: left; min-width: 0;"></div>-->
+    <div class="col-md-12 perfectmapinfo" id="perfectmapinfo" style="position: static !important; padding: 0;">
+			<div class="col-md-8" id="perfectmap_div" style="position: static !important;"></div> <!--style="display: inline-block; float: left; min-width: 95%;"></div>-->
+            <div class="col-md-4" id="info_windows" style="display: inline-block; float: left; position: static !important; overflow: visible; min-width: 0;">&nbsp;</div>
             <div class="col-md-12" id="perfectnwmap">
     </div> 
 <br/>	
