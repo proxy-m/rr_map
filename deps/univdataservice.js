@@ -724,7 +724,7 @@ class UnivDataController {
             reg = reg || stateParamsNew.reg; // region
             stateParamsNew.year = yr;
             var forceFull = stateParamsNew.forceFull;
-            var dt = this.udtService.getDtWorld(); /// this.udtService.getDt(); ///   ///((!this.udtService.getDtWorld() || !this.udtService.getDtWorld().length || this.udtService.getDtWorld().length>=2) && (!(cntr == 0 && reg == 0) && !!this.udtService.getDt() && !!this.udtService.getDt().length && this.udtService.getDt().length>=2)) ? this.udtService.getDt() : this.udtService.getDtWorld(); /// NOTE: Do not use this.getDtWorldPart property
+            let dt = this.udtService.getDt(); /// this.udtService.getDt(); ///   ///((!this.udtService.getDtWorld() || !this.udtService.getDtWorld().length || this.udtService.getDtWorld().length>=2) && (!(cntr == 0 && reg == 0) && !!this.udtService.getDt() && !!this.udtService.getDt().length && this.udtService.getDt().length>=2)) ? this.udtService.getDt() : this.udtService.getDtWorld(); /// NOTE: Do not use this.getDtWorldPart property
             ///this.udtService.updateFastSearch(); ///
             
             stateParamsNew.subj = subj;
@@ -764,7 +764,7 @@ class UnivDataController {
                 var mrks = [];
                 
                 var mrksWorldPart = $.extend(true, [], (dt.length == this.udtService.getDtWorld().length) ? this.getMrksWorld() : this.getMrks()); /// NOTE: Do not use this.getMrksWorldPart property
-                if (false && !forceFull && !!mrksWorldPart && !!mrksWorldPart.length) {
+                if (false && !forceFull && !!mrksWorldPart && !!mrksWorldPart.length) { ///
                     //var dt = this.getDtWorld(); ///
                     mrksWorldPart = mrksWorldPart.map(function (e1, i1) {
                         for (var t=0; t<dt.length-1; ++t) {
