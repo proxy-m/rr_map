@@ -240,7 +240,7 @@ $(document).ready(function ()
             udtController.clearMarkerLayers();
         } else {
             console.log(true, mrks.length, [Object.values(mrks[0])]); //
-            window.needClickOnFirst = true;
+            window.needClickOnFirst = !window.isMobile();
         }
         //console.log('markers: ', mrks); ///
         //console.log(mrks[0]);  
