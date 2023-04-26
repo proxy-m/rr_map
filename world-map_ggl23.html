@@ -353,7 +353,7 @@ ul.typeahead.dropdown-menu > * {
 	
 	#blbtnvz{position:relative;display:block; margin-left: 4.2em}
 	@media screen and (max-width: 980px) {
-	#mapsrchvl{margin-left: -6.6em;width: 50%;}#mapsrchbtn{right: -21em;width: 10%;top:-2.4em;}
+	#mapsrchbtn{right: -21em;width: 10%;top:-2.4em;}
 	.fltr{left:0em;width:100%;position: relative;}#ctrvz{margin-left:-3.5em;}#map{width: 80%;left:0.6em;top:-2.2em;}}
 	.emptmap{position: relative;display: block;width: 100%;height: 40em;}
 	@media screen and (max-width: 950px){#map{left:0em;}}
@@ -577,9 +577,7 @@ color: #494343;">RUR World Map shows the geographical location of universities i
 							<option value="12">2021</option>
 							<option value="13" selected="selected">2022</option>
 			</select>
-            <button type="button" class="mfilter-select-arrow">
-			<!--<img src="images_rur/Konf/down-arrow.svg" alt="filter arrow">-->
-            </button>
+            <button type="button" class="mfilter-select-arrow"><!--<img src="images_rur/Konf/down-arrow.svg" alt="filter arrow">--></button>
         </div>
         <div class="col-md-6">&nbsp;</div>
         <div class="col-md-2" style="text-align: right">
@@ -639,14 +637,14 @@ color: #494343;">RUR World Map shows the geographical location of universities i
 <!--</div>-->
 
         <!--<div class="mpsrch row">-->
-        <div class="col-md-4 tphinp">
+        <div class="col-md-4 col-sm-6 tphinp">
             <input type="text" class="typeahead form-control" style="font-family: opensans_nonumbers !important;" id="mapsrchvl"  autocomplete="off" placeholder="Enter the name of the university"/>
             <select id="tphsel" class="form-control" style="font-family: opensans_nonumbers !important; display: none;"></select>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4 col-sm-3">
             <input class="form-control" type="submit" id="mapsrchbtn" value="Search" disabled="true"/>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4 col-sm-3">
             <input type="button" class="form-control" id="closeallinfocards" value="Close all infocards"/ onclick="window.windowDock.closeAll();">
         </div>
 		
@@ -657,9 +655,9 @@ color: #494343;">RUR World Map shows the geographical location of universities i
 			<div id="nwmap"></div> 
 </div>-->
     <div class="col-md-12 perfectmapinfo" id="perfectmapinfo" style="position: static !important; padding: 0;">
-			<div class="col-md-8" id="perfectmap_div" style="position: static !important;"></div> <!--style="display: inline-block; float: left; min-width: 95%;"></div>-->
-            <div class="col-md-4" id="info_windows" style="display: inline-block; float: left; position: static !important; overflow: visible; min-width: 0;">&nbsp;</div>
-            <div class="col-md-12" id="perfectnwmap">
+			<div class="col-md-8 col-sm-10" id="perfectmap_div" style="position: static !important;"></div> <!--style="display: inline-block; float: left; min-width: 95%;"></div>-->
+            <div class="col-md-4 col-sm-2" id="info_windows" style="display: inline-block; float: left; position: static !important; overflow: visible; min-width: 0;">&nbsp;</div>
+            <div class="col-md-12 col-sm-12" id="perfectnwmap">
     </div> 
 <br/>	
 	<div class="col-md-12 map-legendbox row" style="display: block; float: left;">
