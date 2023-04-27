@@ -122,6 +122,9 @@ var DockInfoWindow = (function () {
                 var posBegin = w.getPosition() || [0, 0];
                 animateByJS(document.getElementById(w.id), (function (e, k, rest) {
                     var w = this.getInfoWindow(e);
+                    if (!w) {
+                        return;
+                    }
                     var processMovementOld = w.processMovement;
                     if (w.processMovement) {
                         w.processMovement = false;
@@ -145,7 +148,7 @@ var DockInfoWindow = (function () {
                 if (idOrElOrW.length > 0) {
                     idOrElOrW = document.getElementById(idOrElOrW);
                 }
-                if (!idOrElOrW.id) {
+                if (!idOrElOrW || !idOrElOrW.id) {
                     return NaN;
                 }
                 for (var i = 0; i < this.windows.length; ++i) {
@@ -173,6 +176,39 @@ var DockInfoWindow = (function () {
                 }
             }
         },
+        closeAll: {
+            value: function closeAll() {
+                var allWindows = [].concat(this.windows, this.windowsOut);
+                var _iteratorNormalCompletion = true;
+                var _didIteratorError = false;
+                var _iteratorError = undefined;
+
+                try {
+                    for (var _iterator = allWindows[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                        var w = _step.value;
+
+                        w.close();
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator["return"]) {
+                            _iterator["return"]();
+                        }
+                    } finally {
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+
+                this.windowsOut = [];
+                this.windows = [];
+                this.refresh(false);
+            }
+        },
         add: {
 
             /**
@@ -182,7 +218,7 @@ var DockInfoWindow = (function () {
             value: function add(params) {
                 var w = null;
                 try {
-                    this.windows.unshift(w = new this.Window($.extend(true, {
+                    w = new this.Window($.extend(true, {
                         processMovement: false,
                         listeners: {
                             move: (function (theWin, x, y, op) {
@@ -229,9 +265,16 @@ var DockInfoWindow = (function () {
                                     throw new Error("Unknown refresh click: " + panel.id);
                                 }
                             }).bind(this) }]
-                    }))); // TODO identifying to disable duplicates
+                    })); // TODO identifying to disable duplicates
+
+                    if (!this.isOpenedAlready(w)) {
+                        this.windows.unshift(w);
+                        w.show();
+                    } else {
+                        w = null;
+                    }
                 } catch (e) {
-                    console.debug("wrong params: ", params);
+                    console.debug("wrong params: ", params, e);
                     params = null;
                 }
                 if (!params) {
@@ -244,8 +287,45 @@ var DockInfoWindow = (function () {
 
                 return w;
             }
+        },
+        isOpenedAlready: {
+            value: function isOpenedAlready(otherW) {
+                // it is dependant of InfoWindow style formatting
+                if (!this.windows.length && !this.windowsOut.length) {
+                    return false;
+                }
+                var allWindows = [].concat(this.windows, this.windowsOut);
+                var _iteratorNormalCompletion = true;
+                var _didIteratorError = false;
+                var _iteratorError = undefined;
 
-            // TODO
+                try {
+                    for (var _iterator = allWindows[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                        var w = _step.value;
+
+                        if (w === otherW || w.getEl().dom == otherW.getEl().dom || $(w.getEl().dom).find("strong").html() == $(otherW.getEl().dom).find("strong").html() && $(w.getEl().dom).find("a:contains(View full university profile)")[0].href.split("year=")[0] == $(otherW.getEl().dom).find("a:contains(View full university profile)")[0].href.split("year=")[0]) {
+                            return true;
+                        }
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator["return"]) {
+                            _iterator["return"]();
+                        }
+                    } finally {
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+
+                return false;
+            }
+
+            // TODO: getter ??
 
         }
     });

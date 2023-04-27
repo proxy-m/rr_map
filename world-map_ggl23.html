@@ -263,10 +263,10 @@ ul.typeahead.dropdown-menu > * {
             requireJS2H("./templates/rur/js/bootstrap-typeahead.js?k=" + rndStr());
 
             try {
-                requireJS2H("./deps/dockinfowindow.js?k=" + rndStr());
+                requireJS2H("./deps/dockinfowindow.js?k=" + rndStr()); ///
             } catch (e567345334) {
                 console.log('failed: ', 'dockinfowindow.js');
-                ///requireJS2H("./deps/dockinfowindow_old.es5.js?k=" + rndStr()); ///
+                requireJS2H("./deps/dockinfowindow_old.es5.js?k=" + rndStr());
             }
             
             requireJS2H("/deps/univdataservice.js" + "?k=" + rndStr());
