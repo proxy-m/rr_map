@@ -537,7 +537,7 @@ ul.typeahead.dropdown-menu > * {
 	     (adsbygoogle = window.adsbygoogle || []).push({});
 	</script-->
 	</header>
-	<section id="main" style="min-width: 320px; max-width: calc(1050px * 1.5); width: calc(100vw - 35%)">
+	<section id="main" style="margin-left: 12px; min-width: 320px; max-width: 640px;">
     <div class="item-page mcontainer row" style="" itemscope itemtype="https://schema.org/Article">
 		<meta itemprop="inLanguage" content="en-GB" />
 		<div class="col-md-12" class="page-header">
@@ -560,7 +560,7 @@ color: #494343;">RUR World Map shows the geographical location of universities i
         </div>
         
         <!--<div class="mcontainer">-->
-        <div class="col-md-4 mfilter-item mfilter-year" style="display: block; position: relative; width-min: 5em; float: left;">
+        <div class="col-md-4 mfilter-item mfilter-year" style="display: block; position: relative; width: 6em; float: left;">
             <label>Years</label>
             <select name="myears" id="myears" class="select-item form-control">
 							<option value="1">2010</option>
@@ -577,14 +577,14 @@ color: #494343;">RUR World Map shows the geographical location of universities i
 							<option value="12">2021</option>
 							<option value="13" selected="selected">2022</option>
 			</select>
-            <button type="button" class="mfilter-select-arrow"><!--<img src="images_rur/Konf/down-arrow.svg" alt="filter arrow">--></button>
+            <!--<button type="button" class="mfilter-select-arrow"><img src="images_rur/Konf/down-arrow.svg" alt="filter arrow"></button>-->
         </div>
         <div class="col-md-6">&nbsp;</div>
-        <div class="col-md-2" style="text-align: right">
-            <button class="btn btn-default active az-btn" id="mctrvz">Visualize</button>
+        <div class="col-md-4" style="float:right; text-align: right; padding: 0;">
+            <button class="btn btn-default active az-btn" style="" id="mctrvz">Visualize</button>
         </div>
         			
-        <div class="col-md-12 mfilter-wrapper" style="padding: 0;">
+        <div class="col-md-12 mfilter-wrapper" style="padding: 0; padding-top: 10px; padding-bottom: 10px;">
             <div class="col-md-4 mfilter-item mfilter-subject">
                 <label>Subject</label>
                 <select name="Subject" class="maz-select maz-sort-by-s form-control">
@@ -637,18 +637,22 @@ color: #494343;">RUR World Map shows the geographical location of universities i
 <!--</div>-->
 
         <!--<div class="mpsrch row">-->
-        <div class="col-md-4 col-sm-6 tphinp">
-            <input type="text" class="typeahead form-control" style="font-family: opensans_nonumbers !important;" id="mapsrchvl"  autocomplete="off" placeholder="Enter the name of the university"/>
-            <select id="tphsel" class="form-control" style="font-family: opensans_nonumbers !important; display: none;"></select>
-        </div>
-        <div class="col-md-4 col-sm-3">
-            <input class="form-control" type="submit" id="mapsrchbtn" value="Search" disabled="true"/>
-        </div>
-        <div class="col-md-4 col-sm-3">
-            <input type="button" class="form-control" id="closeallinfocards" value="Close all infocards"/ onclick="window.windowDock.closeAll();">
+        <div class="col-md-12 mfilter-wrapper" style="padding: 0; padding-top: 10px; padding-bottom: 10px;">
+            <div class="col-md-4 col-sm-6 tphinp">
+                <input type="text" class="typeahead form-control" style="font-family: opensans_nonumbers !important;" id="mapsrchvl"  autocomplete="off" placeholder="Enter the name of the university"/>
+                <select id="tphsel" class="form-control" style="font-family: opensans_nonumbers !important; display: none;"></select>
+            </div>
+            <div class="col-md-4 col-sm-3">
+                <input class="form-control" type="submit" id="mapsrchbtn" value="Search" disabled="true"/>
+            </div>
+            <div class="col-md-4 col-sm-3">
+                <input type="button" class="form-control" id="closeallinfocards" value="Close all infocards"/ onclick="window.windowDock.closeAll();">
+            </div>
         </div>
 		
         <!--</div>-->
+        </section>
+        <section id="map-square" style="min-width: 300px; min-width: calc(min(1050px, max(320px, 60vw), calc(100vw - 40%))); max-width: 2000px; max-width: calc(min(calc(1050px * 1.8), calc(100vw - 15%)))">
 
 <!--<div class="mapinfo">
 			<div id="map_div"></div>
@@ -671,7 +675,7 @@ color: #494343;">RUR World Map shows the geographical location of universities i
     
 </div>
 <br/>
-	<!--/section-->
+	</section>
 
 	</div>
 	<div style="position: reltive; display:block; width: 100&;height: 1em;"></div>
