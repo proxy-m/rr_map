@@ -569,12 +569,12 @@ $(document).ready(function ()
                     }
                     
                     /// yr+'&subj='+subj+'&cntr='+cntr+'&reg='+reg
-                    if (subj == 1 && cntr == 0 && reg == 0) { // default full world
-                        if (!udtController.getDtWorld() || !udtController.getMrksWorld() || udtController.getDtWorld().length < dt.length || !udtController.getMrksWorld().length) {
+                    if (cntr == 0 && (reg != 0 || subj != 1)) { // default full
+                        if (true || !udtController.getDtWorld() || !udtController.getMrksWorld() || udtController.getDtWorld().length < dt.length || !udtController.getMrksWorld().length) {
                             if (!forceFull) {
                                 setTimeout(function () {
-                                    ///initMap(true); /////
-                                    ///console.warn('[OK] was full reload');
+                                    initMap(true); /////
+                                    console.warn('[OK] was full reload');
                                 }, 500);
                             }
                         }

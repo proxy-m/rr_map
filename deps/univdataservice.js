@@ -689,7 +689,7 @@ class UnivDataController {
         yr = yr || this.udtService.year;
         this.udtService.year = yr;
         
-        if (this.udtService.forceFull && !(subj == 1 && cntr == 0 && reg == 0)) {
+        if (this.udtService.forceFull && reg == 0) {
             this.udtService.forceFull = false;
             this.code = 0;
             //return;
@@ -745,7 +745,7 @@ class UnivDataController {
             reg = reg || stateParamsNew.reg; // region
             stateParamsNew.year = yr;
             var forceFull = stateParamsNew.forceFull;
-            let dt = this.udtService.getDt(); /// this.udtService.getDt(); ///   ///((!this.udtService.getDtWorld() || !this.udtService.getDtWorld().length || this.udtService.getDtWorld().length>=2) && (!(cntr == 0 && reg == 0) && !!this.udtService.getDt() && !!this.udtService.getDt().length && this.udtService.getDt().length>=2)) ? this.udtService.getDt() : this.udtService.getDtWorld(); /// NOTE: Do not use this.getDtWorldPart property
+            let dt = (this.udtService.getDt().length > 2) ? this.udtService.getDt() : this.udtService.getDtWorld(); /// NOTE: Do not use this.getDtWorldPart property
             ///this.udtService.updateFastSearch(); ///
             
             stateParamsNew.subj = subj;
