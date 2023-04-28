@@ -440,7 +440,8 @@ $(document).ready(function ()
                         if (!!mNew[4]()) {
                             feature.set('markerfill', mNew, true); // silent update old marker data
                         } else {
-                            console.error('Wrong markerfill data', mNew);
+                            console.error('Wrong markerfill data (not full)', mNew);
+                            content.innerHTML = mNew[3]().info || ('Info window data is not loaded for <strong>' + feature.get('desc') + '</strong> ' + '<a href="#' + feature.get('desc') + '">View full university profile</a>');
                         }
                     }
                     

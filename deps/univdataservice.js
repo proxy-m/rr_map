@@ -250,6 +250,15 @@ class UnivDataService {
                         }
                         if (i1 < 0) { // NEW i1: 3
                             console.error('[ERR] Can not shift position!', i1, i, posOffset, dt[i]);
+                            
+                            if (!forceFull && alreadyShifted) {
+                                this.dtWorldLegacy = this.getDtWorld();
+                                this.dtWorld = []; ////////////
+                            } else if (!this.dtWorldLegacy || this.dtWorldLegacy.length || this.dtWorld.length == this.dt.length || this.dtWorldLegacy.length <= this.dtWorld.length || this.dtWorldLegacy.length <= this.dt.length) {
+                                this.dtWorldLegacy = $.extend(true, [], this.dtWorld);
+                            }
+                            this.dt = [];
+                            
                             return null;
                         }
                         posOffset1 = i - i1; // i = i1 + posOffset1 !!! new posOffset !!!
@@ -685,7 +694,7 @@ class UnivDataController {
             this.code = 0;
             //return;
         } else if (cntr > 0) {
-            this.udtService.forceFull = true; ///
+            ///this.udtService.forceFull = true; ///
         }
         
         code = this.code;
