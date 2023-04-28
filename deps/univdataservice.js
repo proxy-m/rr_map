@@ -592,25 +592,40 @@ class UnivDataController {
                     var mrks2 = mrks0.substring(p1 + 1).trim().split(',').filter(function (el) { return !!el && !!(el.trim()) });
                     mrks3 = [].concat(mrks1, mrks2);
                     console.log(null, [Object.values(mrks3)]); //
+                    console.log(mrks3.length);
                     if (mrks3.length === 4 && mrks3[0].lat !== undefined && mrks3[0].lng !== undefined) {
                         var title = mrks3[1].substring(mrks3[1].indexOf(' ') + 1);
                         var wrData = getWorldRating(this.getDtWorld(), title, null);
-                        console.log('getDtWorld().length: ', this.getDtWorld().length);
+                        if (!wrData) {
+                            wrData = {};
+                            wrData.title = title;
+                            wrData.i = 1;
+                            wrData.label = '5';
+                        }
                         console.log('wrData: ', wrData);
-                        if (mrks3[1] === `#${wrData.label} ${title}`) {
-                            mrks3[3] = () => (this.getDtWorld()[wrData.i] || mrks3[3]);
-                            mrks3[4] = () => (this.getDtWorld()[wrData.i]['info'] || mrks3[4]);
+                        console.log(mrks3.length);
+                        if (!!mrks3[1] && !!mrks3[1].indexOf && mrks3[1].indexOf(title) >= 0) {
+                            mrks3[3] = () => ({"univ_name": title,});
+                            mrks3[4] = () => ('');
+                            mrks3[1] = '#' + wrData.label + ' - ' + title;
                             mrks3[2] = this.getDtWorld()[wrData.i]['iconurl'] || mrks3[2];
                             pos = [mrks3[0].lng, mrks3[0].lat]; //
                             city = ol.proj.fromLonLat(pos); //
                             scale = +(mrks3[0].z); //
+                            console.log(mrks3.length);
+                            console.log(mrks3);
+                        } else {
+                            mrks3 = [];
                         }
+                    } else {
+                        mrks3 = [];
                     }
                 }
             }
         } catch (e56345r3442) {
             window.location.hash = '';
             console.warn('[WARN] Hash parse error', e56345r3442);
+            mrks3 = [];
         }
         return [[mrks3], pos, city, scale]; // returned other mrks3, already wraped!
     }
@@ -967,6 +982,7 @@ class UnivDataController {
             if (!marker.trim().length) {
                 return null;
             }
+            marker = simplifyName(marker);
             marker = [
                 {lat: 0, lng: 0},
                 '' + marker.trim(),
@@ -976,8 +992,11 @@ class UnivDataController {
             ];
             if (searchType == 3) {
                 return -1;
+            } else if (searchType == 1) {
+                searchType = 0;
             }
         }
+        ///marker = $.extend(true, [], marker);
         
         curP = this.getDtWorld().length;
         while ((--curP) >= 0) {
@@ -989,6 +1008,8 @@ class UnivDataController {
             if (!curM || !Array.isArray(curM) || (Array.isArray(curM) && !curM.length)) {
                 continue;
             }
+            curM[1] = simplifyName(curM[1]);
+            marker[1] = simplifyName(marker[1]);
             var was = false;
             if (searchType < 3) { // firstly search by title
                 if (curM[1] !== marker[1]) {

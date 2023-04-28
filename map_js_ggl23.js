@@ -431,9 +431,6 @@ $(document).ready(function ()
                         if (mNew && simplifyName(mNew[1]) === simplifyName(feature.get('markerfill')[1])) {
 //                            alert(8);
                         } else {
-                            if (mNew) {
-//                                alert(mNew[1] + ' -- ' + feature.get('markerfill')[1]);
-                            }
                             mNew = null;
                         }
                     }
@@ -443,9 +440,6 @@ $(document).ready(function ()
                         if (mNew && simplifyName(mNew[1]) === simplifyName(feature.get('markerfill')[1])) {
 //                            alert(7);
                         } else {
-                            if (mNew) {
-//                                alert(mNew[1] + ' -- ' + feature.get('markerfill')[1]);
-                            }
                             mNew = null;
                         }
                     }
@@ -459,23 +453,7 @@ $(document).ready(function ()
                         }
                     }
                     
-//                    if (feature.get('markerfill') && (!mNew || !mNew[4] || !mNew[4]())) {
-//                        for (let y=1; y<new UnivDataController(new UnivDataService()).getDtWorld().length; ++y) {
-//                            mNew = dataToMarker(new UnivDataController(new UnivDataService()).getDtWorld(), y, null, true);
-//                            if (mNew && simplifyName(mNew[1]) === simplifyName(feature.get('markerfill')[1])) {
-//                                break;
-//                            }
-//                        }
-//                        if (mNew && simplifyName(mNew[1]) === simplifyName(feature.get('markerfill')[1])) {
-//                            alert(5);
-//                        } else {
-//                            mNew = null;
-//                        }
-//                    }
-                    
                     content = document.getElementById('popup-content'); ///
-                    
-                    //alert(feature.get('markerfill')[1]);
                     
                     if (false && (!mNew || !mNew[4] || !mNew[4]())) {
                         content.innerHTML = dataToMarker(new UnivDataService().getDtWorld(), new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(feature.get('markerfill')), null, true)[3]().info;
