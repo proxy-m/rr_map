@@ -424,33 +424,10 @@ $(document).ready(function ()
                 lastMissed = wasClickedTrigger;
                 
                 let displayDockInfoWindow = function displayDockInfoWindow () {
-                    var mNew = feature.get('markerfill');
+                    var mNew = null;                    
                     
-                    /*if (!mNew || !mNew[4] || !mNew[4]()) { // for statrup click
-                        mNew = [];
-                        mNew[1] = feature.get('markerfill');
-                        mNew = dataToMarker(mNew, 1, feature.get('markerfill')[1], true); // update marker properties!!!
-                        console.log('statrup click!!!!!!!!!!!!!!!!', feature.get('markerfill'));
-                        if (mNew && mNew[1] === feature.get('markerfill')[1]) {
-                            alert(1);
-                            feature.set('markerfill', mNew, true); // silent update old marker data: 1
-                        } else {
-                            mNew = null;
-                        }
-                    }*/
-/*                    if (feature.get('markerfill') && (!mNew || !mNew[4] || !mNew[4]())) {
-                        mNew = dataToMarker(new UnivDataService().getDtWorld(), new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(feature.get('markerfill')[1].split(' - ')[1]), null, true); // update marker properties!!!                        
-                        if (mNew && simplifyName(mNew[1]) === simplifyName(feature.get('markerfill')[1])) {
-//                            alert(9);
-                        } else {
-                            if (mNew) {
-//                                alert(mNew[1] + ' -- ' + feature.get('markerfill')[1]);
-                            }
-                            mNew = null;
-                        }
-                    }*/
                     if (feature.get('markerfill') && (!mNew || !mNew[4] || !mNew[4]())) {
-                        mNew = dataToMarker(new UnivDataService().getDt(), new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(feature.get('markerfill')), null, true); // update marker properties!!!                        
+                        mNew = dataToMarker(new UnivDataService().getDtWorld(), new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(feature.get('markerfill')), null, true); // update marker properties!!!
                         if (mNew && simplifyName(mNew[1]) === simplifyName(feature.get('markerfill')[1])) {
 //                            alert(8);
                         } else {
@@ -460,8 +437,9 @@ $(document).ready(function ()
                             mNew = null;
                         }
                     }
-                    /*if (feature.get('markerfill') && (!mNew || !mNew[4] || !mNew[4]())) {
-                        mNew = dataToMarker(new UnivDataService().getDtWorld(), new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(feature.get('markerfill')), null, true); // update marker properties!!!
+                    
+                    if (feature.get('markerfill') && (!mNew || !mNew[4] || !mNew[4]())) {
+                        mNew = dataToMarker(new UnivDataService().getDt(), new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(feature.get('markerfill')), null, true); // update marker properties!!!                        
                         if (mNew && simplifyName(mNew[1]) === simplifyName(feature.get('markerfill')[1])) {
 //                            alert(7);
                         } else {
@@ -470,15 +448,16 @@ $(document).ready(function ()
                             }
                             mNew = null;
                         }
-                    }*/
-                    /*if (feature.get('markerfill') && (!mNew || !mNew[4] || !mNew[4]())) {
+                    }
+                    
+                    if (feature.get('markerfill') && (!mNew || !mNew[4] || !mNew[4]())) {
                         mNew = dataToMarker(null, new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(feature.get('markerfill')), null, true); // update marker properties!!!
                         if (mNew && simplifyName(mNew[1]) === simplifyName(feature.get('markerfill')[1])) {
 //                            alert(6);
                         } else {
                             mNew = null;
                         }
-                    }*/
+                    }
                     
 //                    if (feature.get('markerfill') && (!mNew || !mNew[4] || !mNew[4]())) {
 //                        for (let y=1; y<new UnivDataController(new UnivDataService()).getDtWorld().length; ++y) {
