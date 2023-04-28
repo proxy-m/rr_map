@@ -164,7 +164,7 @@ class UnivDataService {
                 if (window.windowDock) { // windowDock appears only after first created infowindow
                     window.windowDock.closeAll();
                 }
-                new UnivDataController(this).resetInputExceptYear();
+                new UnivDataController(this).resetInputExceptYear(cntr);
             } catch (e534234532) {
                 console.error(e534234532);
             }
@@ -526,14 +526,16 @@ class UnivDataController {
 //        });
     }
     
-    resetInputExceptYear () {
-        subj = 1; //this.subject = 1;
-        cntr = 0; //this.country = 0;
-        reg = 0; //this.region = 0;
+    resetInputExceptYear (country = 0, region = 0, subject = 1) {
+        subj = subject; //this.subject = 1;
+        cntr = country; //this.country = 0;
+        reg = region; //this.region = 0;
         
         $('.mfilter-subject select option:selected').val(subj);
         $('.mfilter-country select option:selected').val(cntr);
         $('.mfilter-region select option:selected').val(reg);
+        
+        console.log('cntr, reg, subj: ', cntr, reg, subj);
     }
     
     clearMarkerLayers () {
@@ -682,6 +684,8 @@ class UnivDataController {
             this.udtService.forceFull = false;
             this.code = 0;
             //return;
+        } else if (cntr > 0) {
+            this.udtService.forceFull = true; ///
         }
         
         code = this.code;
