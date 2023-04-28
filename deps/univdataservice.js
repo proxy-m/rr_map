@@ -164,7 +164,7 @@ class UnivDataService {
                 if (window.windowDock) { // windowDock appears only after first created infowindow
                     window.windowDock.closeAll();
                 }
-                new UnivDataController(this).resetInputExceptYear(cntr);
+                new UnivDataController(this).resetInputExceptYear(cntr, reg, subj); // ? preserve subj too
             } catch (e534234532) {
                 console.error(e534234532);
             }
@@ -536,13 +536,13 @@ class UnivDataController {
     }
     
     resetInputExceptYear (country = 0, region = 0, subject = 1) {
-        subj = subject; //this.subject = 1;
-        cntr = country; //this.country = 0;
-        reg = region; //this.region = 0;
+        cntr = (undefined !== country) ? country : cntr; // 0;
+        reg = (undefined !== region) ? region : reg; // 0;
+        subj = (undefined !== subject) ? subject : subj; // 1;
         
-        $('.mfilter-subject select option:selected').val(subj);
         $('.mfilter-country select option:selected').val(cntr);
         $('.mfilter-region select option:selected').val(reg);
+        $('.mfilter-subject select option:selected').val(subj);
         
         console.log('cntr, reg, subj: ', cntr, reg, subj);
     }

@@ -421,25 +421,19 @@ $(document).ready(function ()
                     if (feature.get('markerfill') && (!mNew || !mNew[4] || !mNew[4]())) {
                         mNew = dataToMarker(null, new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(feature.get('markerfill')), null, true); // update marker properties!!!
                     }
-                    if (!mNew || !mNew[4] || !mNew[4]()) {
-                        mNew = dataToMarker(null, new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(mrks[+feature.get('n') - 1]), null, true); // update marker properties!!!
-                    }
-                    if (!mNew || !mNew[4] || !mNew[4]()) {
-                        mNew = dataToMarker(new UnivDataService().getDt(), new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(mrks[+feature.get('n') - 1]), null, true);
-                    }
-                    if (!mNew || !mNew[4] || !mNew[4]()) {
-                        mNew = dataToMarker(null, new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(feature.get('markerfill')), null, true); // update marker properties!!!
-                    }   
                     
                     content = document.getElementById('popup-content'); ///
                     
                     if (false && (!mNew || !mNew[4] || !mNew[4]())) {
                         content.innerHTML = dataToMarker(new UnivDataService().getDtWorld(), new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(feature.get('markerfill')), null, true)[3]().info;
                     } else {
-                        content.innerHTML = mNew[4]();
-                        if (!!mNew[4]()) {
+                        if (!!mNew && !!mNew[4] && !!mNew[4]()) {
+                            content.innerHTML = mNew[4]();
                             feature.set('markerfill', mNew, true); // silent update old marker data
                         } else {
+                            if (!mNew) {
+                                mNew = feature.get('markerfill');
+                            }
                             console.error('Wrong markerfill data (not full)', mNew);
                             content.innerHTML = mNew[3]().info || ('Info window data is not loaded for <strong>' + feature.get('desc') + '</strong> ' + '<a href="#' + feature.get('desc') + '">View full university profile</a>');
                         }
