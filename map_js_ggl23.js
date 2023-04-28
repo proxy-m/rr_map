@@ -177,6 +177,18 @@ $(document).ready(function ()
 		initMap();
 	});
     
+    function reloadMarkerIfNeededAndDisplayOne (marker, callback) {
+        console.log('marker: ', marker);
+        if (!marker[4] || !marker[4]()) {
+            var p1 = udtController.getMarkerPositionInDtWorld(marker);
+            //console.log('getMarkerPositionInDtWorld result:', p1, (p1 >= 0) ? udtController.getDtWorld()[p1] : null);
+            udtController.setStateURL(null, true, p1, p1); ///// construct urlto force overload dt for one marker
+            udtController.requestSecond().then(callback);
+        } else {
+            callback(marker[3]);
+        }
+    }
+    
 
 	function subjectview()
 	{
@@ -290,6 +302,8 @@ $(document).ready(function ()
         
         var features = [];
         mrks.forEach(function (m, i) {
+            m.n = i+1;
+//            m.mrksWas = mrks;
             var iconFeature = new ol.Feature({
                 geometry: new ol.geom.Point(ol.proj.fromLonLat([m[0].lng, m[0].lat])), /// [106.8478695, -6.1568562]))),
                 //z: (!!m[0].z) ? m[0].z : undefined,
@@ -410,26 +424,86 @@ $(document).ready(function ()
                 lastMissed = wasClickedTrigger;
                 
                 let displayDockInfoWindow = function displayDockInfoWindow () {
-                    var mNew = null;
+                    var mNew = feature.get('markerfill');
                     
-                    if (!!(mNew = feature.get('markerfill')) && (!mNew[4] || !mNew[4])) {
-                        mNew = dataToMarker(new UnivDataService().getDtWorld(), new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(feature.get('markerfill')), null, true); // update marker properties!!!
-                    }
+                    /*if (!mNew || !mNew[4] || !mNew[4]()) { // for statrup click
+                        mNew = [];
+                        mNew[1] = feature.get('markerfill');
+                        mNew = dataToMarker(mNew, 1, feature.get('markerfill')[1], true); // update marker properties!!!
+                        console.log('statrup click!!!!!!!!!!!!!!!!', feature.get('markerfill'));
+                        if (mNew && mNew[1] === feature.get('markerfill')[1]) {
+                            alert(1);
+                            feature.set('markerfill', mNew, true); // silent update old marker data: 1
+                        } else {
+                            mNew = null;
+                        }
+                    }*/
+/*                    if (feature.get('markerfill') && (!mNew || !mNew[4] || !mNew[4]())) {
+                        mNew = dataToMarker(new UnivDataService().getDtWorld(), new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(feature.get('markerfill')[1].split(' - ')[1]), null, true); // update marker properties!!!                        
+                        if (mNew && simplifyName(mNew[1]) === simplifyName(feature.get('markerfill')[1])) {
+//                            alert(9);
+                        } else {
+                            if (mNew) {
+//                                alert(mNew[1] + ' -- ' + feature.get('markerfill')[1]);
+                            }
+                            mNew = null;
+                        }
+                    }*/
                     if (feature.get('markerfill') && (!mNew || !mNew[4] || !mNew[4]())) {
                         mNew = dataToMarker(new UnivDataService().getDt(), new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(feature.get('markerfill')), null, true); // update marker properties!!!                        
+                        if (mNew && simplifyName(mNew[1]) === simplifyName(feature.get('markerfill')[1])) {
+//                            alert(8);
+                        } else {
+                            if (mNew) {
+//                                alert(mNew[1] + ' -- ' + feature.get('markerfill')[1]);
+                            }
+                            mNew = null;
+                        }
                     }
-                    if (feature.get('markerfill') && (!mNew || !mNew[4] || !mNew[4]())) {
+                    /*if (feature.get('markerfill') && (!mNew || !mNew[4] || !mNew[4]())) {
+                        mNew = dataToMarker(new UnivDataService().getDtWorld(), new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(feature.get('markerfill')), null, true); // update marker properties!!!
+                        if (mNew && simplifyName(mNew[1]) === simplifyName(feature.get('markerfill')[1])) {
+//                            alert(7);
+                        } else {
+                            if (mNew) {
+//                                alert(mNew[1] + ' -- ' + feature.get('markerfill')[1]);
+                            }
+                            mNew = null;
+                        }
+                    }*/
+                    /*if (feature.get('markerfill') && (!mNew || !mNew[4] || !mNew[4]())) {
                         mNew = dataToMarker(null, new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(feature.get('markerfill')), null, true); // update marker properties!!!
-                    }
+                        if (mNew && simplifyName(mNew[1]) === simplifyName(feature.get('markerfill')[1])) {
+//                            alert(6);
+                        } else {
+                            mNew = null;
+                        }
+                    }*/
+                    
+//                    if (feature.get('markerfill') && (!mNew || !mNew[4] || !mNew[4]())) {
+//                        for (let y=1; y<new UnivDataController(new UnivDataService()).getDtWorld().length; ++y) {
+//                            mNew = dataToMarker(new UnivDataController(new UnivDataService()).getDtWorld(), y, null, true);
+//                            if (mNew && simplifyName(mNew[1]) === simplifyName(feature.get('markerfill')[1])) {
+//                                break;
+//                            }
+//                        }
+//                        if (mNew && simplifyName(mNew[1]) === simplifyName(feature.get('markerfill')[1])) {
+//                            alert(5);
+//                        } else {
+//                            mNew = null;
+//                        }
+//                    }
                     
                     content = document.getElementById('popup-content'); ///
+                    
+                    //alert(feature.get('markerfill')[1]);
                     
                     if (false && (!mNew || !mNew[4] || !mNew[4]())) {
                         content.innerHTML = dataToMarker(new UnivDataService().getDtWorld(), new UnivDataController(new UnivDataService()).getMarkerPositionInDtWorld(feature.get('markerfill')), null, true)[3]().info;
                     } else {
                         if (!!mNew && !!mNew[4] && !!mNew[4]()) {
                             content.innerHTML = mNew[4]();
-                            feature.set('markerfill', mNew, true); // silent update old marker data
+                            feature.set('markerfill', mNew, true); // silent update old marker data: 2
                         } else {
                             if (!mNew) {
                                 mNew = feature.get('markerfill');
@@ -472,20 +546,11 @@ $(document).ready(function ()
                     }
                 };
                 let t10 = null;
-                if (!feature.get('markerfill')[4]() /*|| !mrks[+feature.get('n') - 1][4]()*/ /*!udtController.getDtWorld() || !udtController.getDtWorld().length || udtController.getDtWorld().length < 3*/) {
-                    var p1 = udtController.getMarkerPositionInDtWorld(feature.get('markerfill'));
-                    console.log('getMarkerPositionInDtWorld result:', p1, (p1 >= 0) ? udtController.getDtWorld()[p1] : null);
-                    udtController.setStateURL(null, true, p1, p1); ///// construct urlto force overload dt for one marker
-                    udtController.requestSecond().then(function onGood (dataFullOne) {
-                        console.log('dataFullOne: ', dataFullOne);
-                        t10 = (!t10) ? null : clearTimeout(t10);
-                        t10 = setTimeout(displayDockInfoWindow, 10);
-                    });
-                } else {
+                reloadMarkerIfNeededAndDisplayOne(feature.get('markerfill'), function onGood (dataFullOne) {
+                    console.log('data of one: ', dataFullOne);
                     t10 = (!t10) ? null : clearTimeout(t10);
                     t10 = setTimeout(displayDockInfoWindow, 10);
-                }               
-                
+                }.bind(this));                
 
                 let city;
                 var lt;
