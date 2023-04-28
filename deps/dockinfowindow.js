@@ -8,7 +8,8 @@ class DockInfoWindow {
       *   which we can drop to dock div.
     */
     constructor (dockDivId, InfoWindow) {
-        this.divId = dockDivId;
+        this.modeTwo = undefined;
+        this.divId = dockDivId; // div is needed here just to know target position on window
         this.Window = InfoWindow;
         if (!this.divId || !this.Window) {
             throw new Error('Wrong input for DockInfoWindow');
@@ -108,9 +109,14 @@ class DockInfoWindow {
         } else {
             p = this.getBoundingClientRect();
         }
+        let width = this.getInfoWindowSizes()[0];
         let h = this.getInfoWindowSizes()[1];
-        
         let posBegin = w.getPosition() || [0, 0];
+        
+        if (this.modeTwo === undefined) {
+            this.modeTwo = !!document.body && !!document.body.clientWidth && p.left + 2 * width < document.body.clientWidth - 5;
+        }
+        
         animateByJS (document.getElementById(w.id), function (e, k, rest) {
             var w = this.getInfoWindow(e);
             if (!w) {
@@ -120,7 +126,16 @@ class DockInfoWindow {
             if (w.processMovement) {
                 w.processMovement = false;
             }
-            w.setPosition(posBegin[0] + (p.left - posBegin[0]) * k, posBegin[1] + (p.top + h * (n) - posBegin[1]) * k); // TODO: incremented
+            
+            if (this.modeTwo) {
+                if (n % 2 == 0) { // the if for readability, do not listen your ide!
+                    w.setPosition(posBegin[0] + (p.left - posBegin[0] + width * (n % 2)) * k, posBegin[1] + (p.top + h * Math.floor(n/2) - posBegin[1]) * k);
+                } else {
+                    w.setPosition(posBegin[0] + (p.left - posBegin[0] + width * (n % 2)) * k, posBegin[1] + (p.top + h * Math.floor(n/2) - posBegin[1]) * k);
+                }
+            } else {
+                w.setPosition(posBegin[0] + (p.left - posBegin[0]) * k, posBegin[1] + (p.top + h * (n) - posBegin[1]) * k);
+            }
             if (0 === rest || processMovementOld) {
                 w.processMovement = true;
             }
