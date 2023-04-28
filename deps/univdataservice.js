@@ -694,7 +694,7 @@ class UnivDataController {
             this.code = 0;
             //return;
         } else if (cntr > 0) {
-            ///this.udtService.forceFull = true; ///
+            this.udtService.forceFull = true; ///
         }
         
         code = this.code;
