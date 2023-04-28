@@ -251,15 +251,15 @@ class UnivDataService {
                         if (i1 < 0) { // NEW i1: 3
                             console.error('[ERR] Can not shift position!', i1, i, posOffset, dt[i]);
                             
-                            if (!forceFull && alreadyShifted) {
-                                this.dtWorldLegacy = this.getDtWorld();
-                                this.dtWorld = []; ////////////
-                            } else if (!this.dtWorldLegacy || this.dtWorldLegacy.length || this.dtWorld.length == this.dt.length || this.dtWorldLegacy.length <= this.dtWorld.length || this.dtWorldLegacy.length <= this.dt.length) {
-                                this.dtWorldLegacy = $.extend(true, [], this.dtWorld);
-                            }
-                            this.dt = [];
-                            
-                            return null;
+//                            if (!forceFull && alreadyShifted) {
+//                                this.dtWorldLegacy = this.getDtWorld();
+//                                this.dtWorld = []; ////////////
+//                            } else if (!this.dtWorldLegacy || this.dtWorldLegacy.length || this.dtWorld.length == this.dt.length || this.dtWorldLegacy.length <= this.dtWorld.length || this.dtWorldLegacy.length <= this.dt.length) {
+//                                this.dtWorldLegacy = $.extend(true, [], this.dtWorld);
+//                            }
+//                            this.dt = [];
+//                            return null;
+                            i1 = j;
                         }
                         posOffset1 = i - i1; // i = i1 + posOffset1 !!! new posOffset !!!
                         
