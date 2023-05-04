@@ -1,4 +1,25 @@
 <?php
+session_start();
+
+define('DEBUG', false); // флаг разработки / debug dev flag
+
+if (DEBUG){
+	error_reporting(E_ERROR | E_WARNING | E_STRICT | E_NOTICE | E_PARSE); // error_reporting( E_ALL | E_STRICT );
+	ini_set('display_errors', 1);
+	ini_set('display_startup_errors', 1);
+	ini_set('ignore_repeated_errors', 0);
+	ini_set('html_errors', 1);
+	ini_set('log_errors', 1);
+} else {
+	error_reporting(E_ALL & ~E_WARNING & ~E_STRICT & ~E_NOTICE & ~E_PARSE);
+	ini_set('display_errors', 0);
+	ini_set('display_startup_errors', 0);
+	ini_set('ignore_repeated_errors', 1);
+	ini_set('html_errors', 0);
+	ini_set('log_errors', 1);
+}
+
+
 if($_REQUEST['year']!=''){$year =$_REQUEST['year'];}else{$year =12;}
 if($_REQUEST['subj']!=''){$subj =$_REQUEST['subj'];}else{$subj =1;}
 if($_REQUEST['cntr']!=''){$cntr =$_REQUEST['cntr'];}else{$cntr =0;}
