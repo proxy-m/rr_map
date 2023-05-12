@@ -202,7 +202,9 @@ $(document).ready(function () {
 			$('#hdyr').val($('#years option:selected').text());
 			$('.d3').html('');
 			$('.page-header').css('border-bottom','none');
-          	make_loc();
+          	setTimeout(function(){
+          	getunlnk($.trim($('#university-name').val()));
+          	make_loc();},100);
 			setTimeout(function(){$('#search-university').click();},200);
 			return false;
 		});
@@ -295,7 +297,7 @@ $(document).ready(function () {
 							var pn=String(window.location.pathname).split('/')[2];
 							if(pn!='universitiess.html')
 							{
-								swal("No educational institution with such name was found.");
+								//swal("No educational institution with such name was found.");
 								$('div.sweet-overlay').css('display','none');
 								$('.sweet-alert').css('border','1px solid #99CCFF');
 							}
@@ -328,7 +330,7 @@ $(document).ready(function () {
 					else
 					{
 						$('.d3').css('display','none');
-						swal("This university did not provide the data for selected year/ranking/subject or selected ranking hasn't been published yet");                        $('div.sweet-overlay').css('display','none');
+						//swal("This university did not provide the data for selected year/ranking/subject or selected ranking hasn't been published yet");                        $('div.sweet-overlay').css('display','none');
 						$('.sweet-alert').css('border','1px solid #99CCFF');
 					}
 				});
@@ -346,7 +348,7 @@ $(document).ready(function () {
 				if(data['website'].substring(0, 4)!='http')
 				{undt['website']='http://'+data['website'];}
 				else{undt['website']=data['website'];}
-				
+				//$('#pglnk').html(data['nm_page']);
 				/*
           		if(Number(sdt)>2021)
                 {
@@ -1213,7 +1215,7 @@ else
 	  		url: urlunlnk,
 	  		success: function(data)
 	  	 	{
-	  	 		$('#pglnk').html(data);
+	  	 		$('#pglnk').html(data['aliase']);
 	  	 		$('#pglnk').css('display','none');//pglnk
               //alert($('#pglnk').html());
               make_loc();
@@ -2933,6 +2935,7 @@ else
       
      //alert(window.location.host+window.location.pathname+ '\n'+dmrnk+' '+sbsl+' '+yrsl);
      // alert($('#search-university a').attr('href'));
+      document.location=$('#search-university a').attr('href');
     }
 	});
 	})(jQuery);
