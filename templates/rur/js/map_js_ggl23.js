@@ -772,4 +772,19 @@ $(document).ready(function ()
 		}  		
 	}
     window.initMap = initMap;
+    
+
+    requireCSS2H('/deps/jasmine-4.6.0/jasmine.css'); // jasmine tests styles
+    requireCSS2H('/deps/jasmine-4.6.0/jasmine-custom.css'); // jasmine tests styles
+    requireJS2H('/deps/jasmine-4.6.0/jasmine.js'); // jasmine tests js
+    requireJS2H('/deps/jasmine-4.6.0/jasmine-html.js'); // jasmine tests html
+    requireJS2H('/deps/jasmine-4.6.0/boot0.js'); // jasmine tests boot0
+    requireJS2H('/deps/jasmine-4.6.0/boot1.js'); // optional: include a file here that configures the Jasmine env
+    requireJS2H('/src/Player.js'); // include source files 1
+    requireJS2H('/src/Song.js'); // include source files 2
+    // TODO
+    
+    requireJS2H('/spec/SpecHelper.js');
+    requireJS2H('/spec/PlayerSpec.js');
+
 });

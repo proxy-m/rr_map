@@ -35,6 +35,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 (function() {
   const env = jasmine.getEnv();
+  const jasmineRequire = window.jasmineRequire || require('./jasmine.js');
 
   /**
    * ## Runner Parameters
@@ -93,6 +94,39 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     timer: new jasmine.Timer(),
     filterSpecs: filterSpecs
   });
+  
+  var ConsoleReporter = window.ConsoleReporter;
+  var options = null;
+  if (!jasmine.ConsoleReporter || !!jasmineRequire.ConsoleReporter) {  
+      if (!jasmineRequire.ConsoleReporter) {
+            ConsoleReporter = function(){jasmineRequire.JsApiReporter.apply(this,arguments);};
+            ConsoleReporter.prototype = jasmineRequire.JsApiReporter.prototype;
+            ConsoleReporter.prototype.constructor = ConsoleReporter;
+            ConsoleReporter.prototype.specDone = function (o) {
+                o = o || {};
+                if (o.status !== "passed") {
+                  console.warn("Failed: " + o.fullName + o.failedExpectations[0].message);
+                } else {
+                  console.debug("Passed: " + o.fullName);
+                }
+            };
+      } else {  
+          ConsoleReporter = jasmineRequire.ConsoleReporter();
+          options = {
+              timer: new jasmine.Timer, 
+              print: function () {
+                  console.log.apply(console,arguments)
+              }
+          };
+      }
+  } else {
+      ConsoleReporter = jasmine.ConsoleReporter;
+      options = console.log;
+  }
+  window.ConsoleReporter = ConsoleReporter;
+  
+  consoleReporter = new ConsoleReporter(options); // initialize ConsoleReporter
+  env.addReporter(consoleReporter); // add reporter to execution environment
 
   /**
    * The `jsApiReporter` also receives spec results, and is used by any environment that needs to extract the results  from JavaScript.
