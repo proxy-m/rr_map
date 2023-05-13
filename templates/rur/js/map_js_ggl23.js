@@ -1,10 +1,31 @@
 'use strict';
 
+var DEBUG_JS = false;
 let wasClickedTrigger = 0;
 let ti = null;
 let lastMissed = 0;
 let missedCount = 0;
 window.lastWindowCoord = null;
+
+window.startTestsJasmine = function startTestsJasmine () {
+    if (!DEBUG_JS) {
+        return;
+    }
+    requireCSS2H('/deps/jasmine-4.6.0/jasmine.css'); // jasmine tests styles
+    requireCSS2H('/deps/jasmine-4.6.0/jasmine-custom.css'); // jasmine tests styles
+    requireJS2H('/deps/jasmine-4.6.0/jasmine.js'); // jasmine tests js
+    requireJS2H('/deps/jasmine-4.6.0/jasmine-html.js'); // jasmine tests html
+    requireJS2H('/deps/jasmine-4.6.0/boot0.js'); // jasmine tests boot0
+    requireJS2H('/deps/jasmine-4.6.0/boot1.js'); // optional: include a file here that configures the Jasmine env
+    requireJS2H('/src/Player.js'); // include source files 1
+    requireJS2H('/src/Song.js'); // include source files 2
+    // TODO
+    
+    requireJS2H('/spec/SpecHelper.js');
+    requireJS2H('/spec/PlayerSpec.js');
+    
+    DEBUG_JS = null;
+};
 
 if (!window.polyfillNavigatorUserAgentData) {
     try {
@@ -60,6 +81,9 @@ $(document).ready(function ()
 
 	udtController.countryList();    
 	subjectview();
+    
+    setTimeout(window.startTestsJasmine, 100); ///
+
 	
   	//$('.mapinfo').html('<div id="map_div" style="display:none"></div><div id="nwmap"><h2>The map is loading.</h2></div>');
 	//setTimeout(function(){setmap();},100);
@@ -773,18 +797,5 @@ $(document).ready(function ()
 	}
     window.initMap = initMap;
     
-
-    requireCSS2H('/deps/jasmine-4.6.0/jasmine.css'); // jasmine tests styles
-    requireCSS2H('/deps/jasmine-4.6.0/jasmine-custom.css'); // jasmine tests styles
-    requireJS2H('/deps/jasmine-4.6.0/jasmine.js'); // jasmine tests js
-    requireJS2H('/deps/jasmine-4.6.0/jasmine-html.js'); // jasmine tests html
-    requireJS2H('/deps/jasmine-4.6.0/boot0.js'); // jasmine tests boot0
-    requireJS2H('/deps/jasmine-4.6.0/boot1.js'); // optional: include a file here that configures the Jasmine env
-    requireJS2H('/src/Player.js'); // include source files 1
-    requireJS2H('/src/Song.js'); // include source files 2
-    // TODO
-    
-    requireJS2H('/spec/SpecHelper.js');
-    requireJS2H('/spec/PlayerSpec.js');
-
+    window.startTestsJasmine();
 });

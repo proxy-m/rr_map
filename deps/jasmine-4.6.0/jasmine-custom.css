@@ -1,8 +1,9 @@
 @charset "UTF-8";
 .jasmine_html-reporter {
   left: 0;
-  position: absolute;
-  top: 0;
+  /*position: absolute;*/
+  position: fixed;
+  bottom: 0;
   z-index: 99999;
 }
 
