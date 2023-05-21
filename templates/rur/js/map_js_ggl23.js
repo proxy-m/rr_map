@@ -1,6 +1,6 @@
 'use strict';
 
-var DEBUG_JS = false;
+var DEBUG_JS = false; /// true;
 let wasClickedTrigger = 0;
 let ti = null;
 let lastMissed = 0;
@@ -22,7 +22,8 @@ window.startTestsJasmine = function startTestsJasmine () {
     // TODO
     
     requireJS2H('/spec/SpecHelper.js');
-    requireJS2H('/spec/PlayerSpec.js');
+    requireJS2H('/spec/Spec.js');
+    
     
     DEBUG_JS = null;
 };
