@@ -1,4 +1,5 @@
 'use strict';
+window.BIG_ZOOM = 14;
 //var dt = new Array; // unrequired here
 //var tph = '';				//текст массива вузов для typehead
 ///var tphcord=new Array;	//массив координат поиска

@@ -1,5 +1,4 @@
 'use strict';
-
 var DEBUG_JS = false; /// true;
 let wasClickedTrigger = 0;
 let ti = null;
@@ -547,10 +546,11 @@ $(document).ready(function ()
                     city = [lg, lt];
                 }
                 console.log(lg, lt, mrks[wasClickedTrigger-1][0], wasClickedTrigger-1, mrks[wasClickedTrigger-1]);
+                console.debug(!!coordinate && !!evt.coordinateCustom);
                 
                 window.mappanel.map.setView(new ol.View({
                     center: city,
-                    zoom: (!!mrks[wasClickedTrigger-1][0].z) ? mrks[wasClickedTrigger-1][0].z : window.mappanel.map.getView().getZoom(), ///zoom: 12, /// ???
+                    zoom: (!!coordinate && !!evt.coordinateCustom) ? BIG_ZOOM : (!!mrks[wasClickedTrigger-1][0].z) ? mrks[wasClickedTrigger-1][0].z : window.mappanel.map.getView().getZoom(), ///zoom: 12, /// ???
                 }));
             } else {
                 if (!wasClickedTrigger) {
@@ -567,6 +567,7 @@ $(document).ready(function ()
             evt.type = 'click';
             ///alert(feature.get('type')); // Point
             ///evt.coordinate = [];  evt.coordinate[0] = 6633511;  evt.coordinate[1] = 4079902;
+            evt.coordinateCustom = feature.getGeometry().getCoordinates();
             evt.coordinate = feature.getGeometry().getCoordinates();
             evt.pixel = window.mappanel.map.getPixelFromCoordinate(evt.coordinate);
             
@@ -647,7 +648,7 @@ $(document).ready(function ()
                 
                 
 				const map = new google.maps.Map(document.getElementById("map_div"), {
-				    zoom: scale ,
+				    zoom: scale,
 				    center: coord,
 				    mapTypeId: google.maps.MapTypeId.TERRAIN
 			 	});
@@ -746,7 +747,7 @@ $(document).ready(function ()
                     
                     window.mappanel.map.setView(new ol.View({
                         center: city,
-                        zoom: 12, ///zummap ?? 12,
+                        zoom: BIG_ZOOM, ///zummap ?? 14,
                     }));
                     
                     let title = unnm;
