@@ -379,7 +379,7 @@ margin: 1em 0 1em 3.8em;
   left: 8px;
   bottom: 2px;
   text-align: center;
-  background: url(../images/slider-arrow.png) 0 0 no-repeat;
+  background: url(/images/slider-arrow.png) 0 0 no-repeat;
 }
 .slider-arrow span {
   display: inline-block;
@@ -2648,11 +2648,11 @@ button.mfilter-select-arrow {
 /*Internal styles: */
 @font-face {
     font-family: "opensans_nonumbers";
-    src: url("deps/fonts/OpenSans-Medium_no.woff2") format('woff2');
+    src: url("/deps/fonts/OpenSans-Medium_no.woff2") format('woff2');
 }
 @font-face {
     font-family: "opensans_nonumbers";
-    src: url("deps/fonts/OpenSans-MediumItalic_no.woff") format('woff');
+    src: url("/deps/fonts/OpenSans-MediumItalic_no.woff") format('woff');
     font-style: italic;
 }
 ul.typeahead.dropdown-menu>* {
@@ -2688,8 +2688,8 @@ ul.typeahead.dropdown-menu>* {
     font: 24px Helvetica, Arial, sans-serif;
 }
 .searchbutton {
-    background: url(images/search.png) no-repeat;
-    background-image: url(images/search.png) no-repeat;
+    background: url(/images/search.png) no-repeat;
+    background-image: url(/images/search.png) no-repeat;
     cursor: pointer;
     font-size: 0.9em;
     height: 30px;
