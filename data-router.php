@@ -23,7 +23,7 @@ function connect () {
 	
 	try {
 		///$connectConfig = "mysql:host=$db_host;dbname=$db_dname" . (isset($db_port) && $db_port > 0 ? ";port=$db_port" : "");
-        $connectConfig = "sqlite:./data/raundrank0.sqlite" . (isset($db_port) && $db_port > 0 ? ";port=$db_port" : "");
+        $connectConfig = "sqlite:/data/raundrank0.sqlite" . (isset($db_port) && $db_port > 0 ? ";port=$db_port" : "");
 		$db = new PDO($connectConfig); ///, $db_user, $db_password, array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8") );
 		$db2 = null;
 //		try {

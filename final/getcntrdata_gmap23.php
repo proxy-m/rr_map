@@ -30,7 +30,7 @@ $sb=[];
 $sb[1]='SO';$sb[2]='SH';$sb[3]='SL';$sb[4]='SM';$sb[5]='SN';$sb[6]='SS';$sb[7]='SE';
 $univ = [];$i=0;$country=[];$infomap=[];
 //echo $year.' '.$subj.' '.$cntr.' '.$reg.'<br>';
-$db   =  new PDO('sqlite:raundrank.sqlite');
+$db   =  new PDO('sqlite:../data/raundrank0.sqlite');
 
 	if($cntr !=0)
 	{$sqlc='SELECT DISTINCT t1.id_country,t1.Country,t1.cord,t1.scale,t1.cntr_code,t1.cntr_iso,t1.code_cntr,t1.code_reg FROM Country AS t1 JOIN Univ AS t2 ON t1.id_country = t2.id_country JOIN rur AS t3 ON t2.id_univ = t3.id_univ WHERE t3.id_year = '.$year.' AND t3.id_subj = '.$subj.' AND t1.id_country= '.$cntr.';';}

@@ -47,7 +47,7 @@ $sb=[];
 $sb[1]='SO';$sb[2]='SH';$sb[3]='SL';$sb[4]='SM';$sb[5]='SN';$sb[6]='SS';$sb[7]='SE';
 $univ = [];$i=0;$country=[];$infomap=[];
 //echo $year.' '.$subj.' '.$cntr.' '.$reg.'<br>';
-$db   =  new PDO('sqlite:raundrank.sqlite');
+$db   =  new PDO('sqlite:../data/raundrank0.sqlite');
 if($cntr==0)
 {
 	if($reg==0)

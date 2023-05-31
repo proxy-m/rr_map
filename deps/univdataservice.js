@@ -462,7 +462,7 @@ class UnivDataService {
 						if (!dtI) {
 							dtI = [];
 						}
-						var leftur = 'https://roundranking.com/universities/';hs=''; // NOTE !!! html id dt_i may be broken, do not use it
+						var leftur = 'https://www.roundranking.com/universities/';hs=''; // NOTE !!! html id dt_i may be broken, do not use it
 						
 						dtI['info']='<div id="dt_i' + i + '" style="overflow:auto;font-family:arial; border:2px '+ dtI['O_Color1']+ 'solid; border: 2px '+ dtI['O_Color1']+ ' solid;padding:10px;padding-right:32px;padding-bottom:16px"><table style="font-family:arial;width:560px;height:300px;border-collapse:collapse" class="style5" border="0"><tbody><tr>';
 						dtI['info']+='<td style="font-family:arial;text-align:center" rowspan="10" colspan="2"><img src="'+ dtI['logo']+ '" style="vertical-align:top;width: 8em;height: 8em;" ></td><td colspan="4" style="font-family:arial;text-align:left"><span style="font-family:arial;color:'+ dtI['O_Color1']+ ';font-size:17px"><strong>'+ dtI['univ_name']+ '</strong></span></td></tr>';
@@ -1050,7 +1050,7 @@ class UnivDataController {
 					//alert(subj+'\n'+yr+'\n'+reg+'\n'+cntr);
 					this.dtcntr=[];  this.dtcntr.length=0;
 					//var urlc='final/getunivdata_ymap.php?year='+yr+'&subj='+subj+'&reg='+reg+'&cntr='+cntr;
-					var urlc='./final/getcntrdata_gmap22.php?year='+yr+'&subj='+subj+'&reg='+reg;
+					var urlc='./final/getcntrdata_gmap23.php?year='+yr+'&subj='+subj+'&reg='+reg;
 					//alert(urlc);
                     if (this.oldUrlc === urlc && !!this.dtcntr && this.dtcntr.length > 0) {
                         return this.dtcntr; ///
