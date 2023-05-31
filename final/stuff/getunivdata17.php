@@ -1,5 +1,5 @@
 <?php
-	$year = isset($_REQUEST['year'])?$_REQUEST['year']: 2017;
+	$year = isset($_REQUEST['year'])?$_REQUEST['year']: 2019;
 	$subj = isset($_REQUEST['subj'])?urldecode($_REQUEST['subj']): 'Overall';
 	$unnm = isset($_REQUEST['unnm'])?urldecode($_REQUEST['unnm']): 'Aalto University';
 	/*$unnmn=urldecode($unnm);
@@ -7,7 +7,18 @@
 //	echo ($year.$subj.$unnm.$_REQUEST['unnm']); 
 $db   =  new PDO('sqlite:raundrank.sqlite');
 $repr = array();
+/*
+if($year!=2018)
+{$sqlr='SELECT t1.O_WR AS O_WRr,t1.O_WS AS O_WSr,t2.O_WR AS O_WRp,t2.O_WS AS O_WSp  FROM rur2 AS t1 JOIN rur_perform AS t2 ON t1.id_univ = t2.id_univ AND t1.id_year = t2.id_year JOIN Univ AS t3 ON t1.id_univ = t3.id_univ AND t2.id_univ = t3.id_univ JOIN year AS t4 ON t1.id_year = t4.id_year WHERE t4.year ='.$year.' AND t3.[Univ name] ="'.$unnm.'";';}
+else{$sqlr='SELECT t1.O_WR AS O_WRr,t1.O_WS AS O_WSr FROM rur2 AS t1 JOIN Univ AS t3 ON t1.id_univ = t3.id_univ JOIN year AS t4 ON t1.id_year = t4.id_year WHERE t4.year ='.$year.' AND t3.[Univ name] ="'.$unnm.'";';}
+*/
+//if($year=='2018')
+//{
+//	$sqlr='SELECT t2.O_WR AS O_WRp,t2.O_WS AS O_WSp FROM rur2 AS t1 JOIN rur_perform AS t2 JOIN Univ AS t3 ON t2.id_univ = t3.id_univ JOIN year AS t4 ON t2.id_year = t4.id_year WHERE t4.year ='.$year.' AND t3.[Univ name] ="'.$unnm.'";';
+//}
+//else{
 $sqlr='SELECT t1.O_WR AS O_WRr,t1.O_WS AS O_WSr,t2.O_WR AS O_WRp,t2.O_WS AS O_WSp  FROM rur2 AS t1 JOIN rur_perform AS t2 ON t1.id_univ = t2.id_univ AND t1.id_year = t2.id_year JOIN Univ AS t3 ON t1.id_univ = t3.id_univ AND t2.id_univ = t3.id_univ JOIN year AS t4 ON t1.id_year = t4.id_year WHERE t4.year ='.$year.' AND t3.[Univ name] ="'.$unnm.'";';
+//}
 //echo $sqlr;
 	$str = $db->prepare($sqlr);
 	$str->execute();	
@@ -23,8 +34,8 @@ $sqlr='SELECT t1.O_WR AS O_WRr,t1.O_WS AS O_WSr,t2.O_WR AS O_WRp,t2.O_WS AS O_WS
 	$subject = 'Overall';
 	$univ_name= ($_GET['univ_name']) ?($_GET['univ_name']) : 'California Institute of Technology (Caltech)';
 	$id_univ=$_REQUEST['univ_sel'];*/
-	$id_univ=1;
-	$sql = 'SELECT t2.[Univ name],t3.Country AS Economy,t3.Region,t3.Flag,t2.Logo,t2.Address,t2.Location,t2.Foundation,t2.[Short name],t2.Type,t2.Web_site,t1.Faculty,t1.Students,t1.O_CR,t1.T_CR,t1.R_CR,t1.I_CR,t1.F_CR,t1.O_WR,t1.O_WS,t1.O_TR,t1.O_TS,t1.O_RR,t1.O_RS,t1.O_IR,t1.O_IS,t1.O_FR,t1.O_FS,t4.League AS O_OL,t5.League AS O_TL,t6.League AS O_RL,t7.League AS O_IL,t8.League AS O_FL,t1.O_I1,t1.O_I2,t1.O_I3,t1.O_I4,t1.O_I5,t1.O_I6,t1.O_I7,t1.O_I8,t1.O_I9,t1.O_I10,t1.O_I11,t1.O_I12,t1.O_I13,t1.O_I14,t1.O_I15,t1.O_I16,t1.O_I17,t1.O_I18,t1.O_I19,t1.O_I20,t1.IR1,t1.IR2,t1.IR3,t1.IR4,t1.IR5,t1.IR6,t1.IR7,t1.IR8,t1.IR9,t1.IR10,t1.IR11,t1.IR12,t1.IR13,t1.IR14,t1.IR15,t1.IR16,t1.IR17,t1.IR18,t1.IR19,t1.IR20,t2.Overview,t2.Mission,t2.Picture1,t2.Picture2,t9.O_80p,t9.O_O_s,t9.O_T_s,t9.O_R_s,t9.O_I_s,t9.O_F_s,t4.Color1 AS O_Color1,t4.Color2 AS O_Color2,t4.Color3 AS O_Color3,t4.Color4 AS O_Color4,t10.T_80p,t10.T_Os,t10.T_Ts,t10.T_Rs,t10.T_Is,t10.T_Fs,t5.Color1 AS T_Color1,t5.Color2 AS T_Color2,t5.Color3 AS T_Color3,t5.Color4 AS T_Color4,t11.R_80p,t11.R_Os,t11.R_Ts,t11.R_Rs,t11.R_Is,t11.R_Fs,t6.Color1 AS R_Color1,t6.Color2 AS R_Color2,t6.Color3 AS R_Color3,t6.Color4 AS R_Color4,t12.I_80p,t12.I_Os,t12.I_Ts,t12.I_Rs,t12.I_Is,t12.I_Fs,t7.Color1 AS I_Color1,t7.Color2 AS I_Color2,t7.Color3 AS I_Color3,t7.Color4 AS I_Color4,t13.F_80p,t13.F_Os,t13.F_Ts,t13.F_Rs,t13.F_Is,t13.F_Fs,t8.Color1 AS F_Color1,t8.Color2 AS F_Color2,t8.Color3 AS F_Color3,t8.Color4 AS F_Color4,t14.year,t1.FS,t15.subject AS Subject  FROM rur AS t1 JOIN Univ AS t2 ON t1.id_univ = t2.id_univ JOIN Country AS t3 ON t2.id_country = t3.id_country JOIN League AS t4 ON t1.id_OL = t4.id_leag JOIN League AS t5 ON t1.id_TL = t5.id_leag JOIN League AS t6 ON t1.id_RL = t6.id_leag JOIN League AS t7 ON t1.id_IL = t7.id_leag JOIN League AS t8 ON t1.id_FL = t8.id_leag JOIN picleag AS t9 ON t1.id_OL = t9.id_leag AND t1.id_subj = t9.id_subj JOIN picleag AS t10 ON t1.id_TL = t10.id_leag AND t1.id_subj = t10.id_subj JOIN picleag AS t11 ON t1.id_RL = t11.id_leag AND t1.id_subj = t11.id_subj JOIN picleag AS t12 ON t1.id_IL = t12.id_leag AND t1.id_subj = t12.id_subj JOIN picleag AS t13 ON t1.id_FL = t13.id_leag AND t1.id_subj = t13.id_subj JOIN year AS t14 ON t1.id_year = t14.id_year JOIN Subject AS t15 ON t1.id_subj = t15.id_subj  WHERE t14.year ='.$year.' AND  t15.subject ="'.$subj.'" AND  t2.[Univ name]  ="'.$unnm.'" LIMIT 1;';
+//	$id_univ=1;
+	$sql = 'SELECT t2.[Univ name],t2.nm_prophil,t3.Country AS Economy,t3.Region,t3.Flag,t2.Logo,t2.Address,t2.Location,t2.Foundation,t2.[Short name],t2.Type,t2.Web_site,t2.cord,t2.nm_page,t1.Faculty,t1.Students,t1.O_CR,t1.T_CR,t1.R_CR,t1.I_CR,t1.F_CR,t1.O_WR,t1.O_WS,t1.O_TR,t1.O_TS,t1.O_RR,t1.O_RS,t1.O_IR,t1.O_IS,t1.O_FR,t1.O_FS,t4.League AS O_OL,t5.League AS O_TL,t6.League AS O_RL,t7.League AS O_IL,t8.League AS O_FL,t1.O_I1,t1.O_I2,t1.O_I3,t1.O_I4,t1.O_I5,t1.O_I6,t1.O_I7,t1.O_I8,t1.O_I9,t1.O_I10,t1.O_I11,t1.O_I12,t1.O_I13,t1.O_I14,t1.O_I15,t1.O_I16,t1.O_I17,t1.O_I18,t1.O_I19,t1.O_I20,t1.IR1,t1.IR2,t1.IR3,t1.IR4,t1.IR5,t1.IR6,t1.IR7,t1.IR8,t1.IR9,t1.IR10,t1.IR11,t1.IR12,t1.IR13,t1.IR14,t1.IR15,t1.IR16,t1.IR17,t1.IR18,t1.IR19,t1.IR20,t2.Overview,t2.Mission,t2.Picture1,t2.Picture2,t9.O_80p,t9.O_O_s,t9.O_T_s,t9.O_R_s,t9.O_I_s,t9.O_F_s,t4.Color1 AS O_Color1,t4.Color2 AS O_Color2,t4.Color3 AS O_Color3,t4.Color4 AS O_Color4,t10.T_80p,t10.T_Os,t10.T_Ts,t10.T_Rs,t10.T_Is,t10.T_Fs,t5.Color1 AS T_Color1,t5.Color2 AS T_Color2,t5.Color3 AS T_Color3,t5.Color4 AS T_Color4,t11.R_80p,t11.R_Os,t11.R_Ts,t11.R_Rs,t11.R_Is,t11.R_Fs,t6.Color1 AS R_Color1,t6.Color2 AS R_Color2,t6.Color3 AS R_Color3,t6.Color4 AS R_Color4,t12.I_80p,t12.I_Os,t12.I_Ts,t12.I_Rs,t12.I_Is,t12.I_Fs,t7.Color1 AS I_Color1,t7.Color2 AS I_Color2,t7.Color3 AS I_Color3,t7.Color4 AS I_Color4,t13.F_80p,t13.F_Os,t13.F_Ts,t13.F_Rs,t13.F_Is,t13.F_Fs,t8.Color1 AS F_Color1,t8.Color2 AS F_Color2,t8.Color3 AS F_Color3,t8.Color4 AS F_Color4,t14.year,t1.FS,t1.Sc,t15.subject AS Subject  FROM rur AS t1 JOIN Univ AS t2 ON t1.id_univ = t2.id_univ JOIN Country AS t3 ON t2.id_country = t3.id_country JOIN League AS t4 ON t1.id_OL = t4.id_leag JOIN League AS t5 ON t1.id_TL = t5.id_leag JOIN League AS t6 ON t1.id_RL = t6.id_leag JOIN League AS t7 ON t1.id_IL = t7.id_leag JOIN League AS t8 ON t1.id_FL = t8.id_leag JOIN picleag AS t9 ON t1.id_OL = t9.id_leag AND t1.id_subj = t9.id_subj JOIN picleag AS t10 ON t1.id_TL = t10.id_leag AND t1.id_subj = t10.id_subj JOIN picleag AS t11 ON t1.id_RL = t11.id_leag AND t1.id_subj = t11.id_subj JOIN picleag AS t12 ON t1.id_IL = t12.id_leag AND t1.id_subj = t12.id_subj JOIN picleag AS t13 ON t1.id_FL = t13.id_leag AND t1.id_subj = t13.id_subj JOIN year AS t14 ON t1.id_year = t14.id_year JOIN Subject AS t15 ON t1.id_subj = t15.id_subj  WHERE t14.year ='.$year.' AND  t15.subject ="'.$subj.'" AND  t2.[Univ name]  ="'.$unnm.'" LIMIT 1;';
 //	echo $sql;
 	$st = $db->prepare($sql);
 	$st->execute();	
@@ -33,6 +44,7 @@ $sqlr='SELECT t1.O_WR AS O_WRr,t1.O_WS AS O_WSr,t2.O_WR AS O_WRp,t2.O_WS AS O_WS
 	foreach ($rr as $row)
 	{
 		$universities['univ_name'] = $row['Univ name'];
+		$universities['nm_prophil'] = $row['nm_prophil'];
 		$universities['country'] = $row['Economy'];
 		$universities['region'] = $row['Region'];
 		$universities['flag'] = $row['Flag'];
@@ -43,8 +55,17 @@ $sqlr='SELECT t1.O_WR AS O_WRr,t1.O_WS AS O_WSr,t2.O_WR AS O_WRp,t2.O_WS AS O_WS
 		$universities['sh_nm'] = $row['Short name'];
 		$universities['type'] = $row['Type'];
 		$universities['website'] = $row['Web_site'];
-		$universities['fac'] = $row['Faculty'];
-		$universities['stud'] = $row['Students'];
+		if($year>2017)
+		{
+			$universities['fac'] = round($row['Faculty'],-1);
+			$universities['stud'] = round($row['Students'],-1);
+		}
+		else
+		{
+			$universities['fac'] = round($row['Faculty'],0);
+			$universities['stud'] = round($row['Students'],0);
+		}
+		
 		$universities['O_CR'] = $row['O_CR'];
 		$universities['T_CR'] = $row['T_CR'];
 		$universities['R_CR'] = $row['R_CR'];
@@ -113,6 +134,7 @@ $sqlr='SELECT t1.O_WR AS O_WRr,t1.O_WS AS O_WSr,t2.O_WR AS O_WRp,t2.O_WS AS O_WS
 		$universities['F_Color1'] = $row['F_Color1'];$universities['F_Color2'] = $row['F_Color2'];
 		$universities['F_Color3'] = $row['F_Color3'];$universities['F_Color4'] = $row['F_Color4'];	
 		$universities['year'] = $row['year'];$universities['fs'] = $row['FS'];$universities['subj'] = $row['Subject'];	
+		$universities['cord'] = $row['cord'];$universities['nm_page'] = $row['nm_page'];$universities['Sc'] = $row['Sc'];
 	}
 		$res = array_merge($repr, $universities);
 		header('Content-Type: application/json');

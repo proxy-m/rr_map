@@ -63,7 +63,10 @@ $recnt[0]=0;
 			$recpt[0][$recnt[0]]['id_recipt']=$row['id_recipt'];
 			$recpt[0][$recnt[0]]['Univ_name']=0;
 			$recpt[0][$recnt[0]]['office']=$row['office'];
-			$recpt[0][$recnt[0]]['fio']=$row['io_rus'];
+			if($row['io_rus']=='')
+			{$recpt[$i][$recnt[$i]]['fio']=$row['full_name_eng'];}
+			else
+			{$recpt[$i][$recnt[$i]]['fio']=$row['io_rus'];}
 			$recpt[0][$recnt[0]]['email']=$row['email'];
 			$recpt[0][$recnt[0]]['ismain']=$row['ismain'];
 		}
