@@ -336,7 +336,7 @@ $(document).ready(function () {
 				});
 		function getundata(sdt,ssbj,sdtunnm)
 		{
-		var urlundt='../final/getunivdata20.php?year='+sdt+'&subj='+ssbj+'&unnm='+sdtunnm;
+		var urlundt='../final/getunivdata_gmap23.php?year='+sdt+'&subj='+ssbj+'&unnm='+sdtunnm;
 		//alert(urlundt);
 		$('#hdyr').val(urlundt);
 		$('.d3').html('');
